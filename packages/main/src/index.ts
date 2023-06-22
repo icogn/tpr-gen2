@@ -9,9 +9,9 @@ import path from 'node:path';
 import forkWebsiteProcess from './website/forkWebsiteProcess';
 import processManager from './processManager';
 import prepareDb from './prisma/prepareDb';
-import {autoUpdater} from 'electron-updater';
+// import {autoUpdater} from 'electron-updater';
 import setupEventsIpc from './setupEventsIpc';
-// import {UpdateEndpoint, createCustomAppUpdater} from './updater/CustomAppUpdater';
+import {UpdateEndpoint, createCustomAppUpdater} from './updater/CustomAppUpdater';
 
 const volumePath = path.join(app.getPath('userData'), 'volume');
 console.log(`volumePath:${volumePath}`);
@@ -63,9 +63,9 @@ app.on('activate', restoreOrCreateWindow);
 async function onAppReady() {
   setupEventsIpc();
 
-  // const customAppUpdater = createCustomAppUpdater(UpdateEndpoint.stable);
-  // const a = await customAppUpdater.checkForUpdates();
-  // console.log(a);
+  const customAppUpdater = createCustomAppUpdater(UpdateEndpoint.dev);
+  const a = await customAppUpdater.checkForUpdates();
+  console.log(a);
 
   // We want to specify what we want to target when we create the custom adapter.
   // We need to create the customAppUpdater on command.
@@ -74,7 +74,7 @@ async function onAppReady() {
   if (process.env.NODE_ENV === 'production') {
     prepareDb();
 
-    checkForUpdates();
+    // checkForUpdates();
   }
 
   forkWebsiteProcess();
@@ -82,24 +82,24 @@ async function onAppReady() {
   restoreOrCreateWindow();
 }
 
-function checkForUpdates() {
-  if (process.env.NODE_ENV === 'production') {
-    autoUpdater
-      .checkForUpdates()
-      .then(a => {
-        console.log('Check for updates success:');
-        console.log(a);
-      })
-      .catch(e => {
-        console.log('Check for updates error:');
-        console.log(e);
-      });
+// function checkForUpdates() {
+//   if (process.env.NODE_ENV === 'production') {
+//     autoUpdater
+//       .checkForUpdates()
+//       .then(a => {
+//         console.log('Check for updates success:');
+//         console.log(a);
+//       })
+//       .catch(e => {
+//         console.log('Check for updates error:');
+//         console.log(e);
+//       });
 
-    // autoUpdater.checkForUpdatesAndNotify().catch(e => {
-    //   console.error('Failed check and install updates:', e);
-    // });
-  }
-}
+//     // autoUpdater.checkForUpdatesAndNotify().catch(e => {
+//     //   console.error('Failed check and install updates:', e);
+//     // });
+//   }
+// }
 
 /**
  * Create the application window when the background process is ready.

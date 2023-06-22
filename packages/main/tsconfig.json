@@ -12,7 +12,13 @@
     "paths": {
       "/@/*": ["./src/*"]
     },
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    // This makes the `e` you catch have type "any" instead of "unknown". It
+    // complains when trying to commit if the type is "unknown", so we would
+    // have to do work on every catch since we can't change to "any" manually
+    // because of other lint rules. This basically says we don't care that `e`
+    // is of type "any". We can adjust later if we want to.
+    "useUnknownInCatchVariables": false
   },
   "include": ["src/**/*.ts", "../../types/**/*.d.ts"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts"]

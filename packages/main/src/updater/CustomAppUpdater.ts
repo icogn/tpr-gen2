@@ -118,15 +118,16 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
           null;
 
         if (currentChannel === null) {
-          // noinspection TypeScriptValidateJSTypes
-          tag = hrefRegExp.exec(latestRelease.element('link').attribute('href'))![1];
+          const href = hrefRegExp.exec(latestRelease.element('link').attribute('href'));
+          tag = href ? href[1] : null;
         } else {
           for (const element of feed.getElements('entry')) {
-            // noinspection TypeScriptValidateJSTypes
-            const hrefElement = hrefRegExp.exec(element.element('link').attribute('href'))!;
+            const hrefElement = hrefRegExp.exec(element.element('link').attribute('href'));
 
             // If this is null then something is wrong and skip this release
-            if (hrefElement === null) continue;
+            if (hrefElement == null) {
+              continue;
+            }
 
             // This Release's Tag
             const hrefTag = hrefElement[1];
@@ -145,7 +146,7 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
             }
 
             const isNextPreRelease = hrefChannel && hrefChannel === currentChannel;
-            if (isNextPreRelease) {
+            if (isNextPreRelease && hrefTag !== 'v1.1.4-dev') {
               tag = hrefTag;
               break;
             }
@@ -154,14 +155,14 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
       } else {
         tag = await this.getLatestTagName(cancellationToken);
         for (const element of feed.getElements('entry')) {
-          // noinspection TypeScriptValidateJSTypes
-          if (hrefRegExp.exec(element.element('link').attribute('href'))![1] === tag) {
+          const href = hrefRegExp.exec(element.element('link').attribute('href'));
+          if (href && href[1] === tag) {
             latestRelease = element;
             break;
           }
         }
       }
-    } catch (e: any) {
+    } catch (e) {
       throw newError(
         `Cannot parse releases feed: ${e.stack || e.message},\nXML:\n${feedXml}`,
         'ERR_UPDATER_INVALID_RELEASE_FEED',
@@ -174,17 +175,28 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
 
     let rawData: string;
     let channelFile = '';
-    let channelFileUrl: any = '';
+    let channelFileUrl: URL = new URL('');
     const fetchData = async (channelName: string) => {
-      channelFile = getChannelFilename(channelName);
+      console.log(channelName);
+      // TODO: probably should keep this to where it is always called latest.
+      // Since we can update to any channel from any channel and channel B might
+      // have not even existed when a release was created, we should only want a
+      // single kind of file in any release regardless of its channel or
+      // whatever channels exist.
+      channelFile = getChannelFilename('latest');
+      // channelFile = 'latest.yml';
       channelFileUrl = newUrlFromBase(
         this.getBaseDownloadPath(String(tag), channelFile),
         this.baseUrl,
       );
       const requestOptions = this.createRequestOptions(channelFileUrl);
       try {
-        return (await this.executor.request(requestOptions, cancellationToken))!;
-      } catch (e: any) {
+        const result = await this.executor.request(requestOptions, cancellationToken);
+        if (result == null) {
+          throw new Error(`channelFileUrl request did not return a string. result is ${result}`);
+        }
+        return result;
+      } catch (e) {
         if (e instanceof HttpError && e.statusCode === 404) {
           throw newError(
             `Cannot find ${channelFile} in the latest release artifacts (${channelFileUrl}): ${
@@ -202,7 +214,7 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
         ? this.getCustomChannelName(String(semver.prerelease(tag)?.[0] || 'latest'))
         : this.getDefaultChannelName();
       rawData = await fetchData(channel);
-    } catch (e: any) {
+    } catch (e) {
       if (this.updater.allowPrerelease) {
         // Allow fallback to `latest.yml`
         rawData = await fetchData(this.getDefaultChannelName());
@@ -250,7 +262,7 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
 
       const releaseInfo: GithubReleaseInfo = JSON.parse(rawData);
       return releaseInfo.tag_name;
-    } catch (e: any) {
+    } catch (e) {
       throw newError(
         `Unable to find latest version on GitHub (${url}), please ensure a production release exists: ${
           e.stack || e.message
@@ -262,6 +274,7 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
 
   private get basePath(): string {
     return `/${this.options.owner}/${this.options.repo}/releases`;
+    // return `/${this.options.owner}/${this.options.repo}/tags`;
   }
 
   resolveFiles(updateInfo: GithubUpdateInfo): Array<ResolvedUpdateFileInfo> {
@@ -286,7 +299,7 @@ function computeReleaseNotes(
   currentVersion: semver.SemVer,
   isFullChangelog: boolean,
   feed: XElement,
-  latestRelease: any,
+  latestRelease: XElement,
 ): string | Array<ReleaseNoteInfo> | null {
   if (!isFullChangelog) {
     return getNoteValue(latestRelease);
@@ -295,7 +308,8 @@ function computeReleaseNotes(
   const releaseNotes: Array<ReleaseNoteInfo> = [];
   for (const release of feed.getElements('entry')) {
     // noinspection TypeScriptValidateJSTypes
-    const versionRelease = /\/tag\/v?([^/]+)$/.exec(release.element('link').attribute('href'))![1];
+    const versionRegexResult = /\/tag\/v?([^/]+)$/.exec(release.element('link').attribute('href'));
+    const versionRelease = versionRegexResult ? versionRegexResult[1] : '';
     if (semver.lt(currentVersion, versionRelease)) {
       releaseNotes.push({
         version: versionRelease,
@@ -327,6 +341,8 @@ const endpointDefs: {[key: string]: UpdateEndpointDefinition} = {
   dev: {
     owner: 'icogn',
     repo: 'tpr-gen2',
+    // owner: 'electron-userland',
+    // repo: 'electron-builder',
     channel: 'dev',
   },
   // TODO: create 'isaac' one in a new github account.
@@ -348,7 +364,23 @@ export function createCustomAppUpdater(updateEndpoint: UpdateEndpoint) {
 
   const customAutoUpdater = doLoadAutoUpdater(options);
   // TODO: Only do in dev
+  customAutoUpdater.channel = endpointOptions.channel;
+  // Setting channel automatically sets `allowDowngrade` to true. We probably do
+  // not want this since I think it makes the app automatically update to
+  // whatever the resolved "client.getLatestVersion()" is when that semver
+  // resolved to a lower value than the current one. Meaning that any change in
+  // the version such that it does not match the current version (higher or
+  // lower) would cause us to update to it. The only time we would want to
+  // downgrade (which will likely NEVER be allowed on the "stable" releases due
+  // to messing up people's databases) would be when a user specifies an exact
+  // version they want to swap to. That is a feature that would have to be
+  // developed, and I am not sure if there is much point since the generator
+  // server will probably always be on the latest version, so if the user
+  // swapped to a version which did not match the server, then they would not be
+  // able to interact with the server.
+  customAutoUpdater.allowDowngrade = false;
   customAutoUpdater.forceDevUpdateConfig = true;
+  customAutoUpdater.allowPrerelease = true;
 
   return customAutoUpdater;
 }
