@@ -96,6 +96,11 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
   }
 
   async getLatestVersion(): Promise<GithubUpdateInfo> {
+    const targetChannel =
+      this.updater?.channel ||
+      (semver.prerelease(this.updater.currentVersion)?.[0] as string) ||
+      null;
+
     const cancellationToken = new CancellationToken();
 
     const feedXml: string = (await this.httpRequest(
@@ -107,84 +112,29 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
     )) as string;
 
     const feed = parseXml(feedXml);
-    // noinspection TypeScriptValidateJSTypes
-    let latestRelease = feed.element('entry', false, 'No published versions on GitHub');
-    let tag: string | null = null;
-    try {
-      if (this.updater.allowPrerelease) {
-        const currentChannel =
-          this.updater?.channel ||
-          (semver.prerelease(this.updater.currentVersion)?.[0] as string) ||
-          null;
 
-        if (currentChannel === null) {
-          const href = hrefRegExp.exec(latestRelease.element('link').attribute('href'));
-          tag = href ? href[1] : null;
-        } else {
-          for (const element of feed.getElements('entry')) {
-            const hrefElement = hrefRegExp.exec(element.element('link').attribute('href'));
-
-            // If this is null then something is wrong and skip this release
-            if (hrefElement == null) {
-              continue;
-            }
-
-            // This Release's Tag
-            const hrefTag = hrefElement[1];
-            //Get Channel from this release's tag
-            const hrefChannel = (semver.prerelease(hrefTag)?.[0] as string) || null;
-
-            const shouldFetchVersion =
-              !currentChannel || ['alpha', 'beta'].includes(currentChannel);
-            const isCustomChannel = !['alpha', 'beta'].includes(String(hrefChannel));
-            // Allow moving from alpha to beta but not down
-            const channelMismatch = currentChannel === 'beta' && hrefChannel === 'alpha';
-
-            if (shouldFetchVersion && !isCustomChannel && !channelMismatch) {
-              tag = hrefTag;
-              break;
-            }
-
-            const isNextPreRelease = hrefChannel && hrefChannel === currentChannel;
-            if (isNextPreRelease && hrefTag !== 'v1.1.4-dev') {
-              tag = hrefTag;
-              break;
-            }
-          }
-        }
-      } else {
-        tag = await this.getLatestTagName(cancellationToken);
-        for (const element of feed.getElements('entry')) {
-          const href = hrefRegExp.exec(element.element('link').attribute('href'));
-          if (href && href[1] === tag) {
-            latestRelease = element;
-            break;
-          }
-        }
-      }
-    } catch (e) {
-      throw newError(
-        `Cannot parse releases feed: ${e.stack || e.message},\nXML:\n${feedXml}`,
-        'ERR_UPDATER_INVALID_RELEASE_FEED',
-      );
-    }
+    const {latestRelease, tag} = await this.getTagAndReleaseFromFeed(
+      targetChannel,
+      feed,
+      feedXml,
+      cancellationToken,
+    );
 
     if (tag == null) {
       throw newError('No published versions on GitHub', 'ERR_UPDATER_NO_PUBLISHED_VERSIONS');
     }
 
-    let rawData: string;
     let channelFile = '';
-    let channelFileUrl: URL = new URL('');
-    const fetchData = async (channelName: string) => {
-      console.log(channelName);
-      // TODO: probably should keep this to where it is always called latest.
+    let channelFileUrl: URL | undefined;
+    const fetchData = async () => {
+      // We keep this to where it is always called latest or latest-mac, etc.
       // Since we can update to any channel from any channel and channel B might
       // have not even existed when a release was created, we should only want a
       // single kind of file in any release regardless of its channel or
       // whatever channels exist.
-      channelFile = getChannelFilename('latest');
-      // channelFile = 'latest.yml';
+
+      // `channelFile` looks like 'latest.yml', 'latest-mac.yml', etc.
+      channelFile = getChannelFilename(this.getDefaultChannelName());
       channelFileUrl = newUrlFromBase(
         this.getBaseDownloadPath(String(tag), channelFile),
         this.baseUrl,
@@ -209,23 +159,20 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
       }
     };
 
-    try {
-      const channel = this.updater.allowPrerelease
-        ? this.getCustomChannelName(String(semver.prerelease(tag)?.[0] || 'latest'))
-        : this.getDefaultChannelName();
-      rawData = await fetchData(channel);
-    } catch (e) {
-      if (this.updater.allowPrerelease) {
-        // Allow fallback to `latest.yml`
-        rawData = await fetchData(this.getDefaultChannelName());
-      } else {
-        throw e;
-      }
-    }
+    // `rawData` will be the raw yaml from the latest.yml (latest-mac.yml,
+    // etc.). This call can throw.
+    const rawData: string = await fetchData();
 
+    // `channelFile` and `channelFileUrl` are just passed to use in error
+    // messages.
     const result = parseUpdateInfo(rawData, channelFile, channelFileUrl);
+
+    // I think 'releaseName' and 'releaseNotes' can optionally be specified in
+    // releaseInfo which can be used in the command line or the config. Docs say
+    // it is intended for command line usage. Seems like we don't need to worry
+    // about adding these things.
     if (result.releaseName == null) {
-      result.releaseName = latestRelease.elementValueOrEmpty('title');
+      result.releaseName = latestRelease?.elementValueOrEmpty('title') || '';
     }
 
     if (result.releaseNotes == null) {
@@ -239,6 +186,77 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
     return {
       tag: tag,
       ...result,
+    };
+  }
+
+  // Note that feed is expected to only ever have at most 10 entries and order
+  // of the releases is mostly ordered based on the time the release was created
+  // rather than anything related to the tag. The order can be weird, and the
+  // first element is not guaranteed to be the latest release. If looking for
+  // the latest stable release, then a different endpoint is used. Since we can
+  // only get the latest 10 without having to deal with github API limits
+  // (though we are small enough to where we should probably be able to deal
+  // with it if we needed to), it is not currently advised to have more than 1
+  // prerelease type per repo.
+  private async getTagAndReleaseFromFeed(
+    targetChannel: string | null,
+    feed: XElement,
+    feedXml: string,
+    cancellationToken: CancellationToken,
+  ): Promise<{tag: string | null; latestRelease: XElement | null}> {
+    // Note the below line will THROW with the 3rd param as the message if the
+    // element was not found.
+    feed.element('entry', false, 'No published versions on GitHub');
+
+    let tag: string | null = null;
+    let latestRelease: XElement | null = null;
+    try {
+      if (!targetChannel) {
+        // Get the latest release always when channel is empty.
+        tag = await this.getLatestTagName(cancellationToken);
+
+        // Try to find latestRelease in entries.
+        for (const element of feed.getElements('entry')) {
+          const href = hrefRegExp.exec(element.element('link').attribute('href'));
+          if (href && href[1] === tag) {
+            latestRelease = element;
+            break;
+          }
+        }
+      } else {
+        // From the releases we are given in the response, find the one which
+        // has the highest version which matches the channel.
+
+        for (const element of feed.getElements('entry')) {
+          const hrefElement = hrefRegExp.exec(element.element('link').attribute('href'));
+          // If this is null then something is wrong and skip this release
+          if (hrefElement == null) {
+            continue;
+          }
+
+          // This release's tag
+          const hrefTag = hrefElement[1];
+          // Get channel from this release's tag
+          const hrefChannel = (semver.prerelease(hrefTag)?.[0] as string) || null;
+
+          if (hrefChannel === targetChannel && hrefTag !== 'v1.1.4-dev') {
+            if (tag == null || semver.gt(hrefTag, tag)) {
+              tag = hrefTag;
+              latestRelease = element;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      throw newError(
+        `Cannot parse releases feed: ${e.stack || e.message},\nXML:\n${feedXml}`,
+        'ERR_UPDATER_INVALID_RELEASE_FEED',
+      );
+    }
+
+    return {
+      tag,
+      latestRelease,
     };
   }
 
@@ -289,7 +307,10 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
   }
 }
 
-function getNoteValue(parent: XElement): string {
+function getNoteValue(parent: XElement | null): string {
+  if (!parent) {
+    return '';
+  }
   const result = parent.elementValueOrEmpty('content');
   // GitHub reports empty notes as <content>No content.</content>
   return result === 'No content.' ? '' : result;
@@ -299,7 +320,7 @@ function computeReleaseNotes(
   currentVersion: semver.SemVer,
   isFullChangelog: boolean,
   feed: XElement,
-  latestRelease: XElement,
+  latestRelease: XElement | null,
 ): string | Array<ReleaseNoteInfo> | null {
   if (!isFullChangelog) {
     return getNoteValue(latestRelease);

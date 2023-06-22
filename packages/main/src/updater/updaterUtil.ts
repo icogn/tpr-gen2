@@ -110,7 +110,7 @@ export function resolveFiles(
 export function parseUpdateInfo(
   rawData: string | null,
   channelFile: string,
-  channelFileUrl: URL,
+  channelFileUrl: URL | undefined,
 ): UpdateInfo {
   if (rawData == null) {
     throw newError(
