@@ -6,6 +6,14 @@ import {newError, safeStringifyJson} from 'builder-util-runtime';
 import type {ResolvedUpdateFileInfo, UpdateFileInfo, UpdateInfo} from 'electron-updater';
 import {load} from 'js-yaml';
 
+interface UpdateInfoWithSha2 extends UpdateInfo {
+  readonly sha2?: string;
+}
+
+interface UpdateFileInfoWithSha2 extends UpdateFileInfo {
+  readonly sha2?: string;
+}
+
 export function newBaseUrl(url: string): URL {
   const result = new URL(url);
   if (!result.pathname.endsWith('/')) {
@@ -45,10 +53,6 @@ export function blockmapFiles(baseUrl: URL, oldVersion: string, newVersion: stri
   return [oldBlockMapUrl, newBlockMapUrl];
 }
 
-interface UpdateInfoWithSha2 extends UpdateInfo {
-  readonly sha2?: string;
-}
-
 export function getFileList(updateInfo: UpdateInfo): Array<UpdateFileInfo> {
   const files = updateInfo.files;
   if (files != null && files.length > 0) {
@@ -78,7 +82,7 @@ export function resolveFiles(
 ): Array<ResolvedUpdateFileInfo> {
   const files = getFileList(updateInfo);
   const result: Array<ResolvedUpdateFileInfo> = files.map(fileInfo => {
-    if ((fileInfo as any).sha2 == null && fileInfo.sha512 == null) {
+    if ((fileInfo as UpdateFileInfoWithSha2).sha2 == null && fileInfo.sha512 == null) {
       throw newError(
         `Update info doesn't contain nor sha256 neither sha512 checksum: ${safeStringifyJson(
           fileInfo,
@@ -95,7 +99,7 @@ export function resolveFiles(
   const packages = (updateInfo as WindowsUpdateInfo).packages;
   const packageInfo = packages == null ? null : packages[process.arch] || packages.ia32;
   if (packageInfo != null) {
-    (result[0] as any).packageInfo = {
+    result[0].packageInfo = {
       ...packageInfo,
       path: newUrlFromBase(pathTransformer(packageInfo.path), baseUrl).href,
     };
@@ -118,7 +122,7 @@ export function parseUpdateInfo(
   let result: UpdateInfo;
   try {
     result = load(rawData) as UpdateInfo;
-  } catch (e: any) {
+  } catch (e) {
     throw newError(
       `Cannot parse update info from ${channelFile} in the latest release artifacts (${channelFileUrl}): ${
         e.stack || e.message
