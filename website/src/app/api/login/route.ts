@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import {fetchBranchesConfig} from '@/stateful/branches';
 import * as bcrypt from 'bcrypt';
 
 type RequestBody = {
@@ -7,6 +8,9 @@ type RequestBody = {
 };
 
 export async function POST(req: Request) {
+  const cachedConfig = await fetchBranchesConfig();
+  console.log(cachedConfig);
+
   const body: RequestBody = await req.json();
 
   const user = await prisma.user.findFirst({
