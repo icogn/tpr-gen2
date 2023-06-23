@@ -239,11 +239,9 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
           // Get channel from this release's tag
           const hrefChannel = (semver.prerelease(hrefTag)?.[0] as string) || null;
 
-          if (hrefChannel === targetChannel && hrefTag !== 'v1.1.4-dev') {
-            if (tag == null || semver.gt(hrefTag, tag)) {
-              tag = hrefTag;
-              latestRelease = element;
-            }
+          if (hrefChannel === targetChannel && (tag == null || semver.gt(hrefTag, tag))) {
+            tag = hrefTag;
+            latestRelease = element;
           }
         }
       }
