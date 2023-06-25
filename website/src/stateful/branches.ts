@@ -9,10 +9,11 @@ type RawChannelInfo = {
   name: string;
   owner: string;
   repo: string;
-  site: URL;
+  // site should be either an empty string or a URL
+  site: string;
 };
 
-interface ChannelInfo extends RawChannelInfo {
+export interface ChannelInfo extends RawChannelInfo {
   channel: string;
   // `latestVersion` can be missing since we have to fetch it for each
   // individual channel and we don't want to fail the entire thing if we fail to

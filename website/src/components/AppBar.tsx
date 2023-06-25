@@ -2,9 +2,12 @@ import SignOutButton from './SignOutButton';
 import {getServerSession} from 'next-auth';
 import {authOptions} from '@/app/api/auth/[...nextauth]/route';
 import asSyncComponent from './asSyncComponent';
+import ContainedCl from './ContainedCl';
+import {fetchBranchesConfig} from '@/stateful/branches';
 
 const AppBar = asSyncComponent(async function AppBar() {
   const session = await getServerSession(authOptions);
+  const channels = await fetchBranchesConfig();
 
   return (
     <div
@@ -20,6 +23,7 @@ const AppBar = asSyncComponent(async function AppBar() {
     >
       <div style={{marginRight: 'auto'}}>AppBar</div>
       <SignOutButton user={session?.user} />
+      <ContainedCl channels={channels} />
     </div>
   );
 });
