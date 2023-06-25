@@ -81,7 +81,7 @@ export async function fetchBranchesConfig() {
   return cachedData;
 }
 
-async function fetchBranchLatestVersion(channelInfo: ChannelInfo): string | undefined {
+async function fetchBranchLatestVersion(channelInfo: ChannelInfo): Promise<string | undefined> {
   try {
     if (!channelInfo.channel) {
       // Fetch the latest if the channel is '' (the stable channel)

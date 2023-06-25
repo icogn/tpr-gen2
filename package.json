@@ -69,6 +69,12 @@
     "vue-tsc": "1.6.5"
   },
   "dependencies": {
+    "@emotion/cache": "^11.11.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/server": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.6",
     "builder-util-runtime": "^9.2.1",
     "electron-updater": "^5.3.0",
     "js-yaml": "^4.1.0",
