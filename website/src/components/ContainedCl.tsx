@@ -53,6 +53,7 @@ function ContainedCl({channels}: ContainedClProps) {
                 key={channel}
                 onClick={() => {
                   window.top?.postMessage({type: 'changeToChannel', channelInfo}, '*');
+                  handleClose();
                 }}
               >
                 {name}

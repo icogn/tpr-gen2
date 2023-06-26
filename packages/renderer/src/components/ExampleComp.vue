@@ -1,19 +1,8 @@
 <script lang="ts" setup>
 import {ref, onMounted} from 'vue';
 import {cancelAutoInstall, askDbReady, askWebsiteReady} from '#preload';
-
-type ChannelInfo = {
-  name: string;
-  owner: string;
-  repo: string;
-  // site should be either an empty string or a URL
-  site: string;
-  channel: string;
-  // `latestVersion` can be missing since we have to fetch it for each
-  // individual channel and we don't want to fail the entire thing if we fail to
-  // get the version for a single channel.
-  latestVersion?: string;
-};
+import VersionChangePopup from './VersionChangePopup.vue';
+import type {ChannelInfo} from './RendererTypes';
 
 const channelProps = {
   name: 'string',
@@ -80,10 +69,12 @@ function isObjectChannelInfo(data: unknown): boolean {
 
 const dbReady = ref('pending');
 const websiteReady = ref('pending');
+const channelInfo = ref<ChannelInfo | null>(null);
 
-function handleChangeChannel(channelInfo: ChannelInfo) {
+function handleChangeChannel(channelInfoIn: ChannelInfo) {
   console.log('in handleChangeChannel, channelInfo');
-  console.log(channelInfo);
+  console.log(channelInfoIn);
+  channelInfo.value = channelInfoIn;
 }
 
 onMounted(() => {
@@ -121,6 +112,10 @@ function doCancelAutoInstall() {
   console.log('cancel auto install');
   cancelAutoInstall();
 }
+
+function handleCancel() {
+  channelInfo.value = null;
+}
 </script>
 
 <template>
@@ -128,4 +123,9 @@ function doCancelAutoInstall() {
   <div>dbReady: {{ dbReady }}</div>
   <div>websiteReady: {{ websiteReady }}</div>
   <button @click="doCancelAutoInstall">cancelAutoInstall</button>
+  <version-change-popup
+    v-if="channelInfo != null"
+    :channel-info="channelInfo"
+    :on-cancel="handleCancel"
+  ></version-change-popup>
 </template>
