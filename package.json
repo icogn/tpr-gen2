@@ -4,7 +4,8 @@
   "version": "1.0.13-dev.10",
   "private": true,
   "workspaces": [
-    "website"
+    "website",
+    "packages/renderer"
   ],
   "repository": {
     "type": "git",
@@ -44,7 +45,7 @@
     "@types/js-yaml": "^4.0.5",
     "@types/lodash.escaperegexp": "^4.1.7",
     "@types/node": "18.16.13",
-    "@typescript-eslint/eslint-plugin": "5.59.6",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",
     "@vitejs/plugin-vue": "4.2.3",
     "@vue/test-utils": "2.3.2",

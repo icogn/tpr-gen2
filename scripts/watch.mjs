@@ -145,12 +145,15 @@ async function dev() {
   const rendererWatchServer = await createServer({
     mode,
     logLevel,
-    configFile: 'packages/renderer/vite.config.js',
+    configFile: 'packages/renderer/vite.config.ts',
   }).then(s => {
     console.log('\n\ns is:');
     console.log(s);
     return s.listen();
   });
+
+  console.log('rendererWatchServer.resolvedUrls');
+  console.log(rendererWatchServer.resolvedUrls);
 
   await setupPreloadPackageWatcher(rendererWatchServer);
   await setupMainPackageWatcher(rendererWatchServer);
