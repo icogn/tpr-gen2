@@ -20,6 +20,6 @@
     // is of type "any". We can adjust later if we want to.
     "useUnknownInCatchVariables": false
   },
-  "include": ["src/**/*.ts", "../../types/**/*.d.ts"],
+  "include": ["src/**/*.ts", "../../types/**/*.d.ts", "../shared"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }

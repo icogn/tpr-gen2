@@ -1,5 +1,5 @@
 import {URL} from 'node:url';
-import type {AppUpdater, ResolvedUpdateFileInfo} from 'electron-updater';
+import type {AppUpdater, ProgressInfo, ResolvedUpdateFileInfo} from 'electron-updater';
 import {NsisUpdater, MacUpdater, Provider, CancellationToken} from 'electron-updater';
 import type {XElement, ReleaseNoteInfo} from 'builder-util-runtime';
 import {
@@ -400,6 +400,10 @@ export function createCustomAppUpdater(updateEndpoint: UpdateEndpoint) {
   customAutoUpdater.allowDowngrade = false;
   customAutoUpdater.forceDevUpdateConfig = true;
   customAutoUpdater.allowPrerelease = true;
+
+  customAutoUpdater.on('download-progress', (progressInfo: ProgressInfo) => {
+    console.log(`percent:${progressInfo.percent}`);
+  });
 
   return customAutoUpdater;
 }
