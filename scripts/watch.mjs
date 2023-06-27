@@ -147,8 +147,8 @@ async function dev() {
     logLevel,
     configFile: 'packages/renderer/vite.config.ts',
   }).then(s => {
-    console.log('\n\ns is:');
-    console.log(s);
+    // console.log('\n\ns is:');
+    // console.log(s);
     return s.listen();
   });
 
