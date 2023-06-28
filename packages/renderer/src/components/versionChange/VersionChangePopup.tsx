@@ -1,9 +1,9 @@
-import FullScreenPopup from './FullScreenPopup';
-import type {ChannelInfo} from './RendererTypes';
+import FullScreenPopup from '../FullScreenPopup';
+import type {ChannelInfo} from '../RendererTypes';
 import styles from './VersionChangePopup.module.css';
 
 type VersionChangePopupProps = {
-  channelInfo: ChannelInfo | null;
+  channelInfo: ChannelInfo;
   onCancel: () => void;
 };
 
