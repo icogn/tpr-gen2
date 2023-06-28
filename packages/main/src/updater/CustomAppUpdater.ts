@@ -20,6 +20,7 @@ import {
   parseUpdateInfo,
   resolveFiles,
 } from './updaterUtil';
+import type {ChannelInfo} from '../../../shared/types';
 
 const hrefRegExp = /\/tag\/([^/]+)$/;
 
@@ -339,11 +340,11 @@ function computeReleaseNotes(
   return releaseNotes.sort((a, b) => semver.rcompare(a.version, b.version));
 }
 
-type UpdateEndpointDefinition = {
-  owner: string;
-  repo: string;
-  channel: string;
-};
+// type UpdateEndpointDefinition = {
+//   owner: string;
+//   repo: string;
+//   channel: string;
+// };
 
 export enum UpdateEndpoint {
   stable = 'stable',
@@ -351,28 +352,12 @@ export enum UpdateEndpoint {
   isaac = 'isaac',
 }
 
-const endpointDefs: {[key: string]: UpdateEndpointDefinition} = {
-  stable: {
-    owner: 'icogn',
-    repo: 'tpr-gen2',
-    channel: '',
-  },
-  dev: {
-    owner: 'icogn',
-    repo: 'tpr-gen2',
-    // owner: 'electron-userland',
-    // repo: 'electron-builder',
-    channel: 'dev',
-  },
-  // TODO: create 'isaac' one in a new github account.
-};
-
-export function createCustomAppUpdater(updateEndpoint: UpdateEndpoint) {
-  // TODO: need a way to specify channel.
-  const endpointOptions = endpointDefs[updateEndpoint];
-  if (!endpointOptions) {
-    throw new Error(`Could not find updateEndpointDefinition for "${updateEndpoint}"`);
-  }
+export function createCustomAppUpdater(channelInfo: ChannelInfo) {
+  const endpointOptions = {
+    owner: channelInfo.owner,
+    repo: channelInfo.repo,
+    channel: channelInfo.channel,
+  };
 
   // For example, we might say "dev" which translates to
   const options: AllPublishOptions = {
@@ -400,6 +385,7 @@ export function createCustomAppUpdater(updateEndpoint: UpdateEndpoint) {
   customAutoUpdater.allowDowngrade = false;
   customAutoUpdater.forceDevUpdateConfig = true;
   customAutoUpdater.allowPrerelease = true;
+  customAutoUpdater.autoDownload = false;
 
   customAutoUpdater.on('download-progress', (progressInfo: ProgressInfo) => {
     console.log(`percent:${progressInfo.percent}`);

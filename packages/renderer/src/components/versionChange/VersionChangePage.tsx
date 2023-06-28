@@ -1,13 +1,14 @@
 import FullScreenPopup from '../FullScreenPopup';
-import type {ChannelInfo} from '../RendererTypes';
+import type {ChannelInfo} from '../../../../shared/types';
 import styles from './VersionChangePopup.module.css';
 
 type VersionChangePopupProps = {
   channelInfo: ChannelInfo;
   onCancel: () => void;
+  onDownloadClick: () => void;
 };
 
-function VersionChangePopup({channelInfo, onCancel}: VersionChangePopupProps) {
+function VersionChangePage({channelInfo, onCancel, onDownloadClick}: VersionChangePopupProps) {
   return (
     <FullScreenPopup>
       <div className={styles.title}>Swap generator branch</div>
@@ -39,10 +40,15 @@ function VersionChangePopup({channelInfo, onCancel}: VersionChangePopupProps) {
 
       <div className={styles.buttonsWrapper}>
         <button onClick={onCancel}>Cancel</button>
-        <button className={styles.buttonsRightBtn}>Start Download</button>
+        <button
+          onClick={onDownloadClick}
+          className={styles.buttonsRightBtn}
+        >
+          Start Download
+        </button>
       </div>
     </FullScreenPopup>
   );
 }
 
-export default VersionChangePopup;
+export default VersionChangePage;
