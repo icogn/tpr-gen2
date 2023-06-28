@@ -70,11 +70,11 @@ async function onAppReady() {
   // We need to create the customAppUpdater on command.
   //
 
-  if (process.env.NODE_ENV === 'production') {
-    prepareDb();
+  // if (process.env.NODE_ENV === 'production') {
+  //   // checkForUpdates();
+  // }
 
-    // checkForUpdates();
-  }
+  prepareDb();
 
   forkWebsiteProcess();
 

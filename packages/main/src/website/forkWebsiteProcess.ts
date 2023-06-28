@@ -10,7 +10,16 @@ export const websiteReadyEmitter = basicEventEmitter<boolean>();
 function forkWebsiteProcess() {
   if (process.env.NODE_ENV === 'development') {
     // Server is run separately during development.
-    websiteReadyEmitter.update(true); // Act as if website is ready immediately
+    // ping website and wait until get response
+    pingWebsiteProcess()
+      .then(statusCode => {
+        console.log(`Website returned status code: ${statusCode}`);
+        websiteReadyEmitter.update(true);
+      })
+      .catch(e => {
+        console.log('Ping website failed.');
+        console.log(e);
+      });
     return;
   }
 
