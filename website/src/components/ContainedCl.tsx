@@ -16,7 +16,7 @@ function ContainedCl({channels}: ContainedClProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
 
-  const handleBtnClick = (e: MouseEvent) => {
+  const handleBtnClick = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
 
