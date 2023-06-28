@@ -97,11 +97,7 @@ function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
         This is an non-stable branch. Backwards compatibility between versions is not maintained.
         This will not affect your data on the stable branch.
       </div>
-      {downloadStarted ? (
-        <div className={`${styles.buttonsWrapper} ${styles.centeredButtonsWrapper}`}>
-          <button onClick={handleCancelClick}>Cancel</button>
-        </div>
-      ) : (
+      {!downloadStarted && (
         <div className={styles.buttonsWrapper}>
           <button
             onClick={handleCancelClick}
@@ -114,7 +110,7 @@ function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
             className={styles.buttonsRightBtn}
             disabled={!updateVersion}
           >
-            Start Download
+            Swap Branch
           </button>
         </div>
       )}

@@ -119,7 +119,7 @@ export function downloadUpdate() {
 }
 
 export function cancelUpdate() {
-  ipcRenderer.send(IpcChannel.cancelUpdate);
+  ipcRenderer.send(IpcChannel.cancelUpdater);
 }
 
 export {sha256sum} from './nodeCrypto';

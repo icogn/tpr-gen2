@@ -7,7 +7,7 @@ export enum IpcChannel {
 
   checkForUpdates = 'tpr:checkForUpdates',
   downloadUpdate = 'tpr:downloadUpdate',
-  cancelUpdate = 'tpr:cancelUpdate',
+  cancelUpdater = 'tpr:cancelUpdater',
 
   checkingForUpdate = 'tpr:checking-for-update',
   updateNotAvailable = 'tpr:update-not-available',
