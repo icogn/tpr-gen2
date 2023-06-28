@@ -17,8 +17,14 @@
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Added */
+    "paths": {
+      "#preload": ["../preload/src/index"],
+      "/@/*": ["./src/*"]
+    }
   },
   "include": ["src"],
   "references": [{"path": "./tsconfig.node.json"}]

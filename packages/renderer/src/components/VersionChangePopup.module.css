@@ -1,0 +1,55 @@
+.root {
+  position: fixed;
+  background-color: #fff;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  color: #000;
+}
+
+.contentWrapper {
+  width: 450px;
+  min-height: 500px;
+  padding: 48px 40px 36px;
+  border: 1px solid black;
+  border-radius: 8px;
+}
+
+.title {
+  font-size: 24px;
+}
+
+.tableWrapper {
+  padding-top: 24px;
+}
+
+.table {
+  margin: 0 auto;
+}
+
+.table td:first-child {
+  text-align: right;
+  color: #686868;
+  padding: 2px 4px 2px 0;
+}
+
+.table td:not(:first-child) {
+  text-align: left;
+}
+
+.bodyText {
+  padding-top: 24px;
+}
+
+.buttonsWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: 32px;
+}
+
+.buttonsRightBtn {
+  margin-left: auto;
+}
