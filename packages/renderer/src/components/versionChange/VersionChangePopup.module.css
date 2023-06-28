@@ -34,3 +34,7 @@
 .buttonsRightBtn {
   margin-left: auto;
 }
+
+.centeredButtonsWrapper {
+  justify-content: center;
+}

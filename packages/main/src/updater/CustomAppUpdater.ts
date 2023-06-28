@@ -1,5 +1,5 @@
 import {URL} from 'node:url';
-import type {AppUpdater, ProgressInfo, ResolvedUpdateFileInfo} from 'electron-updater';
+import type {AppUpdater, ResolvedUpdateFileInfo} from 'electron-updater';
 import {NsisUpdater, MacUpdater, Provider, CancellationToken} from 'electron-updater';
 import type {XElement, ReleaseNoteInfo} from 'builder-util-runtime';
 import {
@@ -141,6 +141,7 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
         this.baseUrl,
       );
       const requestOptions = this.createRequestOptions(channelFileUrl);
+      requestOptions.timeout = 5000;
       try {
         const result = await this.executor.request(requestOptions, cancellationToken);
         if (result == null) {
@@ -386,10 +387,6 @@ export function createCustomAppUpdater(channelInfo: ChannelInfo) {
   customAutoUpdater.forceDevUpdateConfig = true;
   customAutoUpdater.allowPrerelease = true;
   customAutoUpdater.autoDownload = false;
-
-  customAutoUpdater.on('download-progress', (progressInfo: ProgressInfo) => {
-    console.log(`percent:${progressInfo.percent}`);
-  });
 
   return customAutoUpdater;
 }

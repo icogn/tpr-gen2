@@ -1,3 +1,5 @@
+process.env.DEBUG = 'electron-builder';
+
 // Note: it is important that `setEnv` be the very first import.
 import './setEnv';
 import {app, ipcMain} from 'electron';
@@ -10,8 +12,9 @@ import forkWebsiteProcess from './website/forkWebsiteProcess';
 import processManager from './processManager';
 import prepareDb from './prisma/prepareDb';
 import setupEventsIpc from './setupEventsIpc';
-import {checkForUpdateOnChannel} from './updater/updaterInstance';
+// import {checkForUpdateOnChannel} from './updater/updaterInstance';
 // import {UpdateEndpoint, createCustomAppUpdater} from './updater/CustomAppUpdater';
+import {setupUpdater} from './updater/updaterInstance';
 
 const volumePath = path.join(app.getPath('userData'), 'volume');
 console.log(`volumePath:${volumePath}`);
@@ -62,14 +65,15 @@ app.on('activate', restoreOrCreateWindow);
 
 async function onAppReady() {
   setupEventsIpc();
+  setupUpdater();
 
-  checkForUpdateOnChannel({
-    name: 'Dev',
-    owner: 'icogn',
-    repo: 'tpr-gen2',
-    channel: 'dev',
-    site: '',
-  });
+  // checkForUpdateOnChannel({
+  //   name: 'Dev',
+  //   owner: 'icogn',
+  //   repo: 'tpr-gen2',
+  //   channel: 'dev',
+  //   site: '',
+  // });
   // const customAppUpdater = createCustomAppUpdater(UpdateEndpoint.dev);
   // const a = await customAppUpdater.checkForUpdates();
   // console.log(a);

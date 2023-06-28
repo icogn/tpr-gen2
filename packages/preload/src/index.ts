@@ -6,7 +6,7 @@ console.log('in preloadddda');
 import {ipcRenderer} from 'electron';
 import {IpcChannel} from '../../shared/ipcChannels';
 import type {ChannelInfo} from '../../shared/types';
-import type {UpdateInfo} from 'electron-updater';
+import type {UpdateInfo, UpdateDownloadedEvent} from 'electron-updater';
 import EventEmitter from 'events';
 import type TypedEventEmitter from 'typed-emitter';
 import type {ProgressInfo} from 'builder-util-runtime';
@@ -17,7 +17,7 @@ type AppUpdaterEvents = {
   'checking-for-update': () => void;
   'update-not-available': (info: UpdateInfo) => void;
   'update-available': (info: UpdateInfo) => void;
-  // 'update-downloaded': (event: UpdateDownloadedEvent) => void;
+  'update-downloaded': (event: UpdateDownloadedEvent) => void;
   'download-progress': (info: ProgressInfo) => void;
   'update-cancelled': (info: UpdateInfo) => void;
   'appimage-filename-updated': (path: string) => void;
@@ -70,14 +70,56 @@ ipcRenderer.on(IpcChannel.checkingForUpdate, () => {
   updaterEmitterInner.emit('checking-for-update');
 });
 
+ipcRenderer.on(IpcChannel.updateNotAvailable, (event, info: UpdateInfo) => {
+  console.log('renderer received updateNotAvailable');
+  console.log(info);
+  updaterEmitterInner.emit('update-not-available', info);
+});
+
 ipcRenderer.on(IpcChannel.updateAvailable, (event, info: UpdateInfo) => {
   console.log('renderer received updateAvailable');
   console.log(info);
   updaterEmitterInner.emit('update-available', info);
 });
 
+ipcRenderer.on(
+  IpcChannel.updateDownloaded,
+  (event, updateDownloadedEvent: UpdateDownloadedEvent) => {
+    console.log('renderer received updateDownloaded');
+    console.log(updateDownloadedEvent);
+    updaterEmitterInner.emit('update-downloaded', updateDownloadedEvent);
+  },
+);
+
+ipcRenderer.on(IpcChannel.downloadProgress, (event, info: ProgressInfo) => {
+  console.log('renderer received downloadProgress');
+  console.log(info);
+  updaterEmitterInner.emit('download-progress', info);
+});
+
+ipcRenderer.on(IpcChannel.updateCancelled, (event, info: UpdateInfo) => {
+  console.log('renderer received updateCancelled');
+  console.log(info);
+  updaterEmitterInner.emit('update-cancelled', info);
+});
+
+ipcRenderer.on(IpcChannel.updaterError, (event, error: Error, message?: string) => {
+  console.log('renderer received updaterError');
+  console.log(error);
+  console.log(message);
+  updaterEmitterInner.emit('error', error, message);
+});
+
 export function checkForUpdates(channelInfo: ChannelInfo) {
   ipcRenderer.send(IpcChannel.checkForUpdates, channelInfo);
+}
+
+export function downloadUpdate() {
+  ipcRenderer.send(IpcChannel.downloadUpdate);
+}
+
+export function cancelUpdate() {
+  ipcRenderer.send(IpcChannel.cancelUpdate);
 }
 
 export {sha256sum} from './nodeCrypto';

@@ -6,6 +6,14 @@ export enum IpcChannel {
   cancelAutoinstall = 'tpr:cancel-autoinstall',
 
   checkForUpdates = 'tpr:checkForUpdates',
+  downloadUpdate = 'tpr:downloadUpdate',
+  cancelUpdate = 'tpr:cancelUpdate',
+
   checkingForUpdate = 'tpr:checking-for-update',
+  updateNotAvailable = 'tpr:update-not-available',
   updateAvailable = 'tpr:update-available',
+  updateDownloaded = 'tpr:update-downloaded',
+  downloadProgress = 'tpr:download-progress',
+  updateCancelled = 'tpr:update-cancelled',
+  updaterError = 'tpr:updaterError',
 }

@@ -10,19 +10,14 @@
 //   - probably doesn't matter since will immediately restart
 // - call quitAndInstall or something with silent set to false
 
-import type {
-  AppUpdater,
-  CancellationToken,
-  ProgressInfo,
-  UpdateDownloadedEvent,
-} from 'electron-updater';
+import {CancellationToken} from 'electron-updater';
 import {createCustomAppUpdater} from './CustomAppUpdater';
 import type {WebContents} from 'electron';
 import {ipcMain} from 'electron';
 import {IpcChannel} from '../../../shared/ipcChannels';
 import isObjectChannelInfo from '../../../shared/isObjectChannelInfo';
 import type {ChannelInfo} from '../../../shared/types';
-import type {UpdateInfo} from 'electron-updater';
+import type {UpdateInfo, AppUpdater, ProgressInfo, UpdateDownloadedEvent} from 'electron-updater';
 
 // UI states:
 // - initial, loading the version info, can only click cancel
@@ -46,6 +41,14 @@ import type {UpdateInfo} from 'electron-updater';
 // downloadAndInstall
 // cancel - can cancel at any point
 
+// Ideally we would allow the user to cancel the update once it starts doing it.
+// Starting an update download and canceling it twice in a row causes all of the
+// electron-updater requests to hang either indefinitely or a really long time.
+// So we for now we will not allow the user to cancel the download. Issues which
+// seem related:
+// https://github.com/electron-userland/electron-builder/issues/7056
+// https://github.com/electron-userland/electron-builder/issues/5795
+
 let customAppUpdater: AppUpdater | null = null;
 let cancellationToken: CancellationToken | null = null;
 let webContents: WebContents | null = null;
@@ -53,25 +56,38 @@ let removeListeners: (() => void) | null;
 
 // forward events to renderer
 
-ipcMain.on(IpcChannel.checkForUpdates, (event, maybeChannelInfo: unknown) => {
-  if (!isObjectChannelInfo(maybeChannelInfo)) {
-    return;
-  }
-  const channelInfo = maybeChannelInfo as ChannelInfo;
+export function setupUpdater() {
+  ipcMain.on(IpcChannel.checkForUpdates, (event, maybeChannelInfo: unknown) => {
+    console.log('in checkForUpdates');
+    if (!isObjectChannelInfo(maybeChannelInfo)) {
+      return;
+    }
+    const channelInfo = maybeChannelInfo as ChannelInfo;
 
-  webContents = event.sender;
+    webContents = event.sender;
 
-  checkForUpdateOnChannel(channelInfo);
+    checkForUpdateOnChannel(channelInfo);
+  });
 
-  // dbPreparedEmitter.onceOrPrev((success: boolean | undefined) => {
-  //   if (success != null && !event.sender.isDestroyed()) {
-  //     event.sender.send(IpcChannel.check, success);
-  //   }
-  // });
-});
+  ipcMain.on(IpcChannel.downloadUpdate, () => {
+    if (customAppUpdater) {
+      cancellationToken = new CancellationToken();
+      customAppUpdater.downloadUpdate(cancellationToken).catch(() => {
+        // Unexpected errors should get emitted as 'error'. We still need to
+        // catch here for when we manually cancel.
+      });
+    } else {
+      console.error('Attempted to download update when customAppUpdater was null.');
+    }
+  });
 
-export async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
-  cancel();
+  ipcMain.on(IpcChannel.cancelUpdate, () => {
+    cancelUpdate();
+  });
+}
+
+async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
+  cancelUpdate();
 
   customAppUpdater = createCustomAppUpdater(channelInfo);
 
@@ -85,6 +101,9 @@ export async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
   const onUpdateNotAvailable = (info: UpdateInfo) => {
     console.log('WWWWW updater -- update-not-available:');
     console.log(info);
+    if (webContents && !webContents.isDestroyed()) {
+      webContents.send(IpcChannel.updateNotAvailable, info);
+    }
   };
 
   const onUpdateAvailable = (info: UpdateInfo) => {
@@ -98,22 +117,28 @@ export async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
   const onUpdateDownloaded = (event: UpdateDownloadedEvent) => {
     console.log('WWWWW updater -- update-downloaded:');
     console.log(event);
+    if (webContents && !webContents.isDestroyed()) {
+      webContents.send(IpcChannel.updateDownloaded, event);
+    }
+
+    customAppUpdater?.quitAndInstall(false);
   };
 
   const onDownloadProgress = (info: ProgressInfo) => {
     console.log('WWWWW updater -- download-progress:');
     console.log(info);
-  };
-
-  const onUpdateCancelled = (info: UpdateInfo) => {
-    console.log('WWWWW updater -- update-cancelled:');
-    console.log(info);
+    if (webContents && !webContents.isDestroyed()) {
+      webContents.send(IpcChannel.downloadProgress, info);
+    }
   };
 
   const onError = (error: Error, message?: string) => {
     console.log('WWWWW updater -- appUpdater error:');
     console.log(error);
     console.log(message);
+    if (webContents && !webContents.isDestroyed()) {
+      webContents.send(IpcChannel.updaterError, error, message);
+    }
   };
 
   customAppUpdater.on('checking-for-update', onCheckingForUpdate);
@@ -121,7 +146,8 @@ export async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
   customAppUpdater.on('update-available', onUpdateAvailable);
   customAppUpdater.on('update-downloaded', onUpdateDownloaded);
   customAppUpdater.on('download-progress', onDownloadProgress);
-  customAppUpdater.on('update-cancelled', onUpdateCancelled);
+  // Note: we don't get the update-cancelled event since we stop listening as soon as
+  // we call cancel.
   customAppUpdater.on('error', onError);
 
   removeListeners = () => {
@@ -131,7 +157,6 @@ export async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
       customAppUpdater.off('update-available', onUpdateAvailable);
       customAppUpdater.off('update-downloaded', onUpdateDownloaded);
       customAppUpdater.off('download-progress', onDownloadProgress);
-      customAppUpdater.off('update-cancelled', onUpdateCancelled);
       customAppUpdater.off('error', onError);
     }
   };
@@ -139,13 +164,14 @@ export async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
   customAppUpdater.checkForUpdates();
 }
 
-function cancel() {
+function cancelUpdate() {
   if (removeListeners) {
     removeListeners();
     removeListeners = null;
   }
   if (cancellationToken) {
     cancellationToken.cancel();
+    cancellationToken.dispose();
     cancellationToken = null;
   }
   if (customAppUpdater) {
