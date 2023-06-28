@@ -29,9 +29,6 @@ export const updaterEmitter = {
   on<E extends keyof AppUpdaterEvents>(event: E, listener: AppUpdaterEvents[E]) {
     updaterEmitterInner.on(event, listener);
   },
-  // on(...args) {
-  //   updaterEmitterInner.on(...args);
-  // },
   // `off` does not work since there is some context bridge isolation proxying
   // stuff at work:
   // https://www.electronjs.org/docs/latest/api/context-bridge/#parameter--error--return-type-support
