@@ -1,22 +1,3 @@
-.root {
-  position: fixed;
-  background-color: #fff;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-  color: #000;
-}
-
-.contentWrapper {
-  width: 450px;
-  min-height: 500px;
-  padding: 48px 40px 36px;
-  border: 1px solid black;
-  border-radius: 8px;
-}
-
 .title {
   font-size: 24px;
 }
