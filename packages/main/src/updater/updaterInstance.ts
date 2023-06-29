@@ -31,6 +31,10 @@ export function setupUpdater() {
     checkForUpdateOnChannel(channelInfo);
   });
 
+  // Note: differential downloads are expected to always fail when swapping
+  // branches due to a hash mismatch. There is no way to manually disable
+  // differential downloads currently, so for now we will see the progress bar
+  // twice.
   ipcMain.on(IpcChannel.downloadUpdate, () => {
     if (customAppUpdater) {
       customAppUpdater.downloadUpdate();
