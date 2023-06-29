@@ -94,7 +94,7 @@ function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
         may take several seconds.
       </div>
       <div className={styles.bodyText}>
-        This is an non-stable branch. Backwards compatibility between versions is not maintained.
+        This is a non-stable branch. Backwards compatibility between versions is not maintained.
         This will not affect your data on the stable branch.
       </div>
       {!downloadStarted && (
