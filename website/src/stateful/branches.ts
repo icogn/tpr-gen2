@@ -128,7 +128,17 @@ async function getLatestTagName(channelInfo: ChannelInfo): Promise<string | unde
       headers: {Accept: 'application/json'},
     }).then(res => res.json());
 
-    return releaseInfo.tag_name;
+    const {tag_name} = releaseInfo;
+
+    if (semver.parse(tag_name) == null) {
+      throw new Error(`semver failed to parse tag_name ${tag_name}`);
+    } else if (semver.prerelease(tag_name) != null) {
+      throw new Error(
+        `"latest" release tag should never include a semver prerelease, but was ${tag_name}. Did someone publish a non-stable release as "latest" instead of "prerelease"? You can edit this in GitHub.`,
+      );
+    }
+
+    return tag_name;
   } catch (e) {
     console.error(
       `Unable to find latest version on GitHub (${url}), please ensure a production release exists: ${

@@ -15,6 +15,7 @@ function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
   const [downloadStarted, setDownloadStarted] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState<ProgressInfo | null>(null);
   const [updateDownloaded, setUpdateDownloaded] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const handleCheckingForUpdate = () => {
@@ -38,10 +39,16 @@ function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
       setUpdateDownloaded(true);
     };
 
+    const handleError = () => {
+      updaterEmitter.removeAllListeners();
+      setError(true);
+    };
+
     updaterEmitter.on('checking-for-update', handleCheckingForUpdate);
     updaterEmitter.on('update-available', handleUpdateAvailable);
     updaterEmitter.on('download-progress', handleDownloadProgress);
     updaterEmitter.on('update-downloaded', handleUpdateDownloaded);
+    updaterEmitter.on('error', handleError);
 
     return () => {
       updaterEmitter.removeAllListeners();
@@ -61,9 +68,11 @@ function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
   };
 
   const handleDownloadClick = () => {
-    console.log('on download click');
-    setDownloadStarted(true);
-    downloadUpdate();
+    if (!error) {
+      console.log('on download click');
+      setDownloadStarted(true);
+      downloadUpdate();
+    }
   };
 
   return (
@@ -83,6 +92,7 @@ function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
           </tbody>
         </table>
       </div>
+      {error && <div>Error occurred</div>}
       {downloadStarted && (
         <>
           <div>DownloadProgress</div>
@@ -108,7 +118,7 @@ function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
           <button
             onClick={handleDownloadClick}
             className={styles.buttonsRightBtn}
-            disabled={!updateVersion}
+            disabled={error || !updateVersion}
           >
             Swap Branch
           </button>
