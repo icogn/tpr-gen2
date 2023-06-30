@@ -1,6 +1,17 @@
 import {createHash} from 'crypto';
-import {expect, test} from 'vitest';
+import {expect, test, vi} from 'vitest';
 import {sha256sum, versions} from '../src';
+
+// mock copied from packages/main/tests/unit.spec.ts
+vi.mock('electron', () => {
+  const ipcRenderer: Pick<Electron.IpcRenderer, 'on'> = {
+    on() {
+      // do nothing
+    },
+  };
+
+  return {ipcRenderer};
+});
 
 test('versions', async () => {
   expect(versions).toBe(process.versions);
