@@ -1,8 +1,25 @@
 import path from 'node:path';
 import {app} from 'electron';
+import semver from 'semver';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const isTest = process.env.IS_TEST === 'true';
+
+function computeChannelString() {
+  const appVersion = app.getVersion();
+  if (semver.parse(appVersion) == null) {
+    throw new Error(`Critical error: semver failed to parse app version "${appVersion}".`);
+  }
+  const prereleaseVal = semver.prerelease(appVersion);
+  if (prereleaseVal == null) {
+    return 'stable';
+  }
+  const channel = String(prereleaseVal[0]);
+  if (!channel) {
+    throw new Error(`Failed to parse channel from appVersion "${appVersion}".`);
+  }
+  return channel;
+}
 
 // TODO: these will need to be updated to handle the Docker image version.
 
@@ -11,16 +28,21 @@ export const nodeModulesDir =
     ? path.resolve(path.join(app.getAppPath(), '../node_modules'))
     : path.resolve('./node_modules');
 
-let volumeDirectory;
+let rootVolumeDirectory;
 if (isTest) {
-  volumeDirectory = path.resolve('./volume-test');
+  rootVolumeDirectory = path.resolve('./volume-test');
 } else if (isProduction) {
-  volumeDirectory = path.resolve(path.join(app.getPath('userData'), 'volume'));
+  rootVolumeDirectory = path.resolve(path.join(app.getPath('userData'), 'volume'));
 } else {
-  volumeDirectory = path.resolve('./volume');
+  rootVolumeDirectory = path.resolve('./volume');
 }
 
-export const volumeDir = volumeDirectory;
+const channel = computeChannelString();
+
+export const rootVolumePath = rootVolumeDirectory;
+export const channelVolumePath = path.join(rootVolumeDirectory, channel);
+console.log(`rootVolumePath:${rootVolumePath}`);
+console.log(`channelVolumePath:${channelVolumePath}`);
 
 export const prismaSchemaPath =
   isProduction && !isTest

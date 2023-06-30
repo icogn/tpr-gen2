@@ -1,7 +1,7 @@
 import {fork} from 'node:child_process';
 import processManager from '../processManager';
 import {prismaEnvVars} from '../prisma/prismaConstants';
-import {serverJsDir, volumeDir} from '../paths';
+import {serverJsDir, rootVolumePath, channelVolumePath} from '../paths';
 import pingWebsiteProcess from './pingWebsiteProcess';
 import basicEventEmitter from '../util/basicEventEmitter';
 
@@ -23,13 +23,16 @@ function forkWebsiteProcess() {
     return;
   }
 
+  // Note: these environment variables are only provided during production. The
+  // development environment variables come from asdfdhsaifsho
   const serverProcess = fork('server.js', [], {
     cwd: serverJsDir,
     env: {
       ...process.env,
       ...prismaEnvVars,
       IS_ELECTRON: 'true',
-      VOLUME_PATH: volumeDir,
+      ROOT_VOLUME_PATH: rootVolumePath,
+      CHANNEL_VOLUME_PATH: channelVolumePath,
     },
     // `silent` must be set to true for the stdio to be piped back to the parent
     // process.

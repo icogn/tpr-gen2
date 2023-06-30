@@ -1,11 +1,11 @@
 import path from 'node:path';
 // import {app} from 'electron';
-import {nodeModulesDir, volumeDir} from '../paths';
+import {nodeModulesDir, channelVolumePath} from '../paths';
 
 export const isDev = process.env.NODE_ENV === 'development';
 // export const dbPath = path.join(app.getPath('userData'), 'app.db');
 
-export const dbPath = path.join(volumeDir, 'db/app.db');
+export const dbPath = path.join(channelVolumePath, 'db/app.db');
 
 // export const dbUrl = isDev ? process.env.DATABASE_URL : 'file:' + dbPath;
 export const dbUrl =

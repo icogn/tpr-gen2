@@ -17,7 +17,7 @@ function getRootDir() {
   if (rootDir == null) {
     throw new Error('Failed to find rootDir.');
   }
-  cachedRootDir = rootDir;
+  cachedRootDir = path.resolve(rootDir);
   return rootDir;
 }
 

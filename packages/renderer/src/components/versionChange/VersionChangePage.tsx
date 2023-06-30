@@ -75,6 +75,9 @@ function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
     }
   };
 
+  // TODO: receiving updateNotAvailable when trying to downgrade to stable.
+  // Maybe need to allow downgrade?
+
   return (
     <FullScreenPopup>
       <div className={styles.title}>Swap generator branch</div>

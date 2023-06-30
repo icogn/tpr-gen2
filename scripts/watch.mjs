@@ -7,6 +7,12 @@ import electronPath from 'electron';
 import {spawn} from 'child_process';
 import {execa} from 'execa';
 import path from 'path';
+import fs from 'fs-extra';
+import * as semver from 'semver';
+import {execSync} from 'node:child_process';
+import getRootDir from './util/getRootDir.mjs';
+
+const rootDir = getRootDir();
 
 /** @type 'production' | 'development'' */
 const mode = (process.env.MODE = process.env.MODE || 'development');
@@ -121,12 +127,64 @@ function setupPreloadPackageWatcher({ws}) {
 //   });
 // }
 
+function computeChannelString() {
+  const packageJsonPath = path.join(rootDir, 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
+  const appVersion = packageJson.version;
+
+  if (semver.parse(appVersion) == null) {
+    throw new Error(`Critical error: semver failed to parse app version "${appVersion}".`);
+  }
+  const prereleaseVal = semver.prerelease(appVersion);
+  if (prereleaseVal == null) {
+    return 'stable';
+  }
+  const channel = prereleaseVal[0];
+  if (!channel) {
+    throw new Error(`Failed to parse channel from appVersion "${appVersion}".`);
+  }
+  return channel;
+}
+
+function getGitCommitHash() {
+  const gitCommitHash = execSync('git rev-parse HEAD', {
+    cwd: rootDir,
+    encoding: 'utf8',
+  });
+
+  if (!gitCommitHash) {
+    throw new Error('Failed to determine git commit hash.');
+  }
+
+  return gitCommitHash.substring(0, 12);
+}
+
+function getNextServerDevelopmentEnv() {
+  const rootDir = getRootDir();
+
+  // Root volume path is always the same when starting the development next
+  // server from this file.
+  const rootVolumePath = path.join(rootDir, 'volume');
+  const channel = computeChannelString();
+
+  const channelVolumePath = path.join(rootVolumePath, channel);
+
+  return {
+    ...process.env,
+    ROOT_VOLUME_PATH: rootVolumePath,
+    CHANNEL_VOLUME_PATH: channelVolumePath,
+    GIT_COMMIT: getGitCommitHash(),
+    DATABASE_URL: 'file:' + path.join(channelVolumePath, 'db/app.db'),
+  };
+}
+
 function startNextServer() {
   const execaOptions = {
     // cwd: process.cwd(),
     cwd: path.join(process.cwd(), 'website'),
     stdio: 'inherit',
     preferLocal: true,
+    env: getNextServerDevelopmentEnv(),
   };
 
   // '.' dir is referring to 'website' dir based on execaOptions cwd
