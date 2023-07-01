@@ -57,12 +57,11 @@ export async function fetchBranchesConfig() {
 
       const keys = Object.keys(config);
       for (let i = 0; i < keys.length; i++) {
-        const rawChannel = keys[i];
+        const channelKey = keys[i];
 
-        const channel = rawChannel === 'stable' ? '' : rawChannel;
         const channelInfo = {
-          ...config[rawChannel],
-          channel,
+          ...config[channelKey],
+          channel: channelKey === 'stable' ? '' : channelKey,
         };
 
         const latestVersion = await fetchBranchLatestVersion(channelInfo);

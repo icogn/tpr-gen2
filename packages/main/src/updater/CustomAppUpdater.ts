@@ -21,6 +21,7 @@ import {
   resolveFiles,
 } from './updaterUtil';
 import type {ChannelInfo} from '../../../shared/types';
+import {channelInfoMatchesCurrentChannel} from '../channel';
 
 const hrefRegExp = /\/tag\/([^/]+)$/;
 
@@ -380,20 +381,65 @@ export function createCustomAppUpdater(channelInfo: ChannelInfo) {
   const customAutoUpdater = doLoadAutoUpdater(options);
   // TODO: Only do in dev
   customAutoUpdater.channel = endpointOptions.channel;
-  // Setting channel automatically sets `allowDowngrade` to true. We probably do
-  // not want this since I think it makes the app automatically update to
-  // whatever the resolved "client.getLatestVersion()" is when that semver
-  // resolved to a lower value than the current one. Meaning that any change in
-  // the version such that it does not match the current version (higher or
-  // lower) would cause us to update to it. The only time we would want to
-  // downgrade (which will likely NEVER be allowed on the "stable" releases due
-  // to messing up people's databases) would be when a user specifies an exact
-  // version they want to swap to. That is a feature that would have to be
-  // developed, and I am not sure if there is much point since the generator
-  // server will probably always be on the latest version, so if the user
-  // swapped to a version which did not match the server, then they would not be
-  // able to interact with the server.
-  customAutoUpdater.allowDowngrade = false;
+  // Setting channel automatically sets `allowDowngrade` to true. We set it
+  // manually here so this change is visible. Downgrades need to be allowed. For
+  // example, it is possible for the semver for a non-stable channel to be
+  // greater than the semver of the stable channel. If we do not allow
+  // downgrades, then `isUpdateAvailable` will return false and the user will
+  // not be allowed to swap to the stable channel even though they should be
+  // able to. We need to take special care in the case of checking for updates
+  // on startup to make sure that we do not allow downgrades in that case.
+
+  // Note that swapping channels will always be allowed when `allowDowngrade` is
+  // true assuming that the two channels do not have literally the same exact
+  // version string ('1.2.3-dev.4' === '1.2.3-dev.4'). In this case, we would
+  // not want to be able to update to something with an identical version since
+  // it should be what we are already on. This is a valid case which might
+  // happen if the user is on the latest dev version and they select the "dev"
+  // option as if they wanted to swap to that channel. In that case, we would
+  // still want to check for an update on that channel because (1) the user can
+  // confirm they are on the latest version and (2) it is valid to manually
+  // update to the latest version on the same channel you are already on.
+
+  // If you have something like '1.2.3-dev.4' and '1.2.3-isaac.4', these two
+  // things will not be equal because eventually the comparison will compare the
+  // strings 'dev' and 'isaac' and one will be greater than the other (with a
+  // simple `>` comparison).
+
+  // TODO: check for autoUpdates of the same channel on startup. This one should
+  // not allowDowngrades.
+
+  // allowDowngrade should be false whenever you are checking for an update on
+  // the channel you are already on.
+
+  // TODO: need to handle data migration when someone is on dev, then swaps to
+  // stable, then swaps back to dev but on an earlier build such that the
+  // database would have different migrations. In this case, we would need to
+  // completely reset the database. We probably also want to track somewhere in
+  // the root volume what the latest stable version the user installed is. We
+  // should NEVER allow downgrades on stable. We cannot control what happens on
+  // non-stable channels by other developers, so we need to be able to handle
+  // the case where the latest version on a non-stable channel is less than the
+  // user's volume version for that channel.
+
+  // For swapping branches, swap is allowed unless trying to swap to a stable
+  // branch which is older than the latest stable branch the person has had.
+
+  // For auto-check on startup, update is allowed as long as it is an increase.
+  // TODO: should confirm version with site assuming site exists. Don't want to
+  // update to a version which is newer than the site.
+
+  // For simulating stable migration, save a file which indicates the current version,
+  // the target version, and the volume which should be used.
+
+  // On startup, should check if this file exists. If it does
+
+  // When starting a simulated migration, should do the following:
+  // - before starting download, first copy the volume of the current release to the new location.
+  // - If this location already exists,
+  // - create
+
+  customAutoUpdater.allowDowngrade = !channelInfoMatchesCurrentChannel(channelInfo);
   customAutoUpdater.forceDevUpdateConfig = true;
   customAutoUpdater.allowPrerelease = true;
   customAutoUpdater.autoDownload = false;

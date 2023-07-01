@@ -3,21 +3,18 @@
     "name": "Stable",
     "owner": "icogn",
     "repo": "tpr-gen2",
-    "channel": "",
     "site": ""
   },
   "dev": {
     "name": "Dev",
     "owner": "icogn",
     "repo": "tpr-gen2",
-    "channel": "dev",
     "site": ""
   },
   "isaac": {
     "name": "Isaac",
     "owner": "icogntest",
     "repo": "tpr-gen2",
-    "channel": "isaac",
     "site": ""
   }
 }
