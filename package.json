@@ -48,7 +48,7 @@
     "glob": "^10.2.7",
     "happy-dom": "9.19.2",
     "nano-staged": "0.8.0",
-    "playwright": "1.33.0",
+    "playwright": "^1.36.0",
     "simple-git-hooks": "2.8.1",
     "terser": "^5.17.7",
     "typed-emitter": "^2.1.0",
