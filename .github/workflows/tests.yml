@@ -29,10 +29,7 @@ jobs:
       - run: yarn --cwd website run prisma:generate
       - run: yarn test:main
       - run: yarn test:preload
-      # Disable renderer tests after swapping to React. The UI is still being
-      # worked on, so these tests don't make sense right now anyway. Maybe
-      # should bring back at some point.
-      # - run: yarn test:renderer
+      - run: yarn test:renderer
 
       # I ran into problems trying to run an electron window in ubuntu due to a missing graphics server.
       # That's why this special command for Ubuntu is here
