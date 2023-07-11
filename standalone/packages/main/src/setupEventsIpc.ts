@@ -6,11 +6,12 @@ import {dbPreparedEmitter} from './prisma/prepareDb';
 
 function setupEventsIpc() {
   // ipcMain.on(IpcChannel.askDatabaseReady, event => {
-  ipcMain.on('tpr:ask-database-ready', event => {
+  ipcMain.on('tpr:ask-database-ready', () => {
     dbPreparedEmitter.onceOrPrev((success: boolean | undefined) => {
-      if (success != null && !event.sender.isDestroyed()) {
-        event.sender.send(IpcChannel.databaseReady, success);
-      }
+      console.log(success);
+      // if (success != null && !event.sender.isDestroyed()) {
+      //   event.sender.send(IpcChannel.databaseReady, success);
+      // }
     });
   });
 
