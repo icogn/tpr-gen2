@@ -8,9 +8,9 @@ import {restoreOrCreateWindow} from '/@/mainWindow';
 import {platform} from 'node:process';
 import fs from 'node:fs';
 import path from 'node:path';
-import forkWebsiteProcess from './website/forkWebsiteProcess';
+// import forkWebsiteProcess from './website/forkWebsiteProcess';
 import processManager from './processManager';
-import prepareDb from './prisma/prepareDb';
+// import prepareDb from './prisma/prepareDb';
 // import setupEventsIpc from './setupEventsIpc';
 // import {checkForUpdateOnChannel} from './updater/updaterInstance';
 // import {UpdateEndpoint, createCustomAppUpdater} from './updater/CustomAppUpdater';
@@ -46,7 +46,7 @@ if (process.env.IS_TEST) {
 /**
  * Disable Hardware Acceleration to save more system resources.
  */
-app.disableHardwareAcceleration();
+// app.disableHardwareAcceleration();
 
 /**
  * Shout down background process if all windows was closed
@@ -86,9 +86,9 @@ async function onAppReady() {
   //   // checkForUpdates();
   // }
 
-  prepareDb();
+  // prepareDb();
 
-  forkWebsiteProcess();
+  // forkWebsiteProcess();
 
   restoreOrCreateWindow();
 }
