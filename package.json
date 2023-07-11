@@ -1,45 +1,34 @@
 {
-  "name": "tpr-generator",
-  "description": "Twilight Princess Randomizer generator and patcher",
-  "version": "1.1.5-dev.1",
   "private": true,
+  "version": "1.1.5-dev.33",
   "workspaces": [
-    "website",
-    "packages/renderer"
+    "standalone",
+    "standalone/packages/renderer",
+    "website"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/icogn/tpr-gen2.git",
-    "directory": "packages/react-dom"
-  },
-  "author": {
-    "email": "iico7no2@gmail.com",
-    "name": "Isaac",
-    "url": "https://github.com/icogn"
-  },
-  "main": "packages/main/dist/index.cjs",
   "scripts": {
-    "build": "yarn build:website && yarn build:main && yarn build:preload && yarn build:renderer",
-    "build:main": "cd ./packages/main && vite build",
-    "build:preload": "cd ./packages/preload && vite build",
-    "build:renderer": "cd ./packages/renderer && vite build",
+    "build": " yarn build:website && yarn build:main && yarn build:preload && yarn build:renderer",
+    "build:main": "cd ./standalone/packages/main && vite build",
+    "build:preload": "cd ./standalone/packages/preload && vite build",
+    "build:renderer": "cd ./standalone/packages/renderer && vite build",
     "build:website": "node scripts/compile.mjs",
-    "compile": "cross-env MODE=production yarn build && electron-builder build --config .electron-builder.config.js --dir --config.asar=false",
+    "compile": "cross-env MODE=production yarn build && cd standalone && yarn compile",
     "compile2": "node scripts/compile.mjs",
-    "compile3": "cross-env MODE=production yarn build && electron-builder build --config .electron-builder.config.js",
+    "compile3": "cross-env MODE=production yarn build && cd standalone && yarn compile3",
     "test": "yarn test:main && yarn test:preload && yarn test:renderer && yarn test:e2e",
-    "test:e2e": "yarn build && vitest run",
-    "test:main": "vitest run -r packages/main --passWithNoTests",
-    "test:preload": "vitest run -r packages/preload --passWithNoTests",
-    "test:renderer": "vitest run -r packages/renderer --passWithNoTests",
+    "test:e2e": "yarn build && vitest run -r standalone",
+    "test:main": "vitest run -r standalone/packages/main --passWithNoTests",
+    "test:preload": "vitest run -r standalone/packages/preload --passWithNoTests",
+    "test:renderer": "vitest run -r standalone/packages/renderer --passWithNoTests",
     "watch": "node scripts/watch.mjs",
     "lint": "eslint . --ext js,mjs,cjs,ts,mts,cts,vue",
-    "typecheck:main": "tsc --noEmit -p packages/main/tsconfig.json",
-    "typecheck:preload": "tsc --noEmit -p packages/preload/tsconfig.json",
-    "typecheck:renderer": "vue-tsc --noEmit -p packages/renderer/tsconfig.json",
+    "typecheck:main": "tsc --noEmit -p standalone/packages/main/tsconfig.json",
+    "typecheck:preload": "tsc --noEmit -p standalone/packages/preload/tsconfig.json",
+    "typecheck:renderer": "vue-tsc --noEmit -p standalone/packages/renderer/tsconfig.json",
     "typecheck": "yarn typecheck:main && yarn typecheck:preload && yarn typecheck:renderer",
-    "postinstall": "cross-env ELECTRON_RUN_AS_NODE=1 electron scripts/update-electron-vendors.mjs",
-    "format": "npx prettier --write \"**/*.{js,mjs,cjs,ts,mts,cts,vue,json}\""
+    "format": "npx prettier --write \"**/*.{js,mjs,cjs,ts,mts,cts,vue,json}\"",
+    "image": "node scripts/image.mjs",
+    "deploy": "node scripts/deploy.mjs"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",
@@ -69,19 +58,6 @@
     "vitest": "0.31.1",
     "vue": "3.3.4",
     "vue-tsc": "1.6.5"
-  },
-  "dependencies": {
-    "@emotion/cache": "^11.11.0",
-    "@emotion/react": "^11.11.1",
-    "@emotion/server": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.11.16",
-    "@mui/material": "^5.13.6",
-    "builder-util-runtime": "^9.2.1",
-    "electron-updater": "^5.3.0",
-    "js-yaml": "^4.1.0",
-    "lodash.escaperegexp": "^4.1.2",
-    "semver": "^7.5.2"
   },
   "packageManager": "yarn@3.5.1"
 }

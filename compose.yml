@@ -1,0 +1,16 @@
+services:
+  tpr-generator:
+    build:
+      context: .
+      args:
+        TPR_ROOT_VOLUME_PATH: ${TPR_ROOT_VOLUME_PATH}
+        TPR_GIT_COMMIT: ${TPR_GIT_COMMIT}
+    image: tpr-generator:3.1
+    ports:
+      - '${HOST_PORT:-2999}:3000'
+    volumes:
+      - tpr-generator-data:${TPR_ROOT_VOLUME_PATH}
+
+volumes:
+  tpr-generator-data:
+    driver: local

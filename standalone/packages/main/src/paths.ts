@@ -5,8 +5,6 @@ import {channelKey} from './channel';
 const isProduction = process.env.NODE_ENV === 'production';
 const isTest = process.env.IS_TEST === 'true';
 
-// TODO: these will need to be updated to handle the Docker image version.
-
 export const nodeModulesDir =
   isProduction && !isTest
     ? path.resolve(path.join(app.getAppPath(), '../node_modules'))

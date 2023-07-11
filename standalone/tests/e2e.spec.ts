@@ -7,7 +7,8 @@ import type {BrowserWindow} from 'electron';
 let electronApp: ElectronApplication;
 
 beforeAll(async () => {
-  electronApp = await electron.launch({args: ['.']});
+  // electronApp = await electron.launch({args: ['.']});
+  electronApp = await electron.launch({args: ['standalone']});
 });
 
 afterAll(async () => {

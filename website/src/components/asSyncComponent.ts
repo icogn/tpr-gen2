@@ -5,11 +5,11 @@ type AsyncFunctionComponent<P = object> = (
   ...args: Parameters<React.FunctionComponent<P>>
 ) => Promise<ReturnType<React.FunctionComponent<P>>>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line
 function asSyncComponent<T extends AsyncFunctionComponent<any>>(
   component: T,
 ): React.FunctionComponent<T extends AsyncFunctionComponent<infer P> ? P : never> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line
   return component as any;
 }
 

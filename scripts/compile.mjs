@@ -8,19 +8,23 @@ import path from 'node:path';
 import fs, {readFileSync, writeFileSync} from 'node:fs';
 import searchUpFileTree from './util/searchUpFileTree.mjs';
 import {fileURLToPath} from 'node:url';
-import {execSync} from 'node:child_process';
+// import {execSync} from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const rootDir = searchUpFileTree(__dirname, currPath => fs.existsSync(path.join(currPath, '.git')));
+const rootDir = searchUpFileTree(__dirname, currPath =>
+  fs.existsSync(path.join(currPath, 'package.json')),
+);
 if (!rootDir) {
   throw new Error('Failed to find rootDir');
 }
+const websiteDir = path.join(rootDir, 'website');
 
 async function buildNext() {
   const execaOptions = {
     // cwd: process.cwd(),
-    cwd: path.join(process.cwd(), 'website'),
+    // cwd: path.join(process.cwd(), 'website'),
+    cwd: websiteDir,
     stdio: 'inherit',
     preferLocal: true,
   };
@@ -34,28 +38,49 @@ async function buildNext() {
 // Then run: electron-builder build --config .electron-builder.config.js --dir --config.asar=false
 
 function getGitCommitEnvStr() {
-  const gitCommitHash = execSync('git rev-parse HEAD', {
-    cwd: rootDir,
-    encoding: 'utf8',
-  });
+  // const gitCommitHash = execSync('git rev-parse HEAD', {
+  //   cwd: websiteDir,
+  //   encoding: 'utf8',
+  // });
 
-  if (!gitCommitHash) {
-    throw new Error('Failed to determine git commit hash.');
-  }
+  // if (!gitCommitHash) {
+  //   throw new Error('Failed to determine git commit hash.');
+  // }
 
-  return `GIT_COMMIT=${gitCommitHash.substring(0, 12)}`;
+  // return `GIT_COMMIT=${gitCommitHash.substring(0, 12)}`;
+
+  // TODO: the git environment is not available inside Docker when building the
+  // image. This needs to be handled in a script which puts this in the ENV then
+  // runs the docker build stuff. This is what is done in the current
+  // randomizer-web-generator.
+  return 'placeholder';
 }
 
 // eslint-disable-next-line
 function updateWebsiteEnv() {
-  const websiteEnvFilePath = path.join(rootDir, 'website/.next/standalone/website/.env');
+  // const websiteEnvFilePath = path.join(websiteDir, 'website/.next/standalone/website/.env');
+  const websiteEnvFilePath = path.join(websiteDir, '.next/standalone/website/.env');
+  // const websiteEnvFilePath = path.join(websiteDir, '.next/standalone/.env');
   const websiteEnvStr = readFileSync(websiteEnvFilePath, 'utf8');
 
-  const envDirEnvFilePath = path.join(rootDir, 'env/.env');
+  // const envDirEnvFilePath = path.join(websiteDir, 'env/.env');
+  const envDirEnvFilePath = path.join(websiteDir, '../env/.env');
   const envDirEnvStr = readFileSync(envDirEnvFilePath, 'utf8');
 
   const newEnv = [websiteEnvStr, envDirEnvStr, getGitCommitEnvStr()].join('\n\n');
   writeFileSync(websiteEnvFilePath, newEnv, 'utf8');
+}
+
+// Next wants us to ideally use a CDN for this, but says to copy these in
+// manually if not using a CDN. Will be 404s if we don't copy it in.
+function copyPublicAndStaticFolders() {
+  const publicSrcPath = path.join(websiteDir, 'public');
+  const publicDestPath = path.join(websiteDir, '.next/standalone/website/public');
+  fs.cpSync(publicSrcPath, publicDestPath, {recursive: true});
+
+  const staticSrcPath = path.join(websiteDir, '.next/static');
+  const staticDestPath = path.join(websiteDir, '.next/standalone/website/.next/static');
+  fs.cpSync(staticSrcPath, staticDestPath, {recursive: true});
 }
 
 async function runBuild() {
@@ -73,6 +98,8 @@ async function runBuild() {
 
   // Manually edit the .env file which gets generated?
   updateWebsiteEnv();
+
+  copyPublicAndStaticFolders();
 }
 
 runBuild();

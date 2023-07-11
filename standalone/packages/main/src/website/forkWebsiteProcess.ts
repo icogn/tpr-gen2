@@ -31,8 +31,8 @@ function forkWebsiteProcess() {
       ...process.env,
       ...prismaEnvVars,
       IS_ELECTRON: 'true',
-      ROOT_VOLUME_PATH: rootVolumePath,
-      CHANNEL_VOLUME_PATH: channelVolumePath,
+      TPR_ROOT_VOLUME_PATH: rootVolumePath,
+      TPR_CHANNEL_VOLUME_PATH: channelVolumePath,
     },
     // `silent` must be set to true for the stdio to be piped back to the parent
     // process.

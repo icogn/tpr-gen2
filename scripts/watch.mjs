@@ -7,12 +7,13 @@ import electronPath from 'electron';
 import {spawn} from 'child_process';
 import {execa} from 'execa';
 import path from 'path';
-import fs from 'fs-extra';
-import * as semver from 'semver';
-import {execSync} from 'node:child_process';
-import getRootDir from './util/getRootDir.mjs';
+// import getRootDir from './util/getRootDir.mjs';
+// import getGitCommitHash from './util/getGitCommitHash.mjs';
+// import getChannelString from './util/getChannelString.mjs';
+import {prepareWebsiteEnv} from './prepareEnv.mjs';
 
-const rootDir = getRootDir();
+// const rootDir = getRootDir();
+// process.chdir(path.join(rootDir, 'standalone'));
 
 /** @type 'production' | 'development'' */
 const mode = (process.env.MODE = process.env.MODE || 'development');
@@ -36,7 +37,7 @@ function setupMainPackageWatcher({resolvedUrls}) {
   return build({
     mode,
     logLevel,
-    configFile: 'packages/main/vite.config.js',
+    configFile: 'standalone/packages/main/vite.config.js',
     build: {
       /**
        * Set to {} to enable rollup watcher
@@ -62,8 +63,12 @@ function setupMainPackageWatcher({resolvedUrls}) {
           }
 
           // Spawn new electron process
-          electronApp = spawn(String(electronPath), ['--inspect', '.'], {
+          electronApp = spawn(String(electronPath), ['--inspect', 'standalone'], {
             stdio: 'inherit',
+            // Technically only care about some of these env vars like
+            // TPR_GIT_COMMIT, but the others are included as well. They aren't
+            // used so it shouldn't really matter.
+            env: getNextServerDevelopmentEnv(),
           });
         },
       },
@@ -81,7 +86,7 @@ function setupPreloadPackageWatcher({ws}) {
   return build({
     mode,
     logLevel,
-    configFile: 'packages/preload/vite.config.js',
+    configFile: 'standalone/packages/preload/vite.config.js',
     build: {
       /**
        * Set to {} to enable rollup watcher
@@ -127,54 +132,40 @@ function setupPreloadPackageWatcher({ws}) {
 //   });
 // }
 
-function computeChannelString() {
-  const packageJsonPath = path.join(rootDir, 'package.json');
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
-  const appVersion = packageJson.version;
+// function computeChannelString() {
+//   const packageJsonPath = path.join(rootDir, 'package.json');
+//   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
+//   const appVersion = packageJson.version;
 
-  if (semver.parse(appVersion) == null) {
-    throw new Error(`Critical error: semver failed to parse app version "${appVersion}".`);
-  }
-  const prereleaseVal = semver.prerelease(appVersion);
-  if (prereleaseVal == null) {
-    return 'stable';
-  }
-  const channel = prereleaseVal[0];
-  if (!channel) {
-    throw new Error(`Failed to parse channel from appVersion "${appVersion}".`);
-  }
-  return channel;
-}
-
-function getGitCommitHash() {
-  const gitCommitHash = execSync('git rev-parse HEAD', {
-    cwd: rootDir,
-    encoding: 'utf8',
-  });
-
-  if (!gitCommitHash) {
-    throw new Error('Failed to determine git commit hash.');
-  }
-
-  return gitCommitHash.substring(0, 12);
-}
+//   if (semver.parse(appVersion) == null) {
+//     throw new Error(`Critical error: semver failed to parse app version "${appVersion}".`);
+//   }
+//   const prereleaseVal = semver.prerelease(appVersion);
+//   if (prereleaseVal == null) {
+//     return 'stable';
+//   }
+//   const channel = prereleaseVal[0];
+//   if (!channel) {
+//     throw new Error(`Failed to parse channel from appVersion "${appVersion}".`);
+//   }
+//   return channel;
+// }
 
 function getNextServerDevelopmentEnv() {
-  const rootDir = getRootDir();
-
   // Root volume path is always the same when starting the development next
   // server from this file.
-  const rootVolumePath = path.join(rootDir, 'volume');
-  const channel = computeChannelString();
+  // const rootVolumePath = path.join(rootDir, 'volume');
+  // const channel = getChannelString();
 
-  const channelVolumePath = path.join(rootVolumePath, channel);
+  // const channelVolumePath = path.join(rootVolumePath, channel);
 
   return {
     ...process.env,
-    ROOT_VOLUME_PATH: rootVolumePath,
-    CHANNEL_VOLUME_PATH: channelVolumePath,
-    GIT_COMMIT: getGitCommitHash(),
-    DATABASE_URL: 'file:' + path.join(channelVolumePath, 'db/app.db'),
+    ...prepareWebsiteEnv(),
+    // TPR_ROOT_VOLUME_PATH: rootVolumePath,
+    // TPR_CHANNEL_VOLUME_PATH: channelVolumePath,
+    // TPR_GIT_COMMIT: getGitCommitHash(),
+    // DATABASE_URL: 'file:' + path.join(channelVolumePath, 'db/app.db'),
   };
 }
 
@@ -203,7 +194,7 @@ async function dev() {
   const rendererWatchServer = await createServer({
     mode,
     logLevel,
-    configFile: 'packages/renderer/vite.config.ts',
+    configFile: 'standalone/packages/renderer/vite.config.ts',
   }).then(s => {
     // console.log('\n\ns is:');
     // console.log(s);

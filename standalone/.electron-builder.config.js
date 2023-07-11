@@ -1,5 +1,12 @@
 const fs = require('fs-extra');
 const path = require('node:path');
+let prepareEnv;
+
+async function importMjsFiles() {
+  prepareEnv = await import('../scripts/prepareEnv.mjs');
+}
+
+importMjsFiles();
 
 // Note: swapped to v24 of electron-builder so that there is an option to
 // exclude langauges other than en-US. This saves 20+ MB. However, v24 is not
@@ -46,24 +53,32 @@ module.exports = async function () {
       // TODO: need to handle copying the public folder correctly once making
       // use of it.
       {
-        from: 'website/.next/standalone',
+        from: '../website/.next/standalone',
         to: 'standalone-website',
       },
-      {
-        from: 'website/.next/static',
-        to: 'standalone-website/website/.next/static',
-      },
+      // Commenting this out since the new website building should automatically
+      // put the static and public files in the output:
+      // {
+      //   from: '../website/.next/static',
+      //   to: 'standalone-website/website/.next/static',
+      // },
 
       // have to keep this outside of the ASAR. Really really does not want to
       // fork when the file is in the ASAR.
       'packages/server-starter/**',
 
       // For prisma
-      'node_modules/@prisma/engines/migration-engine*',
-      'node_modules/@prisma/engines/query*',
-      'node_modules/@prisma/engines/libquery*',
-      'node_modules/@prisma/engines/package.json',
-      'node_modules/@prisma/engines/dist/index.js',
+      {
+        from: '../node_modules/@prisma/engines',
+        to: 'node_modules/@prisma/engines',
+        filter: ['migration-engine*', 'query*', 'libquery*', 'package.json', 'dist/index.js'],
+      },
+
+      // 'node_modules/@prisma/engines/migration-engine*',
+      // 'node_modules/@prisma/engines/query*',
+      // 'node_modules/@prisma/engines/libquery*',
+      // 'node_modules/@prisma/engines/package.json',
+      // 'node_modules/@prisma/engines/dist/index.js',
 
       // start prisma/build
       // {
@@ -74,9 +89,15 @@ module.exports = async function () {
       //   from: 'website/node_modules/prisma/build',
       //   to: 'node_modules/prisma/build',
       // },
-      'node_modules/prisma/package.json',
-      'node_modules/prisma/build/index.js',
-      'node_modules/prisma/build/prisma_fmt_build_bg.wasm',
+
+      {
+        from: '../node_modules/prisma',
+        to: 'node_modules/prisma',
+        filter: ['package.json', 'build/index.js', 'build/prisma_fmt_build_bg.wasm'],
+      },
+      // 'node_modules/prisma/package.json',
+      // 'node_modules/prisma/build/index.js',
+      // 'node_modules/prisma/build/prisma_fmt_build_bg.wasm',
 
       // {
       //   from: 'website/node_modules/prisma/build/index.js',
@@ -89,21 +110,21 @@ module.exports = async function () {
       // end prisma/build
 
       {
-        from: 'website/.next/standalone/node_modules/.prisma',
+        from: '../website/.next/standalone/node_modules/.prisma',
         to: 'node_modules/.prisma',
       },
       {
-        from: 'website/.next/standalone/node_modules/@prisma/client',
+        from: '../website/.next/standalone/node_modules/@prisma/client',
         to: 'node_modules/@prisma/client',
       },
 
       // start prisma schema and migrations
       {
-        from: 'website/prisma/schema.prisma',
+        from: '../website/prisma/schema.prisma',
         to: 'prisma/schema.prisma',
       },
       {
-        from: 'website/prisma/migrations',
+        from: '../website/prisma/migrations',
         to: 'prisma/migrations',
       },
       // end prisma schema and migrations
@@ -117,6 +138,14 @@ module.exports = async function () {
       version: getVersion(),
     },
     afterPack: async function (context) {
+      // Write env file
+      const content = prepareEnv.createEnvFileContents(prepareEnv.prepareElectronEnv());
+      // const content = `TPR_GIT_COMMIT=mycustomval`;
+      const customEnvFilePath = path.join(context.appOutDir, 'resources/myenv.env');
+      console.log('customEnvFilePath');
+      console.log(customEnvFilePath);
+      fs.writeFileSync(customEnvFilePath, content);
+
       // At the very least, extraResources are not available in the beforePack
       // hook.
       console.log('\nafterPack, removing certain files...');
