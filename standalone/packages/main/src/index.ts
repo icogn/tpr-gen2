@@ -46,7 +46,7 @@ if (process.env.IS_TEST) {
 /**
  * Disable Hardware Acceleration to save more system resources.
  */
-// app.disableHardwareAcceleration();
+app.disableHardwareAcceleration();
 
 /**
  * Shout down background process if all windows was closed
