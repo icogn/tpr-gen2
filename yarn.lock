@@ -3411,16 +3411,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:25.1.0":
-  version: 25.1.0
-  resolution: "electron@npm:25.1.0"
+"electron@npm:25.2.0":
+  version: 25.2.0
+  resolution: "electron@npm:25.2.0"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^18.11.18
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 411af45997f9b27d3981c16285e5f393abf265efde4aaa20c41e76e2a9e959fed4247b7621459682c3b91e60d31b0658659c232fc7ff79a8e28e92d694f89ade
+  checksum: 264b19af3077da70fc137a244cec24a7674b0938695fcbf8b22a48164d43efe58c597e189501ee48d02bb52ff26e6952a8c69e4c50bb42686f117d6e10a33aa4
   languageName: node
   linkType: hard
 
@@ -7185,7 +7185,7 @@ __metadata:
     "@vue/test-utils": 2.3.2
     cross-env: 7.0.3
     dotenv: ^16.1.4
-    electron: 25.1.0
+    electron: 25.2.0
     electron-builder: 24.4.0
     eslint: 8.40.0
     eslint-plugin-vue: 9.13.0
@@ -7952,7 +7952,7 @@ __metadata:
     builder-util-runtime: ^9.2.1
     cross-env: 7.0.3
     dotenv: ^16.3.1
-    electron: 25.1.0
+    electron: 25.2.0
     electron-updater: ^5.3.0
     js-yaml: ^4.1.0
     lodash.escaperegexp: ^4.1.2

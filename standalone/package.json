@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "cross-env": "7.0.3",
-    "electron": "25.1.0"
+    "electron": "25.2.0"
   },
   "dependencies": {
     "builder-util-runtime": "^9.2.1",
