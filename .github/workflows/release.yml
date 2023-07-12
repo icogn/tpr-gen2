@@ -43,6 +43,7 @@ jobs:
       - run: yarn --cwd website run prisma:generate
 
       - run: yarn build
+      - run: cd standalone
 
       - name: Compile artifacts ${{ inputs.dry-run && '' || 'and upload them to github release' }}
         # I use this action because it is capable of retrying multiple times if there are any issues with the distribution server
