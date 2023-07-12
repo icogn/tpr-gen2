@@ -8,6 +8,8 @@ import basicEventEmitter from '../util/basicEventEmitter';
 
 export const dbPreparedEmitter = basicEventEmitter<boolean>();
 
+// Note: it is expected that this fails during the e2e test since the db process
+// gets started and quickly killed when the test ends.
 async function prepareDb() {
   console.log(`process.env.NODE_ENV:${process.env.NODE_ENV}`);
   // if (process.env.NODE_ENV !== 'production') {
