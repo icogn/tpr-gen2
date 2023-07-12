@@ -54,7 +54,11 @@ jobs:
           retry_on: error
           shell: 'bash'
           # command: npx --no-install electron-builder --config .electron-builder.config.js --publish ${{ inputs.dry-run && 'never' || 'always' }}
-          command: yarn dlx electron-builder --config standalone/.electron-builder.config.js --publish ${{ inputs.dry-run && 'never' || 'always' }}
+          command: cd standalone && yarn dlx electron-builder --config standalone/.electron-builder.config.js --publish ${{ inputs.dry-run && 'never' || 'always' }}
+          # ^ Note this works when it does not need to retry. Not sure what
+          # would happen with the cd if it fails an attempt. Will address once
+          # this actually happens since it would be a little hard to test and it
+          # works fine if there is no retry.
         env:
           # Code Signing params
           # See https://www.electron.build/code-signing
