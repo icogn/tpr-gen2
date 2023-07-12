@@ -65,6 +65,9 @@ app.on('activate', restoreOrCreateWindow);
 
 async function onAppReady() {
   setupEventsIpc();
+  // Note: the below line will probably cause ubuntu tests to fail once we start
+  // trying to check for updates on startup. This is because CusotmAppUpdater
+  // doLoadAutoUpdater throws an error for non-Windows and non-Mac.
   setupUpdater();
 
   // checkForUpdateOnChannel({
