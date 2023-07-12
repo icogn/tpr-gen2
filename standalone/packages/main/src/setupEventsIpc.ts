@@ -8,8 +8,6 @@ function setupEventsIpc() {
   ipcMain.on(IpcChannel.askDatabaseReady, () => {
     // ipcMain.on('tpr:ask-database-ready', event => {
     console.log('abc');
-    const key = computeChannelKey();
-    console.log(key);
     // dbPreparedEmitter.onceOrPrev((success: boolean | undefined) => {
     //   console.log(success);
     //   // if (success != null && !event.sender.isDestroyed()) {
