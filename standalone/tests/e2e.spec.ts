@@ -9,6 +9,9 @@ let electronApp: ElectronApplication;
 beforeAll(async () => {
   // electronApp = await electron.launch({args: ['.']});
   electronApp = await electron.launch({args: ['standalone']});
+
+  electronApp.process().stdout.on('data', data => console.log(`stdout: ${data.toString()}`));
+  electronApp.process().stderr.on('data', error => console.log(`stderr: ${error.toString()}`));
 });
 
 afterAll(async () => {
