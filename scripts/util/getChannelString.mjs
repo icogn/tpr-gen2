@@ -6,7 +6,7 @@ import getRootDir from './getRootDir.mjs';
 const rootDir = getRootDir();
 
 function getChannelString() {
-  const packageJsonPath = path.join(rootDir, 'package.json');
+  const packageJsonPath = path.join(rootDir, 'standalone/package.json');
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
   const appVersion = packageJson.version;
 
