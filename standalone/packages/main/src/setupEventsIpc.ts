@@ -1,5 +1,5 @@
 import {app, ipcMain} from 'electron';
-// import semver from 'semver';
+import semver from 'semver';
 // import {ipcMain} from 'electron';
 import {websiteReadyEmitter} from './website/forkWebsiteProcess';
 // import {dbPreparedEmitter} from './prisma/prepareDb';
@@ -9,19 +9,18 @@ import {IpcChannel} from '../../shared/ipcChannels';
 function computeChannelKey() {
   // return 'exampleChanKey';
   const appVersion = app.getVersion();
-  return appVersion;
-  // if (semver.parse(appVersion) == null) {
-  //   throw new Error(`Critical error: semver failed to parse app version "${appVersion}".`);
-  // }
-  // const prereleaseVal = semver.prerelease(appVersion);
-  // if (prereleaseVal == null) {
-  //   return 'stable';
-  // }
-  // const channel = String(prereleaseVal[0]);
-  // if (!channel) {
-  //   throw new Error(`Failed to parse channel from appVersion "${appVersion}".`);
-  // }
-  // return channel;
+  if (semver.parse(appVersion) == null) {
+    throw new Error(`Critical error: semver failed to parse app version "${appVersion}".`);
+  }
+  const prereleaseVal = semver.prerelease(appVersion);
+  if (prereleaseVal == null) {
+    return 'stable';
+  }
+  const channel = String(prereleaseVal[0]);
+  if (!channel) {
+    throw new Error(`Failed to parse channel from appVersion "${appVersion}".`);
+  }
+  return channel;
 }
 
 function setupEventsIpc() {
