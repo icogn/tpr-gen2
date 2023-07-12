@@ -14,7 +14,7 @@ import prepareDb from './prisma/prepareDb';
 import setupEventsIpc from './setupEventsIpc';
 // import {checkForUpdateOnChannel} from './updater/updaterInstance';
 // import {UpdateEndpoint, createCustomAppUpdater} from './updater/CustomAppUpdater';
-// import {setupUpdater} from './updater/updaterInstance';
+import {setupUpdater} from './updater/updaterInstance';
 
 const volumePath = path.join(app.getPath('userData'), 'volume');
 console.log(`volumePath:${volumePath}`);
@@ -65,7 +65,7 @@ app.on('activate', restoreOrCreateWindow);
 
 async function onAppReady() {
   setupEventsIpc();
-  // setupUpdater();
+  setupUpdater();
 
   // checkForUpdateOnChannel({
   //   name: 'Dev',
