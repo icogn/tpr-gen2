@@ -1,14 +1,15 @@
-// import {app, ipcMain} from 'electron';
+import {app, ipcMain} from 'electron';
 // import semver from 'semver';
-import {ipcMain} from 'electron';
+// import {ipcMain} from 'electron';
 import {websiteReadyEmitter} from './website/forkWebsiteProcess';
 // import {dbPreparedEmitter} from './prisma/prepareDb';
 // // import {autoUpdater} from 'electron-updater';
 import {IpcChannel} from '../../shared/ipcChannels';
 
 function computeChannelKey() {
-  return 'exampleChanKey';
-  // const appVersion = app.getVersion();
+  // return 'exampleChanKey';
+  const appVersion = app.getVersion();
+  return appVersion;
   // if (semver.parse(appVersion) == null) {
   //   throw new Error(`Critical error: semver failed to parse app version "${appVersion}".`);
   // }
