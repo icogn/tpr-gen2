@@ -2,8 +2,10 @@
 // import processManager from '../processManager';
 // import {prismaEnvVars} from '../prisma/prismaConstants';
 // import {serverJsDir, rootVolumePath, channelVolumePath} from '../paths';
-// import pingWebsiteProcess from './pingWebsiteProcess';
+import pingWebsiteProcess from './pingWebsiteProcess';
 import basicEventEmitter from '../util/basicEventEmitter';
+
+console.log(pingWebsiteProcess);
 
 export const websiteReadyEmitter = basicEventEmitter<boolean>();
 
