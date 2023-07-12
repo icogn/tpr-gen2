@@ -1,6 +1,7 @@
 import path from 'node:path';
 import {app} from 'electron';
-import {channelKey} from './channel';
+// import {channelKey} from './channel';
+const channelKey = 'hardcoded';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const isTest = process.env.IS_TEST === 'true';
