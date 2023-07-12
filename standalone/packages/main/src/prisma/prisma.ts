@@ -39,8 +39,9 @@ export async function runPrismaCommand({
   command: string[];
   dbUrl: string;
 }): Promise<number> {
-  console.log('Migration engine path', mePath);
-  console.log('Query engine path', qePath);
+  console.log('Migration engine path:', mePath);
+  console.log('Query engine path:', qePath);
+  console.log('Database url:', dbUrl);
 
   // Currently we don't have any direct method to invoke prisma migration programatically.
   // As a workaround, we spawn migration script as a child process and wait for its completion.

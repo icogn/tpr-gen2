@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 // import forkWebsiteProcess from './website/forkWebsiteProcess';
 import processManager from './processManager';
-// import prepareDb from './prisma/prepareDb';
+import prepareDb from './prisma/prepareDb';
 import setupEventsIpc from './setupEventsIpc';
 // import {checkForUpdateOnChannel} from './updater/updaterInstance';
 // import {UpdateEndpoint, createCustomAppUpdater} from './updater/CustomAppUpdater';
@@ -86,7 +86,7 @@ async function onAppReady() {
   //   // checkForUpdates();
   // }
 
-  // prepareDb();
+  prepareDb();
 
   // forkWebsiteProcess();
 
