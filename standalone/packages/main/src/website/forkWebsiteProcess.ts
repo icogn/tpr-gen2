@@ -1,10 +1,11 @@
 import {fork} from 'node:child_process';
 import processManager from '../processManager';
-// import {prismaEnvVars} from '../prisma/prismaConstants';
+import {prismaEnvVars} from '../prisma/prismaConstants';
 // import {serverJsDir, rootVolumePath, channelVolumePath} from '../paths';
 import pingWebsiteProcess from './pingWebsiteProcess';
 import basicEventEmitter from '../util/basicEventEmitter';
 
+console.log(prismaEnvVars);
 console.log(fork);
 console.log(processManager);
 console.log(pingWebsiteProcess);
