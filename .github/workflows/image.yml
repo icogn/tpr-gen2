@@ -66,6 +66,8 @@ jobs:
       # - run: yarn image
 
       - run: node scripts/imageToRelease.mjs
+        env:
+          GH_TOKEN: ${{ secrets.github_token }}
 
       # - name: Upload image
       #   uses: ishworkh/container-image-artifact-upload@v1.0.0
