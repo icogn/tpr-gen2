@@ -168,7 +168,8 @@ async function getRelease() {
 async function main() {
   const release = await getRelease();
 
-  const fileName = 'exampleImage.txt';
+  // const fileName = 'exampleImage.txt';
+  const fileName = 'example.tar';
 
   const fileStat = await fs.stat(fileName);
   const dataLength = fileStat.size;
