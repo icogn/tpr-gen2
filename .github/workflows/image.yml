@@ -1,5 +1,5 @@
 name: Image
-on: [workflow_call]
+on: [workflow_dispatch]
   # workflow_call:
     # inputs:
     #   dry-run:
