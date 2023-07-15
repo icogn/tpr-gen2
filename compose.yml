@@ -5,7 +5,7 @@ services:
       args:
         TPR_ROOT_VOLUME_PATH: ${TPR_ROOT_VOLUME_PATH}
         TPR_GIT_COMMIT: ${TPR_GIT_COMMIT}
-    image: tpr-generator:3.1
+    image: tpr-generator:${IMAGE_VERSION}
     ports:
       - '${HOST_PORT:-2999}:3000'
     volumes:
