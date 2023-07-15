@@ -65,6 +65,12 @@ jobs:
 
       - run: yarn image
 
+      - name: Upload image
+        uses: ishworkh/container-image-artifact-upload@v1.0.0
+        with:
+          image: "tpr-generator:1.1.5-dev.34"
+          # container_engine: "podman"
+
       # - name: Compile artifacts ${{ inputs.dry-run && '' || 'and upload them to github release' }}
       #   # I use this action because it is capable of retrying multiple times if there are any issues with the distribution server
       #   uses: nick-fields/retry@v2
