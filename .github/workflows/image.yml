@@ -63,7 +63,7 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
       - run: yarn --cwd website run prisma:generate
 
-      - run: yarn image
+      # - run: yarn image
 
       - run: node scripts/imageToRelease.mjs
 
