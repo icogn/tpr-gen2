@@ -165,11 +165,11 @@ async function getRelease() {
   throw new Error('Failed to find release.');
 }
 
-async function main() {
+async function pushFileToDraftRelease(fileName) {
   const release = await getRelease();
 
   // const fileName = 'exampleImage.txt';
-  const fileName = 'example.tar';
+  // const fileName = 'example.tar';
 
   const fileStat = await fs.stat(fileName);
   const dataLength = fileStat.size;
@@ -190,4 +190,4 @@ async function main() {
   );
 }
 
-main();
+export default pushFileToDraftRelease;
