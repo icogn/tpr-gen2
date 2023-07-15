@@ -2,7 +2,10 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import getRootDir from './util/getRootDir.mjs';
 import {prepareWebsiteEnv, applyEnv} from './prepareEnv.mjs';
+import {getVersion} from './util/getVersion.mjs';
 // import envFromYaml from './util/envFromYaml';
+
+process.env.IMAGE_VERSION = getVersion();
 
 // const rootDir = path.resolve(__dirname, '../..');
 const rootDir = getRootDir();
