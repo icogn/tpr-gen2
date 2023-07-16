@@ -2,6 +2,7 @@ import path from 'node:path';
 import getGitCommitHash from './util/getGitCommitHash.mjs';
 import getChannelString from './util/getChannelString.mjs';
 import getRootDir from './util/getRootDir.mjs';
+import {getVersion} from './util/getVersion.mjs';
 
 export function prepareWebsiteEnv() {
   // Root volume path is always the same when starting the development next
@@ -23,6 +24,13 @@ export function prepareWebsiteEnv() {
     // TPR_CHANNEL: getChannelString(),
     TPR_CHANNEL_VOLUME_PATH: channelVolumePath,
     DATABASE_URL: 'file:' + path.join(channelVolumePath, 'db/app.db'),
+  };
+}
+
+export function prepareDeployEnv() {
+  return {
+    ...prepareWebsiteEnv(),
+    IMAGE_VERSION: getVersion(),
   };
 }
 

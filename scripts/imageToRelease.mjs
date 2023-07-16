@@ -1,9 +1,11 @@
 import {spawnSync} from 'node:child_process';
 import {getVersion} from './util/getVersion.mjs';
 import pushFileToDraftRelease from './githubRelease/pushFileToDraftRelease.mjs';
+import getImageStackHash from './githubRelease/getImageStackHash.mjs';
 
 const version = getVersion();
-const outputFilename = `tpr-generator_${version}.tar`;
+const stackHash = getImageStackHash();
+const outputFilename = `tpr-generator_${version}_${stackHash}.tar`;
 
 console.log(`imageToRelease, version is "${version}".`);
 
