@@ -1,5 +1,0 @@
-This is my example image file which should be added to the release.
-During testing, this file can be used in place of the actual image
-since creating that file takes minutes each time which slows down
-development significantly.
-num 4
