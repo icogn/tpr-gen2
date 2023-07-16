@@ -55,13 +55,20 @@ function findContainerForChannelKey(channelKey) {
 
   const lines = output.split(/[\r\n]+/);
 
+  let ret = null;
+
   for (let i = 1; i < lines.length; i++) {
-    const line = lines[i];
-    const ret = parseContainerLine(line, channelKey);
+    const parsed = parseContainerLine(lines[i], channelKey);
     if (ret) {
-      return ret;
+      // Act as if there is nothing to do if we find multiple running containers
+      // for this channels since we don't know which one to replace.
+      return null;
+    } else {
+      ret = parsed;
     }
   }
+
+  return ret;
 }
 
 function doWork(channelKey) {
@@ -69,6 +76,9 @@ function doWork(channelKey) {
   if (!ret) {
     return;
   }
+
+  // If there is a running container which we might replace, then we check to
+  // see if there is an update.
 
   // Get latest version from github
 
