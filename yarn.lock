@@ -6178,6 +6178,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-windows@npm:^1.0.0-beta.8":
+  version: 1.0.0-beta.8
+  resolution: "node-windows@npm:1.0.0-beta.8"
+  dependencies:
+    xml: 1.0.1
+    yargs: ^17.5.1
+  checksum: eeb1016c6e77518feb7d85913f4853403eca839036467cdfda52c92845b933fcf0ac47ea129cd998d639c59fd0576059693565eebc87feef5b7d2a796589470f
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^5.0.0":
   version: 5.0.0
   resolution: "nopt@npm:5.0.0"
@@ -7214,7 +7224,9 @@ __metadata:
     hosted-git-info: ^6.1.1
     mime: ^3.0.0
     nano-staged: 0.8.0
+    node-windows: ^1.0.0-beta.8
     playwright: ^1.36.0
+    semver: ^7.5.4
     simple-git-hooks: 2.8.1
     terser: ^5.17.7
     typed-emitter: ^2.1.0
@@ -7337,6 +7349,17 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 9d58db16525e9f749ad0a696a1f27deabaa51f66e91d2fa2b0db3de3e9644e8677de3b7d7a03f4c15bc81521e0c3916d7369e0572dbde250d9bedf5194e2a8a7
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.5.4":
+  version: 7.5.4
+  resolution: "semver@npm:7.5.4"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 12d8ad952fa353b0995bf180cdac205a4068b759a140e5d3c608317098b3575ac2f1e09182206bf2eb26120e1c0ed8fb92c48c592f6099680de56bb071423ca3
   languageName: node
   linkType: hard
 
@@ -8732,6 +8755,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"xml@npm:1.0.1":
+  version: 1.0.1
+  resolution: "xml@npm:1.0.1"
+  checksum: 11b5545ef3f8fec3fa29ce251f50ad7b6c97c103ed4d851306ec23366f5fa4699dd6a942262df52313a0cd1840ab26256da253c023bad3309d8ce46fe6020ca0
+  languageName: node
+  linkType: hard
+
 "xmlbuilder@npm:>=11.0.1, xmlbuilder@npm:^15.1.1":
   version: 15.1.1
   resolution: "xmlbuilder@npm:15.1.1"
@@ -8788,7 +8818,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^17.0.1, yargs@npm:^17.6.2":
+"yargs@npm:^17.0.1, yargs@npm:^17.5.1, yargs@npm:^17.6.2":
   version: 17.7.2
   resolution: "yargs@npm:17.7.2"
   dependencies:
