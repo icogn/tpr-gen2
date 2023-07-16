@@ -27,10 +27,12 @@ export function prepareWebsiteEnv() {
   };
 }
 
-export function prepareDeployEnv() {
+export function prepareDeployEnv(optionsIn) {
+  const options = optionsIn || {};
+
   return {
     ...prepareWebsiteEnv(),
-    IMAGE_VERSION: getVersion(),
+    IMAGE_VERSION: options.imageVersion || getVersion(),
   };
 }
 
