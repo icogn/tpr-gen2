@@ -1,6 +1,8 @@
 // import {EventLogger} from 'node-windows';
 import {spawnSync} from 'node:child_process';
 import semver from 'semver';
+// import getChannelInfo from './getChannelInfo.mjs';
+import getChannelLatestReleaseInfo from './getChannelLatestReleaseInfo.mjs';
 
 // const log = new EventLogger({
 //   source: 'My Event Log',
@@ -59,12 +61,14 @@ function findContainerForChannelKey(channelKey) {
 
   for (let i = 1; i < lines.length; i++) {
     const parsed = parseContainerLine(lines[i], channelKey);
-    if (ret) {
-      // Act as if there is nothing to do if we find multiple running containers
-      // for this channels since we don't know which one to replace.
-      return null;
-    } else {
-      ret = parsed;
+    if (parsed) {
+      if (ret) {
+        // Act as if there is nothing to do if we find multiple running containers
+        // for this channels since we don't know which one to replace.
+        return null;
+      } else {
+        ret = parsed;
+      }
     }
   }
 
@@ -85,7 +89,39 @@ function doWork(channelKey) {
   console.log(ret);
 }
 
-function main() {
+async function main() {
+  const channelKey = 'dev';
+
+  const container = findContainerForChannelKey(channelKey);
+  if (!container) {
+    return;
+  }
+
+  const latestReleaseInfo = await getChannelLatestReleaseInfo({
+    owner: 'icogn',
+    repo: 'tpr-gen2',
+    channelKey,
+  });
+  console.log(latestReleaseInfo);
+
+  if (!latestReleaseInfo) {
+    return;
+  }
+
+  if (semver.gt(latestReleaseInfo.version, container.imageVersion)) {
+    console.log('should replace');
+
+    // Download the image and import it.
+  } else {
+    console.log('does not need to replace');
+    return;
+  }
+
+  // Check if latestRelease is a newer version than our current
+
+  // const a = await getChannelInfo();
+  // console.log(a);
+
   const channelsToCheck = ['dev'];
 
   for (let i = 0; i < channelsToCheck.length; i++) {

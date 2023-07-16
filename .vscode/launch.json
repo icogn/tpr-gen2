@@ -21,6 +21,14 @@
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:3000"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug serviceImpl",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}\\scripts\\imageUpdateService\\serviceImpl.mjs",
+      "autoAttachChildProcesses": true
     }
   ]
 }
