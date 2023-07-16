@@ -6,10 +6,10 @@ function singleImageWithTagExists(tag) {
     throw new Error('Did not expect tag to be falsy.');
   }
 
-  return findContainerForTag(tag);
+  return singleImageExists(tag);
 }
 
-function findContainerForTag(tag) {
+function singleImageExists(tag) {
   if (semver.parse(tag) == null) {
     throw new Error(`Invalid tag "${tag}" passed to findContainerForTag.`);
   }
@@ -17,23 +17,23 @@ function findContainerForTag(tag) {
   const result = spawnSync('docker', ['images', `tpr-generator:${tag}`]);
   const output = result.stdout.toString();
 
-  if (!output.startsWith('CONTAINER ID')) {
+  if (!output.startsWith('REPOSITORY')) {
     return null;
   }
 
   const lines = output.split(/[\r\n]+/);
 
-  let ret = null;
+  let ret = false;
 
   for (let i = 1; i < lines.length; i++) {
-    const parsed = parseContainerLine(lines[i]);
-    if (parsed && parsed.imageVersion === tag) {
+    const imgVer = parseContainerLine(lines[i]);
+    if (imgVer && imgVer === tag) {
       if (ret) {
         // Act as if there is nothing to do if we find multiple running containers
         // for this channels since we don't know which one to replace.
-        return null;
+        return false;
       } else {
-        ret = parsed;
+        ret = true;
       }
     }
   }
@@ -42,24 +42,19 @@ function findContainerForTag(tag) {
 }
 
 function parseContainerLine(line) {
-  const reg = /([0-9a-f]+)\s+(tpr-generator:([a-z0-9:.\-_]+))/i;
+  const reg = /tpr-generator\s+([a-z0-9:.\-_]+)\s+/i;
 
   const match = line.match(reg);
   if (!match) {
     return null;
   }
 
-  const imageVersion = match[3];
+  const imageVersion = match[1];
 
   if (semver.parse(imageVersion) == null) {
     return null;
   }
-
-  return {
-    containerId: match[1],
-    image: match[2],
-    imageVersion: match[3],
-  };
+  return imageVersion;
 }
 
 export default singleImageWithTagExists;

@@ -28,7 +28,7 @@
       "name": "Debug deploy",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}\\scripts\\deploy.mjs",
-      // "args": ["-i", "1.1.5-dev.34"],
+      "args": ["-i", "1.1.5-dev.34"],
       "autoAttachChildProcesses": true
     },
     {
