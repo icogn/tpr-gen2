@@ -1,8 +1,13 @@
 // import {EventLogger} from 'node-windows';
+import fs from 'fs-extra';
+import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import semver from 'semver';
 // import getChannelInfo from './getChannelInfo.mjs';
 import getChannelLatestReleaseInfo from './getChannelLatestReleaseInfo.mjs';
+import getRootDir from '../util/getRootDir.mjs';
+// import getImageStackHash from '../githubRelease/getImageStackHash.mjs';
+// import downloadFile from './downloadFile.mjs';
 
 // const log = new EventLogger({
 //   source: 'My Event Log',
@@ -110,8 +115,7 @@ async function main() {
 
   if (semver.gt(latestReleaseInfo.version, container.imageVersion)) {
     console.log('should replace');
-
-    // Download the image and import it.
+    await tryReplaceContainer({container, latestReleaseInfo});
   } else {
     console.log('does not need to replace');
     return;
@@ -128,6 +132,78 @@ async function main() {
     const channelKey = channelsToCheck[i];
     doWork(channelKey);
   }
+}
+
+async function tryReplaceContainer({container, latestReleaseInfo}) {
+  console.log(latestReleaseInfo);
+  const rootDir = getRootDir();
+  const tmpDir = path.join(rootDir, 'tmp');
+
+  // Clean up all old files.
+  fs.ensureDirSync(tmpDir);
+  // fs.emptyDirSync(tmpDir);
+
+  // const asset = getAssetIfValid(latestReleaseInfo.release);
+  // console.log(asset);
+
+  // const downloadResult = await downloadFile(asset.browser_download_url, tmpDir);
+  // if (downloadResult.downloadStatus != 'COMPLETE') {
+  //   // fail
+  //   throw new Error(
+  //     `Failed to download file. downloadStatus is "${downloadResult.downloadStatus}".`,
+  //   );
+  // }
+  // console.log('a');
+
+  // Temp, so we don't spam github with a ton of downloads in a row while
+  // testing.
+  const imagePath = path.join(tmpDir, 'tpr-generator_1.1.5-dev.35_60ae946a.tar');
+
+  const loadedImage = loadDockerImage(imagePath);
+  if (!loadedImage) {
+    throw new Error(`Failed to load docker image at path "${imagePath}".`);
+  }
+
+  // Stop current container
+  stopDockerContainer(container.containerId);
+
+  runDeploy();
+
+  //
+  // Check that image from github is supported in terms of deploy hash. Bail if
+  // not compatible. Some way to alert this from service?
+  //
+  // If compatible, download the image from github. If fail, then just fails.
+  //
+  // Load downloaded image. If fails, it fails.
+  //
+  // If success, stop current container. If fails, it fails.
+  //
+  // Deploy the new container passing the imageVersion as an arg.
+}
+
+// function getAssetIfValid(release) {
+//   const imageStackHash = getImageStackHash();
+//   for (const asset of release.assets) {
+//     if (asset.name.startsWith('tpr-generator_') && asset.name.endsWith(`_${imageStackHash}.tar`)) {
+//       return asset;
+//     }
+//   }
+//   return null;
+// }
+
+function loadDockerImage(imagePath) {
+  const result = spawnSync('docker', ['load', '-i', imagePath]);
+  return result.status === 0;
+}
+
+function stopDockerContainer(containerId) {
+  const result = spawnSync('docker', ['stop', containerId]);
+  return result.status === 0;
+}
+
+function runDeploy() {
+  console.log('runDeploy');
 }
 
 main();

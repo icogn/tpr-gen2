@@ -73,3 +73,6 @@ thumbs.db
 /volume
 /volume-test
 /secrets
+
+# Dir used by docker container updater service
+/tmp

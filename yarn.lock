@@ -4218,6 +4218,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"follow-redirects@npm:^1.15.1":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
+  languageName: node
+  linkType: hard
+
 "for-each@npm:^0.3.3":
   version: 0.3.3
   resolution: "for-each@npm:0.3.3"
@@ -5725,7 +5735,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.12":
+"mime-types@npm:^2.1.12, mime-types@npm:^2.1.27":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -6185,6 +6195,18 @@ __metadata:
     xml: 1.0.1
     yargs: ^17.5.1
   checksum: eeb1016c6e77518feb7d85913f4853403eca839036467cdfda52c92845b933fcf0ac47ea129cd998d639c59fd0576059693565eebc87feef5b7d2a796589470f
+  languageName: node
+  linkType: hard
+
+"nodejs-file-downloader@npm:^4.12.1":
+  version: 4.12.1
+  resolution: "nodejs-file-downloader@npm:4.12.1"
+  dependencies:
+    follow-redirects: ^1.15.1
+    https-proxy-agent: ^5.0.0
+    mime-types: ^2.1.27
+    sanitize-filename: ^1.6.3
+  checksum: 797bf19090bbffed701df2545c8a3e48c413cd155c30551532b92013c2f68d26f249c1eeb6961d574d7a235908f8ce506fb2987ecfd7b13b833bab2a4eadb36f
   languageName: node
   linkType: hard
 
@@ -7225,6 +7247,7 @@ __metadata:
     mime: ^3.0.0
     nano-staged: 0.8.0
     node-windows: ^1.0.0-beta.8
+    nodejs-file-downloader: ^4.12.1
     playwright: ^1.36.0
     semver: ^7.5.4
     simple-git-hooks: 2.8.1
