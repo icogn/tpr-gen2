@@ -53,7 +53,7 @@ if (false && argv.swarm) {
   });
   console.log('deployyy');
 } else {
-  process.env.HOST_PORT = 80;
+  process.env.HOST_PORT = 2999;
 
   spawnSync('docker', ['compose', '-f', stackFilePath, 'up', '-d'], {
     stdio: 'inherit',
