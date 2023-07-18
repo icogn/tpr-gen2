@@ -10,7 +10,7 @@ import singleImageWithTagExists from './util/docker/singleImageWithTagExists.mjs
 const {argv} = yargs(process.argv.slice(2))
   .option('image-version', {
     alias: 'i',
-    describe: 'run your program',
+    describe: 'image version to deploy',
   })
   .check(argv => {
     if (argv.imageVersion && !semver.parse(argv.imageVersion)) {
@@ -18,8 +18,25 @@ const {argv} = yargs(process.argv.slice(2))
     }
     return true;
   })
+  .option('replace', {
+    alias: 'r',
+    describe: 'stop active container of same channel',
+    type: 'boolean',
+    default: true,
+  })
+  .option('fetch', {
+    alias: 'f',
+    describe: 'fetch the image from github',
+    type: 'boolean',
+    default: false,
+  })
+  .option('from-service', {
+    describe: 'for service use only. only it sets this to true',
+    type: 'boolean',
+    default: false,
+  })
   .option('swarm', {
-    describe: '',
+    describe: 'use swarm deploy',
     type: 'boolean',
     default: false,
   })
