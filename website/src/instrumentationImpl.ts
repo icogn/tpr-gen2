@@ -1,3 +1,5 @@
+// Note: env from .env file is available at this point.
+
 if (process.env.NODE_ENV === 'production') {
   process.env.DOG = 'DOG_VAL_PRODUCTION';
   // In production, the config is provided by docker swarm configs.

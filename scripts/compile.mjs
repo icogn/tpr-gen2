@@ -37,25 +37,6 @@ async function buildNext() {
 
 // Then run: electron-builder build --config .electron-builder.config.js --dir --config.asar=false
 
-function getGitCommitEnvStr() {
-  // const gitCommitHash = execSync('git rev-parse HEAD', {
-  //   cwd: websiteDir,
-  //   encoding: 'utf8',
-  // });
-
-  // if (!gitCommitHash) {
-  //   throw new Error('Failed to determine git commit hash.');
-  // }
-
-  // return `GIT_COMMIT=${gitCommitHash.substring(0, 12)}`;
-
-  // TODO: the git environment is not available inside Docker when building the
-  // image. This needs to be handled in a script which puts this in the ENV then
-  // runs the docker build stuff. This is what is done in the current
-  // randomizer-web-generator.
-  return 'placeholder';
-}
-
 // eslint-disable-next-line
 function updateWebsiteEnv() {
   // const websiteEnvFilePath = path.join(websiteDir, 'website/.next/standalone/website/.env');
@@ -67,7 +48,10 @@ function updateWebsiteEnv() {
   const envDirEnvFilePath = path.join(websiteDir, '../env/.env');
   const envDirEnvStr = readFileSync(envDirEnvFilePath, 'utf8');
 
-  const newEnv = [websiteEnvStr, envDirEnvStr, getGitCommitEnvStr()].join('\n\n');
+  const createdEnvFilePath = path.join(rootDir, 'tmp/website.env');
+  const createdEnvStr = readFileSync(createdEnvFilePath, 'utf8');
+
+  const newEnv = [websiteEnvStr, envDirEnvStr, createdEnvStr].join('\n\n');
   writeFileSync(websiteEnvFilePath, newEnv, 'utf8');
 }
 

@@ -6,6 +6,7 @@ import {spawnSync} from 'node:child_process';
 import getRootDir from './util/getRootDir.mjs';
 import {prepareWebsiteEnv, applyEnv} from './prepareEnv.mjs';
 import {getVersion} from './util/getVersion.mjs';
+import createWebsiteEnvFile from './createWebsiteEnvFile.mjs';
 
 const rootDir = getRootDir();
 // const rootDir = searchUpFileTree(__dirname, (currPath) =>
@@ -18,6 +19,8 @@ const rootDir = getRootDir();
 // envFromYaml(stackFilePath);
 
 applyEnv(prepareWebsiteEnv({imageVersion: getVersion()}));
+
+createWebsiteEnvFile();
 
 spawnSync('docker', ['compose', 'build'], {
   stdio: 'inherit',

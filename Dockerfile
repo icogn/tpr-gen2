@@ -1,14 +1,11 @@
 FROM node:lts-alpine as next-server-build
 
-WORKDIR /buildDir/
+WORKDIR /buildDir
 
 COPY .yarn ./.yarn
 COPY .yarnrc.yml .
 COPY package.json .
 COPY yarn.lock .
-
-COPY scripts ./scripts
-COPY env ./env
 
 COPY ./website/package.json ./website/package.json
 RUN yarn
@@ -19,7 +16,10 @@ WORKDIR /buildDir/website
 RUN yarn prisma:generate
 WORKDIR /buildDir
 
+COPY env ./env
 COPY ./website ./website
+COPY scripts ./scripts
+COPY ./tmp/website.env ./tmp/website.env
 
 RUN node scripts/compile.mjs
 
@@ -34,12 +34,6 @@ COPY --from=next-server-build /buildDir/website/.next/standalone /app/website-st
 COPY Dockerfile .
 
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
-
-ARG TPR_IMAGE_VERSION
-ENV TPR_IMAGE_VERSION $TPR_IMAGE_VERSION
-
-ARG TPR_GIT_COMMIT
-ENV TPR_GIT_COMMIT $TPR_GIT_COMMIT
 
 # https://github.com/vercel/next.js/issues/51684#issuecomment-1612834913
 # Get Internal Server Error unless specify HOSTNAME as 127.0.0.1. Default

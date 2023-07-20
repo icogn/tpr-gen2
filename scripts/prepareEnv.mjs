@@ -65,7 +65,7 @@ export function createEnvFileContents(envObj) {
 
   let content = '';
   Object.keys(envObj).forEach(key => {
-    content += `${key}=${String(envObj[key])}`;
+    content += `${key}=${String(envObj[key])}\n`;
   });
   return content;
 }

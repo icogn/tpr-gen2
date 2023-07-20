@@ -7,6 +7,7 @@ import yargs from 'yargs';
 import semver from 'semver';
 import singleImageWithTagExists from './util/docker/singleImageWithTagExists.mjs';
 import loadImageFromGithub from './deployment/loadImageFromGithub.mjs';
+import createWebsiteEnvFile from './createWebsiteEnvFile.mjs';
 // import envFromYaml from './util/envFromYaml';
 
 const {argv} = yargs(process.argv.slice(2))
@@ -79,6 +80,8 @@ const stackFilePath = path.join(rootDir, 'compose.yml');
 // Probably will want to have the envFromYaml stuff in the prepareDeployEnv once
 // start using it for secrets and configs
 applyEnv(prepareDeployEnv({imageVersion: argv.imageVersion}));
+
+createWebsiteEnvFile();
 
 // Not using swarm until test it.
 // eslint-disable-next-line no-constant-condition
