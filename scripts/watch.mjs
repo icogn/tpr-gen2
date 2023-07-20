@@ -11,6 +11,7 @@ import path from 'path';
 // import getGitCommitHash from './util/getGitCommitHash.mjs';
 // import getChannelString from './util/getChannelString.mjs';
 import {prepareWebsiteEnv} from './prepareEnv.mjs';
+import {getVersion} from './util/getVersion.mjs';
 
 // const rootDir = getRootDir();
 // process.chdir(path.join(rootDir, 'standalone'));
@@ -161,7 +162,9 @@ function getNextServerDevelopmentEnv() {
 
   return {
     ...process.env,
-    ...prepareWebsiteEnv(),
+    ...prepareWebsiteEnv({
+      imageVersion: getVersion(),
+    }),
     // TPR_ROOT_VOLUME_PATH: rootVolumePath,
     // TPR_CHANNEL_VOLUME_PATH: channelVolumePath,
     // TPR_GIT_COMMIT: getGitCommitHash(),

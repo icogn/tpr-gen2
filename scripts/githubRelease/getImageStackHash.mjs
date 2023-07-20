@@ -7,7 +7,7 @@ import {prepareDeployEnv} from '../prepareEnv.mjs';
 const rootDir = getRootDir();
 const stackFilePath = path.join(rootDir, 'compose.yml');
 
-const envKeysWhichCanBeIgnored = ['TPR_GIT_COMMIT', 'IMAGE_VERSION', 'HOST_PORT'];
+const envKeysWhichCanBeIgnored = ['TPR_GIT_COMMIT', 'TPR_IMAGE_VERSION', 'HOST_PORT'];
 
 function strImportantEnvValues(ymlContent) {
   const deployEnv = prepareDeployEnv();

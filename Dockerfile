@@ -27,7 +27,7 @@ RUN node scripts/compile.mjs
 # ENTRYPOINT ["node", ".next/standalone/server.js"]
 
 FROM node:lts-alpine as website
-WORKDIR /app/website
+WORKDIR /
 COPY --from=next-server-build /buildDir/website/.next/standalone /app/website-standalone
 
 # Copy in Dockerfile for debugging purposes.
@@ -35,8 +35,8 @@ COPY Dockerfile .
 
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
 
-ARG TPR_ROOT_VOLUME_PATH
-ENV TPR_ROOT_VOLUME_PATH $TPR_ROOT_VOLUME_PATH
+ARG TPR_IMAGE_VERSION
+ENV TPR_IMAGE_VERSION $TPR_IMAGE_VERSION
 
 ARG TPR_GIT_COMMIT
 ENV TPR_GIT_COMMIT $TPR_GIT_COMMIT

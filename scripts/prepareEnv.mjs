@@ -4,7 +4,11 @@ import getChannelString from './util/getChannelString.mjs';
 import getRootDir from './util/getRootDir.mjs';
 import {getVersion} from './util/getVersion.mjs';
 
-export function prepareWebsiteEnv() {
+export function prepareWebsiteEnv({imageVersion}) {
+  if (!imageVersion) {
+    throw new Error('imageVersion provided to prepareWebsiteEnv was falsy.');
+  }
+
   // Root volume path is always the same when starting the development next
   // server from this file.
   let rootVolumePath;
@@ -23,16 +27,18 @@ export function prepareWebsiteEnv() {
     TPR_ROOT_VOLUME_PATH: rootVolumePath,
     // TPR_CHANNEL: getChannelString(),
     TPR_CHANNEL_VOLUME_PATH: channelVolumePath,
+    TPR_IMAGE_VERSION: imageVersion,
     DATABASE_URL: 'file:' + path.join(channelVolumePath, 'db/app.db'),
   };
 }
 
 export function prepareDeployEnv(optionsIn) {
   const options = optionsIn || {};
+  options.imageVersion = options.imageVersion || getVersion();
 
   return {
-    ...prepareWebsiteEnv(),
-    IMAGE_VERSION: options.imageVersion || getVersion(),
+    ...prepareWebsiteEnv(options),
+    // IMAGE_VERSION: options.imageVersion || getVersion(),
   };
 }
 

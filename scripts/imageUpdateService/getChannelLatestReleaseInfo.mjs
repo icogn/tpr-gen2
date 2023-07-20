@@ -34,7 +34,7 @@ function githubRequest(path, token, data, method) {
   );
 }
 
-async function getChannelLatestReleaseInfo({owner, repo, channelKey}) {
+async function getChannelLatestReleaseInfo({owner, repo, channelKey, exactVersion}) {
   const releases = await githubRequest(`/repos/${owner}/${repo}/releases`, null, null, 'GET');
 
   let latestRelease = null;
@@ -61,6 +61,13 @@ async function getChannelLatestReleaseInfo({owner, repo, channelKey}) {
       continue;
     }
 
+    if (exactVersion && version === exactVersion) {
+      return {
+        release,
+        version,
+      };
+    }
+
     if (latestRelease) {
       if (semver.gt(parsedVersion, latestSemVer)) {
         latestRelease = release;
@@ -72,7 +79,7 @@ async function getChannelLatestReleaseInfo({owner, repo, channelKey}) {
     }
   }
 
-  if (latestRelease && latestSemVer) {
+  if (!exactVersion && latestRelease && latestSemVer) {
     return {
       release: latestRelease,
       version: latestSemVer.version,
