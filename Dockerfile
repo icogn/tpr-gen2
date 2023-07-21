@@ -4,7 +4,7 @@ WORKDIR /buildDir
 
 COPY .yarn ./.yarn
 COPY .yarnrc.yml .
-COPY package.json .
+COPY ./tmp/package.json ./package.json
 COPY yarn.lock .
 
 COPY ./website/package.json ./website/package.json
