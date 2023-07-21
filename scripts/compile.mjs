@@ -8,9 +8,17 @@ import path from 'node:path';
 import fs, {readFileSync, writeFileSync} from 'node:fs';
 import searchUpFileTree from './util/searchUpFileTree.mjs';
 import {fileURLToPath} from 'node:url';
-// import {execSync} from 'node:child_process';
+import yargs from 'yargs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const {argv} = yargs(process.argv.slice(2))
+  .option('from-dockerfile', {
+    describe: 'set to true when calling compile.mjs from the Dockerfile',
+    type: 'boolean',
+    default: false,
+  })
+  .help();
 
 const rootDir = searchUpFileTree(__dirname, currPath =>
   fs.existsSync(path.join(currPath, 'package.json')),
@@ -48,10 +56,13 @@ function updateWebsiteEnv() {
   const envDirEnvFilePath = path.join(websiteDir, '../env/.env');
   const envDirEnvStr = readFileSync(envDirEnvFilePath, 'utf8');
 
-  const createdEnvFilePath = path.join(rootDir, 'tmp/website.env');
-  const createdEnvStr = readFileSync(createdEnvFilePath, 'utf8');
+  let createdEnvStr = '';
+  if (argv.fromDockerfile) {
+    const createdEnvFilePath = path.join(rootDir, 'tmp/website.env');
+    createdEnvStr = readFileSync(createdEnvFilePath, 'utf8');
+  }
 
-  const newEnv = [websiteEnvStr, envDirEnvStr, createdEnvStr].join('\n\n');
+  const newEnv = [websiteEnvStr, envDirEnvStr, createdEnvStr].filter(Boolean).join('\n\n');
   writeFileSync(websiteEnvFilePath, newEnv, 'utf8');
 }
 

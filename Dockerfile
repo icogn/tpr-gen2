@@ -21,7 +21,7 @@ COPY ./website ./website
 COPY scripts ./scripts
 COPY ./tmp/website.env ./tmp/website.env
 
-RUN node scripts/compile.mjs
+RUN node scripts/compile.mjs --from-dockerfile
 
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
 # ENTRYPOINT ["node", ".next/standalone/server.js"]
