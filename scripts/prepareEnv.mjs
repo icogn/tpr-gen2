@@ -38,7 +38,6 @@ export function prepareDeployEnv(optionsIn) {
 
   return {
     ...prepareWebsiteEnv(options),
-    // IMAGE_VERSION: options.imageVersion || getVersion(),
   };
 }
 

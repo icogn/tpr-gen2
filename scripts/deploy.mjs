@@ -7,7 +7,6 @@ import yargs from 'yargs';
 import semver from 'semver';
 import singleImageWithTagExists from './util/docker/singleImageWithTagExists.mjs';
 import loadImageFromGithub from './deployment/loadImageFromGithub.mjs';
-import createWebsiteEnvFile from './createWebsiteEnvFile.mjs';
 import findContainerForChannelKey from './util/docker/findSingleContainerForChannelKey.mjs';
 import getChannelKeyFromVersion from './util/getChannelKeyFromVersion.mjs';
 import {getVersion} from './util/getVersion.mjs';
@@ -16,6 +15,7 @@ import {
   rmContainerById,
   rmImageByTagIfExists,
 } from './util/docker/runDockerCommand.mjs';
+import getYarnCommand from './util/getYarnCommand.mjs';
 // import envFromYaml from './util/envFromYaml';
 
 const {argv} = yargs(process.argv.slice(2))
@@ -109,6 +109,14 @@ if (!argv.imageVersion) {
   if (!success) {
     throw new Error(`Removing docker image tagged "${version}" has a non-zero exit code.`);
   }
+
+  // Build the image
+  const result = spawnSync(getYarnCommand(), ['image'], {
+    stdio: 'inherit',
+  });
+  if (result.status !== 0) {
+    throw new Error(`Failed to build image. ${result.stderr.toString()}`);
+  }
 }
 
 // TODO: should call yarn image to build the image so everything is in one place.
@@ -121,8 +129,6 @@ const stackFilePath = path.join(rootDir, 'compose.yml');
 // Probably will want to have the envFromYaml stuff in the prepareDeployEnv once
 // start using it for secrets and configs
 applyEnv(prepareDeployEnv({imageVersion: version}));
-
-createWebsiteEnvFile();
 
 // Not using swarm until test it.
 // eslint-disable-next-line no-constant-condition

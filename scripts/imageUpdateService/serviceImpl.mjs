@@ -8,6 +8,7 @@ import getChannelLatestReleaseInfo from './getChannelLatestReleaseInfo.mjs';
 import getRootDir from '../util/getRootDir.mjs';
 import getImageStackHash from '../githubRelease/getImageStackHash.mjs';
 import downloadFile from './downloadFile.mjs';
+import getYarnCommand from '../util/getYarnCommand.mjs';
 
 // const log = new EventLogger({
 //   source: 'My Event Log',
@@ -196,9 +197,7 @@ function runDeploy(imageTag) {
   console.log('runDeploy');
   console.log(process.cwd());
 
-  const yarnCommand = process.platform === 'win32' ? 'yarn.cmd' : 'yarn';
-
-  const result = spawnSync(yarnCommand, ['deploy', '-i', imageTag], {
+  const result = spawnSync(getYarnCommand(), ['deploy', '-i', imageTag], {
     stdio: 'inherit',
   });
   return result.status === 0;
