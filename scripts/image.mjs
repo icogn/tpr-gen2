@@ -32,7 +32,9 @@ function createTmpPackageJson() {
     return acc;
   }, {});
 
-  fs.writeFileSync(path.join(rootDir, 'tmp/package.json'), JSON.stringify(contents, null, 2));
+  const tmpDir = path.join(rootDir, 'tmp');
+  fs.ensureDirSync(tmpDir);
+  fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify(contents, null, 2));
   return contents;
 }
 
