@@ -1,0 +1,5 @@
+services:
+  tpr-generator:
+    build:
+      context: .
+    image: tpr-generator:${TPR_IMAGE_VERSION}

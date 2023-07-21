@@ -40,23 +40,14 @@ function createTmpPackageJson() {
 
 createTmpPackageJson();
 
-// const rootDir = searchUpFileTree(__dirname, (currPath) =>
-//   fs.existsSync(path.join(currPath, '.env'))
-// );
-// const stackFilePath = path.join(rootDir, 'stack.yml');
-
-// require('dotenv').config({path: path.join(rootDir, '.env')});
-
-// envFromYaml(stackFilePath);
-
-const stackFilePath = path.join(rootDir, 'compose.yml');
-envFromYaml(stackFilePath);
+const composeBuildPath = path.join(rootDir, 'compose-build.yml');
+envFromYaml(composeBuildPath);
 
 applyEnv(prepareWebsiteEnv({imageVersion: getVersion()}));
 
 createWebsiteEnvFile();
 
-spawnSync('docker', ['compose', 'build'], {
+spawnSync('docker', ['compose', '-f', composeBuildPath, 'build'], {
   stdio: 'inherit',
   cwd: rootDir,
   env: process.env,

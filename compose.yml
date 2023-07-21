@@ -1,7 +1,5 @@
 services:
   tpr-generator:
-    build:
-      context: .
     image: tpr-generator:${TPR_IMAGE_VERSION}
     ports:
       - '${HOST_PORT:-2999}:3000'
@@ -18,9 +16,3 @@ secrets:
   abc_secret:
     file: ./secrets/abc.txt
     name: abc_secret-${ABC_HASH}
-  # jwt_secret:
-  #   file: ./secrets/jwtSecret.txt
-  #   name: jwt_secret-${JWT_SECRET_HASH}
-  # seedhash_secret:
-  #   file: ./secrets/seedHashSecret.txt
-  #   name: seedhash_secret-${SEEDHASH_SECRET_HASH}
