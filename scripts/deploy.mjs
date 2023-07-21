@@ -114,22 +114,14 @@ if (!argv.imageVersion) {
   }
 }
 
-// TODO: should call yarn image to build the image so everything is in one place.
-
 const stackFilePath = path.join(rootDir, 'compose.yml');
-
-// require('dotenv').config({path: path.join(rootDir, '.env')});
-
 envFromYaml(stackFilePath);
 
-// Probably will want to have the envFromYaml stuff in the prepareDeployEnv once
-// start using it for secrets and configs
 applyEnv(prepareDeployEnv({imageVersion: version}));
 
 // process.env.HOST_PORT = 2999;
 spawnSync('docker', ['compose', '-f', stackFilePath, 'up', '-d'], {
   stdio: 'inherit',
-  // cwd: path.join(__dirname, '..'),
   cwd: rootDir,
 });
-console.log('deployyy non-swarm');
+console.log('Deployed');
