@@ -1,5 +1,7 @@
 // Note: env from .env file is available at this point.
 
+// secrets mounted at `/run/secrets/...`
+
 if (process.env.NODE_ENV === 'production') {
   process.env.DOG = 'DOG_VAL_PRODUCTION';
   // In production, the config is provided by docker swarm configs.

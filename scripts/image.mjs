@@ -9,6 +9,7 @@ import getRootDir from './util/getRootDir.mjs';
 import {prepareWebsiteEnv, applyEnv} from './prepareEnv.mjs';
 import {getVersion} from './util/getVersion.mjs';
 import createWebsiteEnvFile from './createWebsiteEnvFile.mjs';
+import envFromYaml from './deployment/envFromYaml.mjs';
 
 const rootDir = getRootDir();
 const rootPackageJson = path.join(rootDir, 'package.json');
@@ -45,6 +46,9 @@ createTmpPackageJson();
 // require('dotenv').config({path: path.join(rootDir, '.env')});
 
 // envFromYaml(stackFilePath);
+
+const stackFilePath = path.join(rootDir, 'compose.yml');
+envFromYaml(stackFilePath);
 
 applyEnv(prepareWebsiteEnv({imageVersion: getVersion()}));
 

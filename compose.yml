@@ -7,7 +7,20 @@ services:
       - '${HOST_PORT:-2999}:3000'
     volumes:
       - tpr-generator-data:${TPR_ROOT_VOLUME_PATH}
+    secrets:
+      - abc_secret
 
 volumes:
   tpr-generator-data:
     driver: local
+
+secrets:
+  abc_secret:
+    file: ./secrets/abc.txt
+    name: abc_secret-${ABC_HASH}
+  # jwt_secret:
+  #   file: ./secrets/jwtSecret.txt
+  #   name: jwt_secret-${JWT_SECRET_HASH}
+  # seedhash_secret:
+  #   file: ./secrets/seedHashSecret.txt
+  #   name: seedhash_secret-${SEEDHASH_SECRET_HASH}

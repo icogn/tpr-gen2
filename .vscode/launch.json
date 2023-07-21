@@ -34,6 +34,14 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Debug image",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}\\scripts\\image.mjs",
+      "autoAttachChildProcesses": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Debug serviceImpl",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}\\scripts\\imageUpdateService\\serviceImpl.mjs",

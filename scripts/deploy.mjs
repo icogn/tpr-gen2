@@ -16,7 +16,7 @@ import {
   rmImageByTagIfExists,
 } from './util/docker/runDockerCommand.mjs';
 import getYarnCommand from './util/getYarnCommand.mjs';
-// import envFromYaml from './util/envFromYaml';
+import envFromYaml from './deployment/envFromYaml.mjs';
 
 const {argv} = yargs(process.argv.slice(2))
   .option('image-version', {
@@ -124,7 +124,8 @@ if (!argv.imageVersion) {
 const stackFilePath = path.join(rootDir, 'compose.yml');
 
 // require('dotenv').config({path: path.join(rootDir, '.env')});
-// envFromYaml(stackFilePath);
+
+envFromYaml(stackFilePath);
 
 // Probably will want to have the envFromYaml stuff in the prepareDeployEnv once
 // start using it for secrets and configs
