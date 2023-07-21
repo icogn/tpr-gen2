@@ -40,11 +40,6 @@ const {argv} = yargs(process.argv.slice(2))
     type: 'boolean',
     default: false,
   })
-  .option('swarm', {
-    describe: 'use swarm deploy',
-    type: 'boolean',
-    default: false,
-  })
   .check(argv => {
     if (argv.imageVersion && !semver.parse(argv.imageVersion)) {
       throw new Error(`Semver failed to parse imageVersion "${argv.imageVersion}".`);
@@ -131,23 +126,10 @@ envFromYaml(stackFilePath);
 // start using it for secrets and configs
 applyEnv(prepareDeployEnv({imageVersion: version}));
 
-// Not using swarm until test it.
-// eslint-disable-next-line no-constant-condition
-if (false && argv.swarm) {
-  spawnSync('docker', ['stack', 'deploy', '-c', stackFilePath, 'demo'], {
-    stdio: 'inherit',
-    // cwd: path.join(__dirname, '..'),
-    cwd: rootDir,
-  });
-  console.log('deployyy');
-} else {
-  process.env.HOST_PORT = 2999;
-
-  spawnSync('docker', ['compose', '-f', stackFilePath, 'up', '-d'], {
-    stdio: 'inherit',
-    // cwd: path.join(__dirname, '..'),
-    cwd: rootDir,
-  });
-
-  console.log('deployyy non-swarm');
-}
+// process.env.HOST_PORT = 2999;
+spawnSync('docker', ['compose', '-f', stackFilePath, 'up', '-d'], {
+  stdio: 'inherit',
+  // cwd: path.join(__dirname, '..'),
+  cwd: rootDir,
+});
+console.log('deployyy non-swarm');
