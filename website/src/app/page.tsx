@@ -11,6 +11,7 @@ export default function Home() {
       <div>{'databaseUrl: ' + process.env.DATABASE_URL}</div>
       <div>{'gitCommit: ' + process.env.TPR_GIT_COMMIT}</div>
       <div style={{fontSize: '24px'}}>{'version: ' + process.env.TPR_IMAGE_VERSION}</div>
+      <div>after change, redoing deploy 4</div>
     </main>
   );
 }

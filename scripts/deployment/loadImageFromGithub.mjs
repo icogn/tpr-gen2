@@ -3,7 +3,7 @@ import getImageStackHash from '../githubRelease/getImageStackHash.mjs';
 import downloadFile from '../imageUpdateService/downloadFile.mjs';
 import getChannelLatestReleaseInfo from '../imageUpdateService/getChannelLatestReleaseInfo.mjs';
 import getChannelKeyFromVersion from '../util/getChannelKeyFromVersion.mjs';
-import loadDockerImage from '../util/docker/loadDockerImage.mjs';
+import {loadDockerImage} from '../util/docker/runDockerCommand.mjs';
 
 function getAssetIfValid(release) {
   const imageStackHash = getImageStackHash();

@@ -8,6 +8,14 @@ import semver from 'semver';
 import singleImageWithTagExists from './util/docker/singleImageWithTagExists.mjs';
 import loadImageFromGithub from './deployment/loadImageFromGithub.mjs';
 import createWebsiteEnvFile from './createWebsiteEnvFile.mjs';
+import findContainerForChannelKey from './util/docker/findSingleContainerForChannelKey.mjs';
+import getChannelKeyFromVersion from './util/getChannelKeyFromVersion.mjs';
+import {getVersion} from './util/getVersion.mjs';
+import {
+  stopContainerById,
+  rmContainerById,
+  rmImageByTagIfExists,
+} from './util/docker/runDockerCommand.mjs';
 // import envFromYaml from './util/envFromYaml';
 
 const {argv} = yargs(process.argv.slice(2))
@@ -70,7 +78,40 @@ if (argv.imageVersion && !singleImageWithTagExists(argv.imageVersion)) {
   );
 }
 
-// Stop an existing container if it exists.
+const version = argv.imageVersion || getVersion();
+
+// Stop an existing container if there is exactly one to stop.
+if (argv.replace) {
+  const channelKey = getChannelKeyFromVersion(version);
+  const {numContainers, containerInfo} = findContainerForChannelKey(channelKey);
+  if (numContainers >= 2) {
+    throw new Error(
+      `"replace" is true, but there are 2 or more (${numContainers}) containers for the "${channelKey}" channel. Cannot know which one to replace.`,
+    );
+  }
+  if (containerInfo) {
+    const {containerId} = containerInfo;
+    const stopped = stopContainerById(containerId);
+    if (!stopped) {
+      throw new Error(`Stopping docker container "${containerId}" has a non-zero exit code.`);
+    }
+    const removed = rmContainerById(containerId);
+    if (!removed) {
+      throw new Error(`Removing docker container "${containerId}" has a non-zero exit code.`);
+    }
+  }
+}
+
+// If deploying and imageVersion was not specified, then we should delete the
+// image and rebuild it.
+if (!argv.imageVersion) {
+  const success = rmImageByTagIfExists(version);
+  if (!success) {
+    throw new Error(`Removing docker image tagged "${version}" has a non-zero exit code.`);
+  }
+}
+
+// TODO: should call yarn image to build the image so everything is in one place.
 
 const stackFilePath = path.join(rootDir, 'compose.yml');
 
@@ -79,7 +120,7 @@ const stackFilePath = path.join(rootDir, 'compose.yml');
 
 // Probably will want to have the envFromYaml stuff in the prepareDeployEnv once
 // start using it for secrets and configs
-applyEnv(prepareDeployEnv({imageVersion: argv.imageVersion}));
+applyEnv(prepareDeployEnv({imageVersion: version}));
 
 createWebsiteEnvFile();
 
