@@ -1,12 +1,9 @@
 import semver from 'semver';
+import fetchChannels from '../util/fetch/fetchChannels.mjs';
 
 async function getChannelInfo() {
   try {
-    const res = await fetch(
-      'https://raw.githubusercontent.com/icogn/tpr-gen2/main/staticApi/branches.json',
-    );
-    const responseText = await res.text();
-    const config = JSON.parse(responseText);
+    const config = await fetchChannels();
 
     if (config && typeof config === 'object') {
       const channelInfoArr = [];

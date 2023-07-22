@@ -4,20 +4,24 @@ import path from 'node:path';
 const cacheDurationMs = 5 * 60 * 1000;
 
 export function tryGetCachedData(filePath) {
-  if (!fs.existsSync(filePath)) {
+  try {
+    if (!fs.existsSync(filePath)) {
+      return null;
+    }
+
+    const jsonObj = fs.readJsonSync(filePath);
+    if (!jsonObj.timestamp) {
+      return null;
+    }
+
+    if (Date.now() - jsonObj.timestamp > cacheDurationMs) {
+      return null;
+    }
+
+    return jsonObj.data;
+  } catch (e) {
     return null;
   }
-
-  const jsonObj = fs.readJsonSync(filePath);
-  if (!jsonObj.timestamp) {
-    return null;
-  }
-
-  if (Date.now() - jsonObj.timestamp > cacheDurationMs) {
-    return null;
-  }
-
-  return jsonObj.data;
 }
 
 export function cacheData(filePath, data) {

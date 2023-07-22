@@ -3,6 +3,7 @@ import semver from 'semver';
 import getChannelLatestReleaseInfo from './getChannelLatestReleaseInfo.mjs';
 import getYarnCommand from '../util/getYarnCommand.mjs';
 import findContainerForChannelKey from '../util/docker/findSingleContainerForChannelKey.mjs';
+import fetchChannels from '../util/fetch/fetchChannels.mjs';
 
 // const minuteMs = 60 * 1000;
 
@@ -10,7 +11,7 @@ let logEvent = () => {
   // do nothing
 };
 
-async function processChannelKey(channelKey) {
+async function processChannel({owner, repo, channelKey}) {
   // Service only replaces containers; it does not deploy one if there is not
   // already one deployed or if there are multiple so we do not know which one
   // to replace.
@@ -19,12 +20,10 @@ async function processChannelKey(channelKey) {
     return;
   }
 
-  // TODO: don't use hardcoded info for the input to this.
-
   const latestReleaseInfo = await getChannelLatestReleaseInfo({
-    owner: 'icogn',
-    repo: 'tpr-gen2',
-    channelKey,
+    owner: owner,
+    repo: repo,
+    channelKey: channelKey,
   });
 
   console.log(latestReleaseInfo);
@@ -33,8 +32,7 @@ async function processChannelKey(channelKey) {
   }
 
   if (semver.gt(latestReleaseInfo.version, containerInfo.imageVersion)) {
-    console.log('should replace');
-    logEvent('should replace');
+    console.log(`should replace "${channelKey}"`);
 
     const result = spawnSync(getYarnCommand(), [
       'deploy',
@@ -52,28 +50,29 @@ async function processChannelKey(channelKey) {
       logEvent('Ran deploy command with exit code 0');
     }
   } else {
-    console.log('does not need to replace');
-    logEvent('does not need to replace');
+    console.log(`does not need to replace "${channelKey}"`);
   }
 }
 
 async function doServiceIteration() {
   console.log('\nDoing iteration');
 
-  const channelKey = 'dev';
+  const channelsConfig = await fetchChannels();
+  const channelKeys = Object.keys(channelsConfig);
 
-  // TODO: fetch centralized channel config once up-front.
-
-  try {
-    await processChannelKey(channelKey);
-  } catch (e) {
-    // We base64 encode the error message since it will fail to log otherwise.
-    // It appears no escaping is done on the input, but handling escaping
-    // yourself is considered a bad idea.
-    console.error(e);
-    logEvent(
-      `Caught error at top level (base64-encoded):\n${Buffer.from(e.message).toString('base64')}`,
-    );
+  for (let i = 0; i < channelKeys.length; i++) {
+    const channelKey = channelKeys[i];
+    try {
+      await processChannel({...channelsConfig[channelKey], channelKey});
+    } catch (e) {
+      // We base64 encode the error message since it will fail to log otherwise.
+      // It appears no escaping is done on the input, but handling escaping
+      // yourself is considered a bad idea.
+      console.error(e);
+      logEvent(
+        `Caught error at top level (base64-encoded):\n${Buffer.from(e.message).toString('base64')}`,
+      );
+    }
   }
 
   // setTimeout(doServiceIteration, 5 * minuteMs);

@@ -4,6 +4,7 @@ import downloadFile from '../imageUpdateService/downloadFile.mjs';
 import getChannelLatestReleaseInfo from '../imageUpdateService/getChannelLatestReleaseInfo.mjs';
 import getChannelKeyFromVersion from '../util/getChannelKeyFromVersion.mjs';
 import {loadDockerImage} from '../util/docker/runDockerCommand.mjs';
+import fetchChannelObj from '../util/fetch/fetchChannelObj.mjs';
 
 function getAssetIfValid(release) {
   const imageStackHash = getImageStackHash();
@@ -16,11 +17,20 @@ function getAssetIfValid(release) {
 }
 
 async function loadImageFromGithub(version, tmpDir) {
-  // TODO: need to get owner and repo from static github API
+  const channelKey = getChannelKeyFromVersion(version);
+  const channelObj = await fetchChannelObj(channelKey);
+  if (!channelObj) {
+    throw new Error(`fetchChannelObj return null for channelKey "${channelKey}".`);
+  }
+  const {owner, repo} = channelObj;
+  if (!owner || !repo) {
+    throw new Error(`owner or repo was falsy for channelKey "${channelKey}".`);
+  }
+
   const latestReleaseInfo = await getChannelLatestReleaseInfo({
-    owner: 'icogn',
-    repo: 'tpr-gen2',
-    channelKey: getChannelKeyFromVersion(version),
+    owner,
+    repo,
+    channelKey,
     exactVersion: version,
   });
 
