@@ -3,10 +3,16 @@ import semver from 'semver';
 
 function findContainerForChannelKey(channelKey) {
   const result = spawnSync('docker', ['ps']);
-  const output = result.stdout.toString();
+  const error = result.stderr.toString();
+  if (error) {
+    throw new Error(error);
+  } else if (result.status !== 0) {
+    throw new Error(`result.status was ${result.status}`);
+  }
 
+  const output = result.stdout.toString();
   if (!output.startsWith('CONTAINER ID')) {
-    return null;
+    throw new Error('output does not start with "CONTAINER ID".');
   }
 
   const lines = output.split(/[\r\n]+/);

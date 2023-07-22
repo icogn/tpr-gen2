@@ -1,41 +1,8 @@
 import semver from 'semver';
-import {
-  parseJson,
-  configureRequestOptions,
-  CancellationToken,
-  // ProgressCallbackTransform,
-} from 'builder-util-runtime';
-import {httpExecutor} from 'builder-util/out/nodeHttpExecutor.js';
-import {parse as parseUrl} from 'node:url';
-// import {getVersion} from '../util/getVersion.mjs';
-// import mime from 'mime';
-// import fs from 'fs-extra';
-// import getOwnerAndRepo from './getOwnerAndRepo.mjs';
-
-function githubRequest(path, token, data, method) {
-  const baseUrl = parseUrl('https://api.github.com');
-  return parseJson(
-    httpExecutor.request(
-      configureRequestOptions(
-        {
-          protocol: baseUrl.protocol,
-          hostname: baseUrl.hostname,
-          port: baseUrl.port,
-          path,
-          headers: {accept: 'application/vnd.github.v3+json'},
-          timeout: undefined,
-        },
-        token,
-        method,
-      ),
-      new CancellationToken(),
-      data,
-    ),
-  );
-}
+import fetchReleasesInfo from '../util/fetch/fetchReleasesInfo.mjs';
 
 async function getChannelLatestReleaseInfo({owner, repo, channelKey, exactVersion}) {
-  const releases = await githubRequest(`/repos/${owner}/${repo}/releases`, null, null, 'GET');
+  const releases = await fetchReleasesInfo({owner, repo});
 
   let latestRelease = null;
   let latestSemVer = null;

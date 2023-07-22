@@ -21,9 +21,6 @@ async function processChannelKey(channelKey) {
 
   // TODO: don't use hardcoded info for the input to this.
 
-  // TODO: should minimize the calls in the below since there is a 60 per hour
-  // rate limit by IP for non-authenticated.
-
   const latestReleaseInfo = await getChannelLatestReleaseInfo({
     owner: 'icogn',
     repo: 'tpr-gen2',
