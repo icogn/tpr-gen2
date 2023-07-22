@@ -6,4 +6,5 @@
 website/.next
 website/build
 
-
+# Created by node-windows image update service while it is installed
+scripts/imageUpdateService/daemon

@@ -76,3 +76,6 @@ thumbs.db
 
 # Dir used by docker container updater service
 /tmp
+
+# Created by node-windows image update service while it is installed
+/scripts/imageUpdateService/daemon

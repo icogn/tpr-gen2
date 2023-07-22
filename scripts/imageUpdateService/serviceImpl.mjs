@@ -47,7 +47,7 @@ async function processChannel({owner, repo, channelKey}) {
       );
       return;
     } else if (result.status === 0) {
-      logEvent('Ran deploy command with exit code 0');
+      logEvent(`Ran deploy command with exit code 0 for tag "${latestReleaseInfo.version}"`);
     }
   } else {
     console.log(`does not need to replace "${channelKey}"`);
