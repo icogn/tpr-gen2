@@ -5,8 +5,6 @@ import getYarnCommand from '../util/getYarnCommand.mjs';
 import findContainerForChannelKey from '../util/docker/findSingleContainerForChannelKey.mjs';
 import fetchChannels from '../util/fetch/fetchChannels.mjs';
 
-// const minuteMs = 60 * 1000;
-
 let logEvent = () => {
   // do nothing
 };
@@ -75,8 +73,7 @@ async function doServiceIteration() {
     }
   }
 
-  // setTimeout(doServiceIteration, 5 * minuteMs);
-  setTimeout(doServiceIteration, 10_000);
+  setTimeout(doServiceIteration, 5 * 60_000);
 }
 
 async function prepareLogger() {

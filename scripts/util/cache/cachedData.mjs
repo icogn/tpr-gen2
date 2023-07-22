@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'node:path';
 
-const cacheDurationMs = 5 * 60 * 1000;
+const cacheDurationMs = 5 * 60_000;
 
 export function tryGetCachedData(filePath) {
   try {
