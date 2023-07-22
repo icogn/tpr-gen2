@@ -5,6 +5,8 @@ import getChannelLatestReleaseInfo from './getChannelLatestReleaseInfo.mjs';
 import getYarnCommand from '../util/getYarnCommand.mjs';
 import findContainerForChannelKey from '../util/docker/findSingleContainerForChannelKey.mjs';
 
+const minuteMs = 60 * 1000;
+
 // const log = new EventLogger({
 //   source: 'My Event Log',
 //   // eventLog: 'SYSTEM',
@@ -59,16 +61,26 @@ async function processChannelKey(channelKey) {
   }
 }
 
-async function main() {
+async function doServiceIteration() {
+  console.log('Doing iteration');
+
   const channelKey = 'dev';
 
   // TODO: fetch centralized channel config once up-front.
 
+  console.log('before');
   try {
     await processChannelKey(channelKey);
   } catch (e) {
     console.error(e);
   }
+  console.log('after\n');
+
+  setTimeout(doServiceIteration, 5 * minuteMs);
+}
+
+async function main() {
+  doServiceIteration();
 }
 
 main();
