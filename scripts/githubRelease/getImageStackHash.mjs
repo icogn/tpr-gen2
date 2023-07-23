@@ -50,8 +50,8 @@ function getSimplifiedComposeContent() {
   const fileContents = fs.readFileSync(stackFilePath).toString();
   const parsed = yaml.parse(fileContents);
   let str = yaml.stringify(parsed);
-  // Probably not strictly necessary, but just in case. This should make the
-  // line endings all be 0x0a regardless of the OS which is doing the deploying.
+  // This should make the line endings all be 0x0a regardless of the OS which is
+  // doing the deploying.
   str = str.replace(/(?:\r\n|\r|\n)/g, '\n');
   return str;
 }
