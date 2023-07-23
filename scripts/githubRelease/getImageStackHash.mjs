@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import yaml from 'yaml';
 import getRootDir from '../util/getRootDir.mjs';
 import {prepareDeployEnv} from '../prepareEnv.mjs';
 
@@ -9,6 +10,11 @@ const stackFilePath = path.join(rootDir, 'compose.yml');
 
 const envKeysWhichCanBeIgnored = ['TPR_GIT_COMMIT', 'TPR_IMAGE_VERSION', 'HOST_PORT'];
 
+// Note: any env variables in the secrets are expected to map to 'undefined'
+// since the secrets are not part of `prepareDeployEnv`. This is fine since we
+// don't care about the exact value of the secret. Shouldn't matter either way
+// since changing the compose file will result in a different hash, so we don't
+// need to manually add these keys to the ignore list.
 function strImportantEnvValues(ymlContent) {
   const deployEnv = prepareDeployEnv();
 
@@ -26,26 +32,36 @@ function strImportantEnvValues(ymlContent) {
     }
   }
 
-  return output
-    .filter(envKey => envKeysWhichCanBeIgnored.indexOf(envKey) < 0)
-    .map(envKey => deployEnv[envKey])
-    .join('###');
+  const keysToIgnore = envKeysWhichCanBeIgnored.reduce((acc, key) => {
+    acc[key] = true;
+    return acc;
+  }, {});
+
+  const filtered = output.filter(envKey => !keysToIgnore[envKey]);
+  const mapped = filtered.map(envKey => {
+    return `${envKey}=${deployEnv[envKey]}`;
+  });
+  return mapped.join('===');
+}
+
+// Normalizes the file content (differences in whitespace and comments should
+// resolve to the same thing).
+function getSimplifiedComposeContent() {
+  const fileContents = fs.readFileSync(stackFilePath).toString();
+  const parsed = yaml.parse(fileContents);
+  return yaml.stringify(parsed);
 }
 
 // Provides a hash which is put onto the end of the image created on the github
 // release. This can be used to check if the local repo instance can run the
 // same deploy since there has been no change.
 function getImageStackHash() {
-  let content = fs.readFileSync(stackFilePath).toString();
+  const composeContent = getSimplifiedComposeContent();
 
-  content += strImportantEnvValues(content);
+  let toHash = composeContent;
+  toHash += strImportantEnvValues(composeContent);
 
-  envKeysWhichCanBeIgnored.forEach(key => {
-    content += '#&#&';
-    content += key;
-  });
-
-  return crypto.createHash('md5').update(content).digest('hex').substring(0, 8);
+  return crypto.createHash('md5').update(toHash).digest('hex').substring(0, 8);
 }
 
 export default getImageStackHash;

@@ -16,3 +16,5 @@ spawnSync('docker', ['save', `tpr-generator:${version}`, '-o', outputFilename], 
 
 // Upload file to release.
 pushFileToDraftRelease(outputFilename);
+
+// TODO: remove other tar files which do not match the `outputFilename`
