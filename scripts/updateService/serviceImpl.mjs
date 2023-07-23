@@ -1,6 +1,6 @@
 import {spawnSync} from 'node:child_process';
 import semver from 'semver';
-import getChannelLatestReleaseInfo from './getChannelLatestReleaseInfo.mjs';
+import getChannelLatestReleaseInfo from '../deployment/getChannelLatestReleaseInfo.mjs';
 import getYarnCommand from '../util/getYarnCommand.mjs';
 import findContainerForChannelKey from '../util/docker/findSingleContainerForChannelKey.mjs';
 import fetchChannels from '../util/fetch/fetchChannels.mjs';
