@@ -108,6 +108,7 @@ if (!argv.imageVersion) {
   // Build the image
   const result = spawnSync(getYarnCommand(), ['image'], {
     stdio: 'inherit',
+    cwd: rootDir,
   });
   if (result.status !== 0) {
     throw new Error(`Failed to build image. ${result.stderr.toString()}`);

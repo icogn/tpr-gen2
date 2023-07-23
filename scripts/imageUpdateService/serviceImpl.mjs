@@ -4,6 +4,9 @@ import getChannelLatestReleaseInfo from './getChannelLatestReleaseInfo.mjs';
 import getYarnCommand from '../util/getYarnCommand.mjs';
 import findContainerForChannelKey from '../util/docker/findSingleContainerForChannelKey.mjs';
 import fetchChannels from '../util/fetch/fetchChannels.mjs';
+import getRootDir from '../util/getRootDir.mjs';
+
+const rootDir = getRootDir();
 
 let logEvent = () => {
   // do nothing
@@ -32,18 +35,18 @@ async function processChannel({owner, repo, channelKey}) {
   if (semver.gt(latestReleaseInfo.version, containerInfo.imageVersion)) {
     console.log(`should replace "${channelKey}"`);
 
-    const result = spawnSync(getYarnCommand(), [
-      'deploy',
-      '--from-service',
-      '-f',
-      '-i',
-      latestReleaseInfo.version,
-    ]);
+    const result = spawnSync(
+      getYarnCommand(),
+      ['deploy', '--from-service', '-f', '-i', latestReleaseInfo.version],
+      {
+        stdio: 'inherit',
+        cwd: rootDir,
+      },
+    );
     if (result.status == null) {
       logEvent(
         'Tried to run yarn, but result.status was null. yarn is likely not available in the PATH environment variable.',
       );
-      return;
     } else if (result.status === 0) {
       logEvent(`Ran deploy command with exit code 0 for tag "${latestReleaseInfo.version}"`);
     }
