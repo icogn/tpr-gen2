@@ -45,7 +45,6 @@ function main() {
   rawContents = rawContents.replace(/(?:\r\n|\r|\n)/g, '\n');
 
   const serviceContents = replaceExecStart(rawContents);
-  console.log(serviceContents);
 
   // Write contents to location
   if (!fs.pathExistsSync(serviceDir)) {
@@ -53,6 +52,10 @@ function main() {
       `Wanted to write service to "${serviceFilePath}", but "${serviceDir}" did not exist.`,
     );
   }
+
+  console.log(`\nWriting file to "${serviceFilePath}":\n\n`);
+  console.log(serviceContents);
+  console.log(serviceContents);
   fs.writeFileSync(serviceFilePath, serviceContents);
 
   // Notify of changes

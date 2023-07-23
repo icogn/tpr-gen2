@@ -12,7 +12,7 @@ import {
 function main() {
   if (!fs.existsSync(serviceFilePath)) {
     console.error(
-      `Expected to file service file at "${serviceFilePath}", but found nothing. Service likely already uninstalled.`,
+      `Failed to file service file at "${serviceFilePath}".\nService likely already uninstalled.`,
     );
     process.exit(1);
   }
