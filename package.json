@@ -27,7 +27,8 @@
     "typecheck": "yarn typecheck:main && yarn typecheck:preload && yarn typecheck:renderer",
     "format": "npx prettier --write \"**/*.{js,mjs,cjs,ts,mts,cts,vue,json}\"",
     "image": "node scripts/image.mjs",
-    "deploy": "node scripts/deploy.mjs"
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:check-hash": "node scripts/checkDeployHash.mjs"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",

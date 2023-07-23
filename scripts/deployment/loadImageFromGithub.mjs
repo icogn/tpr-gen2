@@ -8,6 +8,7 @@ import fetchChannelObj from '../util/fetch/fetchChannelObj.mjs';
 
 function getAssetIfValid(release) {
   const imageStackHash = getImageStackHash();
+  console.log(`imageStackHash:${imageStackHash}`);
   for (const asset of release.assets) {
     if (asset.name.startsWith('tpr-generator_') && asset.name.endsWith(`_${imageStackHash}.tar`)) {
       return asset;
