@@ -12,6 +12,8 @@ import {
 // Note: you may need to add sudo when you run this. If it still fails, you can
 // always do the steps in this file manually.
 
+// Note: you can follow the live logs with the command `journalctl -f`.
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const templatePath = path.join(__dirname, 'serviceTemplate.txt');
