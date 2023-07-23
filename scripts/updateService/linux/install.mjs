@@ -12,9 +12,8 @@ const templatePath = path.join(__dirname, 'serviceTemplate.txt');
 const serviceImplPath = path.resolve(path.join(__dirname, '../serviceImpl.mjs'));
 
 function checkThrowSpawnSyncResult(result) {
-  const error = result.stderr.toString();
-  if (error) {
-    throw new Error(error);
+  if (result.stderr) {
+    throw new Error(result.stderr.toString());
   } else if (result.status !== 0) {
     throw new Error(`result.status was non-zero ${result.status}.`);
   }
