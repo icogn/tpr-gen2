@@ -11,6 +11,7 @@ import mime from 'mime';
 import fs from 'fs-extra';
 import getOwnerAndRepo from './getOwnerAndRepo.mjs';
 
+let cachedAssets = undefined;
 const {owner, repo} = await getOwnerAndRepo();
 const version = getVersion();
 const tag = `v${version}`;
@@ -52,23 +53,32 @@ function doesErrorMeanAlreadyExists(e) {
   return e.statusCode === 422 && descIncludesAlreadyExists;
 }
 
-async function overwriteArtifact(fileName, release) {
-  // Delete old artifact and re-upload
-  console.log(`Trying to delete file "${fileName}". Already exists on GitHub.`);
+async function deleteAsset(asset) {
+  await githubRequest(`/repos/${owner}/${repo}/releases/assets/${asset.id}`, token, null, 'DELETE');
+}
+
+async function fetchAssets(release) {
+  if (cachedAssets) {
+    return cachedAssets;
+  }
 
   const assets = await githubRequest(
     `/repos/${owner}/${repo}/releases/${release.id}/assets`,
     token,
     null,
   );
+  cachedAssets = assets;
+  return assets;
+}
+
+async function overwriteArtifact(fileName, release) {
+  // Delete old artifact and re-upload
+  console.log(`Trying to delete file "${fileName}". Already exists on GitHub.`);
+
+  const assets = await fetchAssets(release);
   for (const asset of assets) {
     if (asset.name === fileName) {
-      await githubRequest(
-        `/repos/${owner}/${repo}/releases/assets/${asset.id}`,
-        token,
-        null,
-        'DELETE',
-      );
+      await deleteAsset(asset);
       return;
     }
   }
@@ -165,11 +175,20 @@ async function getRelease() {
   throw new Error('Failed to find release.');
 }
 
-async function pushFileToDraftRelease(fileName) {
-  const release = await getRelease();
+async function deleteOldTars(release, fileName) {
+  const assets = await fetchAssets(release);
 
-  // const fileName = 'exampleImage.txt';
-  // const fileName = 'example.tar';
+  for (const asset of assets) {
+    if (asset.name.endsWith('.tar') && asset.name !== fileName) {
+      console.log(`Deleting old tar "${asset.name}"...`);
+      await deleteAsset(asset);
+      console.log('Done!');
+    }
+  }
+}
+
+async function updateDraftReleaseTars(fileName) {
+  const release = await getRelease();
 
   const fileStat = await fs.stat(fileName);
   const dataLength = fileStat.size;
@@ -188,6 +207,8 @@ async function pushFileToDraftRelease(fileName) {
     },
     release,
   );
+
+  await deleteOldTars(release, fileName);
 }
 
-export default pushFileToDraftRelease;
+export default updateDraftReleaseTars;
