@@ -2,7 +2,7 @@ services:
   tpr-generator:
     image: tpr-generator:${TPR_IMAGE_VERSION}
     ports:
-      - '${HOST_PORT:-2999}:3000'
+      - '127.0.0.1:${HOST_PORT:-2999}:3000'
     volumes:
       - tpr-generator-data:${TPR_ROOT_VOLUME_PATH}
     secrets:
