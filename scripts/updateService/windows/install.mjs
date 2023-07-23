@@ -1,5 +1,5 @@
 import {Service} from 'node-windows';
-import {windowsServiceName, serviceScriptPath} from './windowsServiceConstants.mjs';
+import {windowsServiceName, serviceScriptPath} from './constants.mjs';
 
 // Note: you can read logs in the Windows Event Viewer.
 

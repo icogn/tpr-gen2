@@ -6,5 +6,6 @@
 website/.next
 website/build
 
-# Created by node-windows image update service while it is installed
-scripts/imageUpdateService/daemon
+# Created by node-windows image update service while it is installed. Seems to
+# be the same dir as serviceImpl.mjs
+scripts/updateService/daemon

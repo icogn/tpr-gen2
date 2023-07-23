@@ -33,7 +33,7 @@ async function processChannel({owner, repo, channelKey}) {
   }
 
   if (semver.gt(latestReleaseInfo.version, containerInfo.imageVersion)) {
-    console.log(`should replace "${channelKey}"`);
+    logEvent(`should replace to tag "${latestReleaseInfo.version}"`);
 
     const result = spawnSync(
       getYarnCommand(),
@@ -56,7 +56,7 @@ async function processChannel({owner, repo, channelKey}) {
 }
 
 async function doServiceIteration() {
-  console.log('\nDoing iteration');
+  console.log('Doing iteration');
 
   const channelsConfig = await fetchChannels();
   const channelKeys = Object.keys(channelsConfig);
@@ -75,6 +75,9 @@ async function doServiceIteration() {
       );
     }
   }
+
+  logEvent('Iteration done');
+  console.log('Iteration done');
 
   setTimeout(doServiceIteration, 5 * 60_000);
 }
