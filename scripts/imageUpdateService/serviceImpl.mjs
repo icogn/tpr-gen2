@@ -92,6 +92,10 @@ async function prepareLogger() {
     logEvent = str => {
       eventLog.info(str);
     };
+  } else {
+    logEvent = str => {
+      console.log(str);
+    };
   }
 }
 
