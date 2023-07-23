@@ -6,11 +6,15 @@ import {
   serviceNameNoExt,
 } from './linuxServiceShared.mjs';
 
+// Note: you may need to add sudo when you run this. If it still fails, you can
+// always do the steps in this file manually.
+
 function main() {
   if (!fs.existsSync(serviceFilePath)) {
-    throw new Error(
+    console.error(
       `Expected to file service file at "${serviceFilePath}", but found nothing. Service likely already uninstalled.`,
     );
+    process.exit(1);
   }
 
   // Stop service
@@ -23,6 +27,8 @@ function main() {
   // Notify of changes
   const resultReload = spawnSync('systemctl', ['daemon-reload'], {stdio: 'inherit'});
   checkThrowSpawnSyncResult(resultReload);
+
+  console.log(`Service "${serviceNameNoExt}" uninstalled.`);
 }
 
 main();
