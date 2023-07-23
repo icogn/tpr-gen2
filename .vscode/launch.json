@@ -46,6 +46,14 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}\\scripts\\updateService\\serviceImpl.mjs",
       "autoAttachChildProcesses": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug linux install",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}\\scripts\\updateService\\linux\\install.mjs",
+      "autoAttachChildProcesses": true
     }
   ]
 }

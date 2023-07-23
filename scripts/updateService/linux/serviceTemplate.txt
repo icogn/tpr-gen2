@@ -1,0 +1,13 @@
+[Unit]
+Description=hello_env.jss - making your environment variables rad
+Documentation=https://google.com
+After=network.target
+
+[Service]
+Environment=TPR_IS_SERVICE=true
+Type=simple
+ExecStart={ExecStart}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
