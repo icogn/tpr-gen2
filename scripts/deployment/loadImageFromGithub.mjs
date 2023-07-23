@@ -33,6 +33,11 @@ async function loadImageFromGithub(version, tmpDir) {
     channelKey,
     exactVersion: version,
   });
+  if (!latestReleaseInfo) {
+    throw new Error(
+      `latestReleaseInfo for channelKey "${channelKey}" was null, but expected a value.`,
+    );
+  }
 
   // Check that image from github is supported in terms of deploy hash. Bail if
   // not compatible. Some way to alert this from service?
