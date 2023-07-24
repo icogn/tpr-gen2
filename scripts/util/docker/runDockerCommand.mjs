@@ -22,10 +22,13 @@ export function rmContainerById(containerId) {
 
 function imageExists(image) {
   const result = spawnSync('docker', ['images', '-q', image], spawnOptions);
-  if (result.status !== 0) {
+  const error = result.stderr ? result.stderr.toString() : '';
+  if (error) {
+    throw new Error(error);
+  } else if (result.status !== 0) {
     throw new Error(`Failed to check if docker image "${image}" exists.`);
   }
-  return Boolean(result.stdout.toString());
+  return Boolean(result.stdout && result.stdout.toString());
 }
 
 export function rmImageByTagIfExists(tag) {

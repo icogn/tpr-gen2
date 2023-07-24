@@ -17,7 +17,7 @@ function createWebsiteEnvFiles() {
   const envObj = prepareWebsiteEnv({imageVersion: getVersion()});
 
   // Write as env file
-  const envFileContents = createEnvFileContents();
+  const envFileContents = createEnvFileContents(envObj);
   fs.writeFileSync(envFilePath, envFileContents);
 
   // Write as json file

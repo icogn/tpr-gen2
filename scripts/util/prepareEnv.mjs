@@ -4,6 +4,10 @@ import getChannelString from './getChannelString.mjs';
 import getRootDir from './getRootDir.mjs';
 import {getVersion} from './getVersion.mjs';
 
+function asLinuxPath(inputPath) {
+  return inputPath.replace(/\\/g, '/');
+}
+
 export function prepareWebsiteEnv({imageVersion}) {
   if (!imageVersion) {
     throw new Error('imageVersion provided to prepareWebsiteEnv was falsy.');
@@ -19,16 +23,14 @@ export function prepareWebsiteEnv({imageVersion}) {
     rootVolumePath = '/app/volume';
   }
   const channel = getChannelString();
-
   const channelVolumePath = path.join(rootVolumePath, channel);
 
   return {
     TPR_GIT_COMMIT: getGitCommitHash(),
-    TPR_ROOT_VOLUME_PATH: rootVolumePath,
-    // TPR_CHANNEL: getChannelString(),
-    TPR_CHANNEL_VOLUME_PATH: channelVolumePath,
     TPR_IMAGE_VERSION: imageVersion,
-    DATABASE_URL: 'file:' + path.join(channelVolumePath, 'db/app.db'),
+    TPR_ROOT_VOLUME_PATH: asLinuxPath(rootVolumePath),
+    TPR_CHANNEL_VOLUME_PATH: asLinuxPath(channelVolumePath),
+    DATABASE_URL: asLinuxPath('file:' + path.join(channelVolumePath, 'db/app.db')),
   };
 }
 
@@ -41,9 +43,14 @@ export function prepareDeployEnv(optionsIn) {
   };
 }
 
+// These env variables are forwarded to the website from electron. We leave some
+// out since they will be calculated by electron and then provided to the
+// website. For example, electron determines the volume path and passes that
+// info to the website.
 export function prepareElectronEnv() {
   return {
     TPR_GIT_COMMIT: getGitCommitHash(),
+    TPR_IMAGE_VERSION: getVersion(),
   };
 }
 
