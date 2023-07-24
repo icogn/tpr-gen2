@@ -18,6 +18,9 @@ if (process.env.NODE_ENV === 'production') {
   const rootDir = searchUpFileTree(__dirname, currPath => {
     return fs.existsSync(path.join(currPath, '.git'));
   });
+  if (!rootDir) {
+    throw new Error('Failed to find rootDir');
+  }
   const envObjFilePath = path.join(rootDir, 'tmp/website.env.json');
 
   const contents = fs.readFileSync(envObjFilePath).toString();
