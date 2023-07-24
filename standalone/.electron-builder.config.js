@@ -3,7 +3,7 @@ const path = require('node:path');
 let prepareEnv;
 
 async function importMjsFiles() {
-  prepareEnv = await import('../scripts/prepareEnv.mjs');
+  prepareEnv = await import('../scripts/util/prepareEnv.mjs');
 }
 
 importMjsFiles();

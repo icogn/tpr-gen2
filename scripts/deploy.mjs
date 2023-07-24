@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'fs-extra';
 import {spawnSync} from 'node:child_process';
 import getRootDir from './util/getRootDir.mjs';
-import {applyEnv, prepareDeployEnv} from './prepareEnv.mjs';
+import {applyEnv, prepareDeployEnv} from './util/prepareEnv.mjs';
 import yargs from 'yargs';
 import semver from 'semver';
 import singleImageWithTagExists from './util/docker/singleImageWithTagExists.mjs';

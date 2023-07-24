@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import getRootDir from './getRootDir.mjs';
-import {createEnvFileContents, prepareWebsiteEnv} from '../prepareEnv.mjs';
+import {createEnvFileContents, prepareWebsiteEnv} from './prepareEnv.mjs';
 import {getVersion} from './getVersion.mjs';
 
 // Note: it is okay to not pass in the version since the image should only ever

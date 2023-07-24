@@ -1,8 +1,8 @@
 import path from 'node:path';
-import getGitCommitHash from './util/getGitCommitHash.mjs';
-import getChannelString from './util/getChannelString.mjs';
-import getRootDir from './util/getRootDir.mjs';
-import {getVersion} from './util/getVersion.mjs';
+import getGitCommitHash from './getGitCommitHash.mjs';
+import getChannelString from './getChannelString.mjs';
+import getRootDir from './getRootDir.mjs';
+import {getVersion} from './getVersion.mjs';
 
 export function prepareWebsiteEnv({imageVersion}) {
   if (!imageVersion) {

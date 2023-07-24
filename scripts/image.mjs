@@ -6,7 +6,7 @@ import path from 'node:path';
 import fs from 'fs-extra';
 import {spawnSync} from 'node:child_process';
 import getRootDir from './util/getRootDir.mjs';
-import {prepareWebsiteEnv, applyEnv} from './prepareEnv.mjs';
+import {prepareWebsiteEnv, applyEnv} from './util/prepareEnv.mjs';
 import {getVersion} from './util/getVersion.mjs';
 import createWebsiteEnvFiles from './util/createWebsiteEnvFiles.mjs';
 import envFromYaml from './deployment/envFromYaml.mjs';

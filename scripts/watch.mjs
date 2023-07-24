@@ -10,7 +10,7 @@ import path from 'path';
 // import getRootDir from './util/getRootDir.mjs';
 // import getGitCommitHash from './util/getGitCommitHash.mjs';
 // import getChannelString from './util/getChannelString.mjs';
-import {prepareWebsiteEnv} from './prepareEnv.mjs';
+import {prepareWebsiteEnv} from './util/prepareEnv.mjs';
 import {getVersion} from './util/getVersion.mjs';
 
 // const rootDir = getRootDir();
@@ -155,20 +155,12 @@ function setupPreloadPackageWatcher({ws}) {
 function getNextServerDevelopmentEnv() {
   // Root volume path is always the same when starting the development next
   // server from this file.
-  // const rootVolumePath = path.join(rootDir, 'volume');
-  // const channel = getChannelString();
-
-  // const channelVolumePath = path.join(rootVolumePath, channel);
 
   return {
     ...process.env,
     ...prepareWebsiteEnv({
       imageVersion: getVersion(),
     }),
-    // TPR_ROOT_VOLUME_PATH: rootVolumePath,
-    // TPR_CHANNEL_VOLUME_PATH: channelVolumePath,
-    // TPR_GIT_COMMIT: getGitCommitHash(),
-    // DATABASE_URL: 'file:' + path.join(channelVolumePath, 'db/app.db'),
   };
 }
 

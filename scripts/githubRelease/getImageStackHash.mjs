@@ -3,7 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import yaml from 'yaml';
 import getRootDir from '../util/getRootDir.mjs';
-import {prepareDeployEnv} from '../prepareEnv.mjs';
+import {prepareDeployEnv} from '../util/prepareEnv.mjs';
 
 const rootDir = getRootDir();
 const stackFilePath = path.join(rootDir, 'compose.yml');
