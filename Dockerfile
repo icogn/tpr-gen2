@@ -30,6 +30,9 @@ FROM node:lts-alpine as website
 WORKDIR /
 COPY --from=next-server-build /buildDir/website/.next/standalone /app/website-standalone
 
+COPY ./scripts/website/startServer.mjs /app/startServer.mjs
+COPY ./tmp/website.env.json /app/website.env.json
+
 # Copy in Dockerfile for debugging purposes.
 COPY Dockerfile .
 
@@ -39,4 +42,5 @@ COPY Dockerfile .
 # Get Internal Server Error unless specify HOSTNAME as 127.0.0.1. Default
 # 'localhost' does not work
 ENV HOSTNAME=127.0.0.1
-ENTRYPOINT ["node", "/app/website-standalone/website/server.js"]
+# ENTRYPOINT ["node", "/app/website-standalone/website/server.js"]
+ENTRYPOINT ["node", "/app/startServer.mjs"]
