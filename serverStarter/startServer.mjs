@@ -17,7 +17,8 @@ const result = spawnSync('node', ['/app/website-standalone/website/server.js'], 
     // TODO: this should come from an actual secret
     NEXTAUTH_SECRET: 'publiclyVisibleNextAuthSecret',
     // This appears to be used to build the call on the client-side.
-    NEXTAUTH_URL: 'http://localhost:2999',
+    // NEXTAUTH_URL: 'http://localhost:2999',
+    NEXTAUTH_URL: 'http://new.trackerp.net',
   },
 });
 
