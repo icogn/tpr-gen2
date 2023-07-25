@@ -1,8 +1,14 @@
+import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
+import prepareDb from './prepareDb.mjs';
 
 console.log('process.cwd()');
 console.log(process.cwd());
 
+const envObj = JSON.parse(fs.readFileSync('/app/website.env.json').toString());
+await prepareDb(envObj);
+
+// Spawn website
 const result = spawnSync('node', ['/app/website-standalone/website/server.js'], {
   stdio: 'inherit',
   env: {
