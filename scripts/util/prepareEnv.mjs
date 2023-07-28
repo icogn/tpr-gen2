@@ -1,6 +1,5 @@
 import path from 'node:path';
 import getGitCommitHash from './getGitCommitHash.mjs';
-import getChannelString from './getChannelString.mjs';
 import getRootDir from './getRootDir.mjs';
 import {getVersion} from './getVersion.mjs';
 
@@ -22,15 +21,11 @@ export function prepareWebsiteEnv({imageVersion}) {
   } else {
     rootVolumePath = '/app/volume';
   }
-  const channel = getChannelString();
-  const channelVolumePath = path.join(rootVolumePath, channel);
 
   return {
     TPR_GIT_COMMIT: getGitCommitHash(),
     TPR_IMAGE_VERSION: imageVersion,
     TPR_ROOT_VOLUME_PATH: asLinuxPath(rootVolumePath),
-    TPR_CHANNEL_VOLUME_PATH: asLinuxPath(channelVolumePath),
-    DATABASE_URL: asLinuxPath('file:' + path.join(channelVolumePath, 'db/app.db')),
   };
 }
 

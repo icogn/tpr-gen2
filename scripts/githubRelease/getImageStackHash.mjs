@@ -10,11 +10,11 @@ const stackFilePath = path.join(rootDir, 'compose.yml');
 
 const envKeysWhichCanBeIgnored = ['TPR_GIT_COMMIT', 'TPR_IMAGE_VERSION', 'HOST_PORT'];
 
-// Note: any env variables in the secrets are expected to map to 'undefined'
-// since the secrets are not part of `prepareDeployEnv`. This is fine since we
-// don't care about the exact value of the secret. Shouldn't matter either way
-// since changing the compose file will result in a different hash, so we don't
-// need to manually add these keys to the ignore list.
+// Note: any env variables in the secrets and configs are expected to map to
+// 'undefined' since the secrets and configs are not part of `prepareDeployEnv`.
+// This is fine since we don't care about the exact value. Shouldn't matter
+// either way since changing the compose file will result in a different hash,
+// so we don't need to manually add these keys to the ignore list.
 function strImportantEnvValues(ymlContent) {
   const deployEnv = prepareDeployEnv();
 

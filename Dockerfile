@@ -23,6 +23,15 @@ COPY ./tmp/website.env ./tmp/website.env
 
 RUN node scripts/compile.mjs --from-dockerfile
 
+# Do serverStarterStuff
+WORKDIR /serverStarterBuildDir
+COPY .yarn ./.yarn
+COPY .yarnrc.yml .
+COPY ./serverStarter/package.json ./package.json
+RUN yarn
+COPY ./serverStarter .
+
+
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
 # ENTRYPOINT ["node", ".next/standalone/server.js"]
 
@@ -34,7 +43,7 @@ COPY --from=next-server-build /buildDir/node_modules/prisma /app/node_modules/pr
 COPY --from=next-server-build /buildDir/node_modules/@prisma/engines /app/node_modules/@prisma/engines
 
 COPY ./website/prisma /app/prisma
-COPY ./serverStarter /app/serverStarter
+COPY --from=next-server-build /serverStarterBuildDir /app/serverStarter
 COPY ./tmp/website.env.json /app/website.env.json
 
 # Copy in Dockerfile for debugging purposes.

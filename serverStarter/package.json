@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "dependencies": {
+    "semver": "^7.5.4"
+  },
+  "packageManager": "yarn@3.5.1"
+}

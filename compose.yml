@@ -5,12 +5,19 @@ services:
       - '127.0.0.1:${HOST_PORT:-2999}:3000'
     volumes:
       - tpr-generator-data:${TPR_ROOT_VOLUME_PATH}
+    configs:
+      - deploy_config
     secrets:
       - abc_secret
 
 volumes:
   tpr-generator-data:
     driver: local
+
+configs:
+  deploy_config:
+    file: ./secrets/deploy-config.json
+    name: deploy_config-${DEPLOY_CONFIG_HASH}
 
 secrets:
   abc_secret:
