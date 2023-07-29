@@ -8,6 +8,7 @@ function calcCanShowLoginBtn() {
   try {
     const hdrs = headers();
     const host = hdrs.get('x-forwarded-host');
+    console.log(`host is ${host}`);
     const hostname = host ? host.split(':')[0] : '';
     console.log(`hostname is "${hostname}"`);
 
