@@ -7,6 +7,8 @@ import {redirect} from 'next/navigation';
 function calcCanShowLoginBtn() {
   try {
     const hdrs = headers();
+    console.log('headers:');
+    console.log([...hdrs.entries()]);
     const host = hdrs.get('x-forwarded-host');
     console.log(`host is ${host}`);
     const hostname = host ? host.split(':')[0] : '';
