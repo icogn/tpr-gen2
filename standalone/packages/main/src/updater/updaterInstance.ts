@@ -58,6 +58,7 @@ export function setupUpdater() {
   // differential downloads currently, so for now we will see the progress bar
   // twice.
   ipcMain.on(IpcChannel.downloadUpdate, () => {
+    startupUpdateReadyEmitter.update('');
     startDownload();
   });
 
@@ -81,7 +82,9 @@ async function checkForUpdateOnChannel(channelInfo: ChannelInfo, isStartupCheck 
   const onUpdateNotAvailable = (info: UpdateInfo) => {
     console.log('WWWWW updater -- update-not-available:');
     console.log(info);
-    if (!isStartupCheck && webContents && !webContents.isDestroyed()) {
+    if (isStartupCheck) {
+      startupUpdateReadyEmitter.update('');
+    } else if (webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.updateNotAvailable, info);
     }
   };
@@ -126,7 +129,9 @@ async function checkForUpdateOnChannel(channelInfo: ChannelInfo, isStartupCheck 
     console.log('WWWWW updater -- appUpdater error:');
     console.log(error);
     console.log(message);
-    if (!isStartupCheck && webContents && !webContents.isDestroyed()) {
+    if (isStartupCheck) {
+      startupUpdateReadyEmitter.update('');
+    } else if (webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.updaterError, error, message);
     }
   };

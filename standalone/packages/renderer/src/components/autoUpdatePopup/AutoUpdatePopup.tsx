@@ -1,22 +1,29 @@
 import {askStartupUpdateReady} from '#preload';
 import {useState, useEffect} from 'react';
+import styles from './AutoUpdatePopup.module.css';
 
 function AutoUpdatePopup() {
-  const [show, setShow] = useState(false);
+  const [version, setVersion] = useState(false);
 
   useEffect(() => {
     askStartupUpdateReady().then((response: string) => {
       console.log(`Reponse back for startup update ready: "${response}"`);
       if (response) {
-        setShow(true);
+        setVersion(response);
       }
     });
   }, []);
 
-  if (!show) {
+  if (!version) {
     return null;
   }
-  return <div>in autoupdate popup</div>;
+  return (
+    <div className={styles.root}>
+      <div>{`Update for version "${version}" is ready.`}</div>
+      <button>Update Now</button>
+      {/* <button>X</button> */}
+    </div>
+  );
 }
 
 export default AutoUpdatePopup;
