@@ -1,4 +1,5 @@
 import './App.css';
+import AutoUpdatePopup from './components/autoUpdatePopup/AutoUpdatePopup';
 import PreparingPage from './components/preparing/PreparingPage';
 import VersionChangeContainer from './components/versionChange/VersionChangeContainer';
 
@@ -11,6 +12,7 @@ function App() {
       ></iframe>
       <PreparingPage />
       <VersionChangeContainer />
+      <AutoUpdatePopup />
     </>
   );
 }

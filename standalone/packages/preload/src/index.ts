@@ -61,6 +61,17 @@ export function askWebsiteReady(): Promise<boolean> {
   });
 }
 
+export function askStartupUpdateReady(): Promise<string> {
+  return new Promise(resolve => {
+    ipcRenderer.once(IpcChannel.startupUpdateReady, (event, version: string) => {
+      resolve(version);
+    });
+
+    console.log('ASKING IF STARTUPUPDATE READY');
+    ipcRenderer.send(IpcChannel.askStartupUpdateReady);
+  });
+}
+
 export function cancelAutoInstall() {
   ipcRenderer.send(IpcChannel.cancelAutoinstall);
 }

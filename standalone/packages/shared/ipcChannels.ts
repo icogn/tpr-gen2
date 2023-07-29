@@ -16,4 +16,8 @@ export enum IpcChannel {
   downloadProgress = 'tpr:download-progress',
   updateCancelled = 'tpr:update-cancelled',
   updaterError = 'tpr:updaterError',
+
+  askStartupUpdateReady = 'tpr:ask-startup-update-ready',
+  startupUpdateReady = 'tpr:startup-update-ready',
+  triggerStartupUpdate = 'tpr:trigger-startup-update',
 }

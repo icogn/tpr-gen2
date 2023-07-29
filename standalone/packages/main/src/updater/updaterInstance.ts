@@ -5,6 +5,7 @@ import {IpcChannel} from '../../../shared/ipcChannels';
 import isObjectChannelInfo from '../../../shared/isObjectChannelInfo';
 import type {ChannelInfo} from '../../../shared/types';
 import type {UpdateInfo, AppUpdater, ProgressInfo, UpdateDownloadedEvent} from 'electron-updater';
+import basicEventEmitter from '../util/basicEventEmitter';
 
 // Ideally we would allow the user to cancel the update once it starts doing it.
 // Starting an update download and canceling it twice in a row causes all of the
@@ -17,6 +18,8 @@ import type {UpdateInfo, AppUpdater, ProgressInfo, UpdateDownloadedEvent} from '
 let customAppUpdater: AppUpdater | null = null;
 let webContents: WebContents | null = null;
 let removeListeners: (() => void) | null;
+
+export const startupUpdateReadyEmitter = basicEventEmitter<string>();
 
 export function handleCheckForUpdatesRequest(
   maybeChannelInfo: unknown,
@@ -97,7 +100,14 @@ async function checkForUpdateOnChannel(channelInfo: ChannelInfo, isStartupCheck 
     console.log('WWWWW updater -- update-downloaded:');
     console.log(event);
     if (isStartupCheck) {
+      startupUpdateReadyEmitter.update(event.version);
+
       // Show popup on the UI
+      // Send event to UI.
+      //
+      // Notification needs to happen at the renderer level. This makes sense
+      // since it is 100% related to standalone only, and also we don't want to
+      // lose it on page change.
     } else if (webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.updateDownloaded, event);
       customAppUpdater?.quitAndInstall(false);
