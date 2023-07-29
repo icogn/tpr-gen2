@@ -18,17 +18,36 @@ let customAppUpdater: AppUpdater | null = null;
 let webContents: WebContents | null = null;
 let removeListeners: (() => void) | null;
 
+export function handleCheckForUpdatesRequest(
+  maybeChannelInfo: unknown,
+  event?: Electron.IpcMainEvent,
+) {
+  console.log('in checkForUpdates');
+  if (!isObjectChannelInfo(maybeChannelInfo)) {
+    return;
+  }
+  const channelInfo = maybeChannelInfo as ChannelInfo;
+
+  if (event) {
+    webContents = event.sender;
+    checkForUpdateOnChannel(channelInfo, false);
+  } else {
+    webContents = null;
+    checkForUpdateOnChannel(channelInfo, true);
+  }
+}
+
+function startDownload() {
+  if (customAppUpdater) {
+    customAppUpdater.downloadUpdate();
+  } else {
+    console.error('Attempted to download update when customAppUpdater was null.');
+  }
+}
+
 export function setupUpdater() {
   ipcMain.on(IpcChannel.checkForUpdates, (event, maybeChannelInfo: unknown) => {
-    console.log('in checkForUpdates');
-    if (!isObjectChannelInfo(maybeChannelInfo)) {
-      return;
-    }
-    const channelInfo = maybeChannelInfo as ChannelInfo;
-
-    webContents = event.sender;
-
-    checkForUpdateOnChannel(channelInfo);
+    handleCheckForUpdatesRequest(maybeChannelInfo, event);
   });
 
   // Note: differential downloads are expected to always fail when swapping
@@ -36,11 +55,7 @@ export function setupUpdater() {
   // differential downloads currently, so for now we will see the progress bar
   // twice.
   ipcMain.on(IpcChannel.downloadUpdate, () => {
-    if (customAppUpdater) {
-      customAppUpdater.downloadUpdate();
-    } else {
-      console.error('Attempted to download update when customAppUpdater was null.');
-    }
+    startDownload();
   });
 
   ipcMain.on(IpcChannel.cancelUpdater, () => {
@@ -48,14 +63,14 @@ export function setupUpdater() {
   });
 }
 
-async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
+async function checkForUpdateOnChannel(channelInfo: ChannelInfo, isStartupCheck = false) {
   cancelUpdater();
 
   customAppUpdater = createCustomAppUpdater(channelInfo);
 
   const onCheckingForUpdate = () => {
     console.log('WWWWW updater -- checking-for-update');
-    if (webContents && !webContents.isDestroyed()) {
+    if (!isStartupCheck && webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.checkingForUpdate);
     }
   };
@@ -63,7 +78,7 @@ async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
   const onUpdateNotAvailable = (info: UpdateInfo) => {
     console.log('WWWWW updater -- update-not-available:');
     console.log(info);
-    if (webContents && !webContents.isDestroyed()) {
+    if (!isStartupCheck && webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.updateNotAvailable, info);
     }
   };
@@ -71,7 +86,9 @@ async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
   const onUpdateAvailable = (info: UpdateInfo) => {
     console.log('WWWWW updater -- update-available:');
     console.log(info);
-    if (webContents && !webContents.isDestroyed()) {
+    if (isStartupCheck) {
+      startDownload();
+    } else if (webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.updateAvailable, info);
     }
   };
@@ -79,17 +96,18 @@ async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
   const onUpdateDownloaded = (event: UpdateDownloadedEvent) => {
     console.log('WWWWW updater -- update-downloaded:');
     console.log(event);
-    if (webContents && !webContents.isDestroyed()) {
+    if (isStartupCheck) {
+      // Show popup on the UI
+    } else if (webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.updateDownloaded, event);
+      customAppUpdater?.quitAndInstall(false);
     }
-
-    customAppUpdater?.quitAndInstall(false);
   };
 
   const onDownloadProgress = (info: ProgressInfo) => {
     console.log('WWWWW updater -- download-progress:');
     console.log(info);
-    if (webContents && !webContents.isDestroyed()) {
+    if (!isStartupCheck && webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.downloadProgress, info);
     }
   };
@@ -98,7 +116,7 @@ async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
     console.log('WWWWW updater -- appUpdater error:');
     console.log(error);
     console.log(message);
-    if (webContents && !webContents.isDestroyed()) {
+    if (!isStartupCheck && webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.updaterError, error, message);
     }
   };

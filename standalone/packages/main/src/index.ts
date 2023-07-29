@@ -10,11 +10,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import forkWebsiteProcess from './website/forkWebsiteProcess';
 import processManager from './processManager';
-import prepareDb from './prisma/prepareDb';
+import prepareDb, {dbPreparedEmitter} from './prisma/prepareDb';
 import setupEventsIpc from './setupEventsIpc';
 // import {checkForUpdateOnChannel} from './updater/updaterInstance';
 // import {UpdateEndpoint, createCustomAppUpdater} from './updater/CustomAppUpdater';
-import {setupUpdater} from './updater/updaterInstance';
+import {handleCheckForUpdatesRequest, setupUpdater} from './updater/updaterInstance';
+import {fetchBranchesConfig} from './updater/branches';
+import {channelKey} from './channel';
 
 const volumePath = path.join(app.getPath('userData'), 'volume');
 console.log(`volumePath:${volumePath}`);
@@ -69,6 +71,27 @@ async function onAppReady() {
   // trying to check for updates on startup. This is because CusotmAppUpdater
   // doLoadAutoUpdater throws an error for non-Windows and non-Mac.
   setupUpdater();
+
+  dbPreparedEmitter.onceOrPrev(async (success: boolean | undefined) => {
+    if (success != null) {
+      const configs = await fetchBranchesConfig();
+      console.log('branchesConfig:');
+      console.log(configs);
+      for (let i = 0; i < configs.length; i++) {
+        const channelInfo = configs[i];
+        if (
+          (channelInfo.channel === '' && channelKey === 'stable') ||
+          channelInfo.channel === channelKey
+        ) {
+          // TODO: this should not run if an update check request has already
+          // been received from the renderer.
+
+          handleCheckForUpdatesRequest(channelInfo);
+          break;
+        }
+      }
+    }
+  });
 
   // checkForUpdateOnChannel({
   //   name: 'Dev',
