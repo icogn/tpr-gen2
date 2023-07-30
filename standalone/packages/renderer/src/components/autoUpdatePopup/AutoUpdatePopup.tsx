@@ -1,4 +1,4 @@
-import {askStartupUpdateReady} from '#preload';
+import {askStartupUpdateReady, triggerStartupUpdate} from '#preload';
 import {useState, useEffect} from 'react';
 import styles from './AutoUpdatePopup.module.css';
 
@@ -14,13 +14,17 @@ function AutoUpdatePopup() {
     });
   }, []);
 
+  const handleClick = () => {
+    triggerStartupUpdate();
+  };
+
   if (!version) {
     return null;
   }
   return (
     <div className={styles.root}>
       <div>{`Update for version "${version}" is ready.`}</div>
-      <button>Update Now</button>
+      <button onClick={handleClick}>Update Now</button>
       {/* <button>X</button> */}
     </div>
   );

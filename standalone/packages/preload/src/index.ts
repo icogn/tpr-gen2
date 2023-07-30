@@ -76,6 +76,10 @@ export function cancelAutoInstall() {
   ipcRenderer.send(IpcChannel.cancelAutoinstall);
 }
 
+export function triggerStartupUpdate() {
+  ipcRenderer.send(IpcChannel.triggerStartupUpdate);
+}
+
 ipcRenderer.on(IpcChannel.checkingForUpdate, () => {
   console.log('renderer received checkingForUpdate');
   updaterEmitterInner.emit('checking-for-update');

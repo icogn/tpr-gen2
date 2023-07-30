@@ -3,7 +3,7 @@ import {websiteReadyEmitter} from './website/forkWebsiteProcess';
 import {dbPreparedEmitter} from './prisma/prepareDb';
 import {autoUpdater} from 'electron-updater';
 import {IpcChannel} from '../../shared/ipcChannels';
-import {startupUpdateReadyEmitter} from './updater/updaterInstance';
+import {startupUpdateReadyEmitter, triggerStartupUpdateInstall} from './updater/updaterInstance';
 
 function setupEventsIpc() {
   ipcMain.on(IpcChannel.askDatabaseReady, event => {
@@ -28,6 +28,10 @@ function setupEventsIpc() {
         event.sender.send(IpcChannel.startupUpdateReady, version);
       }
     });
+  });
+
+  ipcMain.on(IpcChannel.triggerStartupUpdate, () => {
+    triggerStartupUpdateInstall();
   });
 
   ipcMain.on(IpcChannel.cancelAutoinstall, () => {

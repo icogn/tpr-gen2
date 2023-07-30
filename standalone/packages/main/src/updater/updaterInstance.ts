@@ -16,6 +16,7 @@ import basicEventEmitter from '../util/basicEventEmitter';
 // https://github.com/electron-userland/electron-builder/issues/5795
 
 let customAppUpdater: AppUpdater | null = null;
+let isStartupCheck = false;
 let webContents: WebContents | null = null;
 let removeListeners: (() => void) | null;
 
@@ -33,10 +34,12 @@ export function handleCheckForUpdatesRequest(
 
   if (event) {
     webContents = event.sender;
-    checkForUpdateOnChannel(channelInfo, false);
+    isStartupCheck = false;
+    checkForUpdateOnChannel(channelInfo);
   } else {
     webContents = null;
-    checkForUpdateOnChannel(channelInfo, true);
+    isStartupCheck = true;
+    checkForUpdateOnChannel(channelInfo);
   }
 }
 
@@ -45,6 +48,16 @@ function startDownload() {
     customAppUpdater.downloadUpdate();
   } else {
     console.error('Attempted to download update when customAppUpdater was null.');
+  }
+}
+
+export function triggerStartupUpdateInstall() {
+  if (!isStartupCheck) {
+    console.error('Attempted to install startup update when isStartupCheck was false');
+  } else if (!customAppUpdater) {
+    console.error('Attempted to install startup update when customAppUpdater was null.');
+  } else {
+    customAppUpdater.quitAndInstall(false);
   }
 }
 
@@ -67,7 +80,7 @@ export function setupUpdater() {
   });
 }
 
-async function checkForUpdateOnChannel(channelInfo: ChannelInfo, isStartupCheck = false) {
+async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
   cancelUpdater();
 
   customAppUpdater = createCustomAppUpdater(channelInfo);
