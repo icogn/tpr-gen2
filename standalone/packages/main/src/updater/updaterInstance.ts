@@ -17,6 +17,7 @@ import basicEventEmitter from '../util/basicEventEmitter';
 
 let customAppUpdater: AppUpdater | null = null;
 let isStartupCheck = false;
+let desiredVersion = '';
 let webContents: WebContents | null = null;
 let removeListeners: (() => void) | null;
 
@@ -24,7 +25,8 @@ export const startupUpdateReadyEmitter = basicEventEmitter<string>();
 
 export function handleCheckForUpdatesRequest(
   maybeChannelInfo: unknown,
-  event?: Electron.IpcMainEvent,
+  event: Electron.IpcMainEvent | null,
+  specificVersion?: string,
 ) {
   console.log('in checkForUpdates');
   if (!isObjectChannelInfo(maybeChannelInfo)) {
@@ -33,12 +35,16 @@ export function handleCheckForUpdatesRequest(
   const channelInfo = maybeChannelInfo as ChannelInfo;
 
   if (event) {
+    // not startup check
     webContents = event.sender;
     isStartupCheck = false;
+    desiredVersion = '';
     checkForUpdateOnChannel(channelInfo);
   } else {
+    // startup check
     webContents = null;
     isStartupCheck = true;
+    desiredVersion = specificVersion || '';
     checkForUpdateOnChannel(channelInfo);
   }
 }
@@ -106,7 +112,11 @@ async function checkForUpdateOnChannel(channelInfo: ChannelInfo) {
     console.log('WWWWW updater -- update-available:');
     console.log(info);
     if (isStartupCheck) {
-      startDownload();
+      if (!desiredVersion || desiredVersion === info.version) {
+        startDownload();
+      } else {
+        startupUpdateReadyEmitter.update('');
+      }
     } else if (webContents && !webContents.isDestroyed()) {
       webContents.send(IpcChannel.updateAvailable, info);
     }

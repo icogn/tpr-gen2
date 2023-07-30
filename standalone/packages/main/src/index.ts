@@ -73,23 +73,37 @@ async function onAppReady() {
   setupUpdater();
 
   dbPreparedEmitter.onceOrPrev(async (success: boolean | undefined) => {
-    if (success != null) {
-      const configs = await fetchBranchesConfig();
-      console.log('branchesConfig:');
-      console.log(configs);
-      for (let i = 0; i < configs.length; i++) {
-        const channelInfo = configs[i];
-        if (
-          (channelInfo.channel === '' && channelKey === 'stable') ||
-          channelInfo.channel === channelKey
-        ) {
-          // TODO: this should not run if an update check request has already
-          // been received from the renderer.
+    try {
+      if (success != null) {
+        const configs = await fetchBranchesConfig();
+        console.log('branchesConfig:');
+        console.log(configs);
+        for (let i = 0; i < configs.length; i++) {
+          const channelInfo = configs[i];
+          if (
+            (channelInfo.channel === '' && channelKey === 'stable') ||
+            channelInfo.channel === channelKey
+          ) {
+            // TODO: this should not run if an update check request has already
+            // been received from the renderer.
 
-          handleCheckForUpdatesRequest(channelInfo);
-          break;
+            // check with website what the version is
+            let specificVersion = '';
+
+            if (channelInfo.site) {
+              const res = await fetch(`${channelInfo.site}/api/website-version`);
+              const asJson = await res.json();
+              console.log(asJson);
+              specificVersion = asJson.data || '';
+            }
+
+            handleCheckForUpdatesRequest(channelInfo, null, specificVersion);
+            break;
+          }
         }
       }
+    } catch (e) {
+      console.error(e);
     }
   });
 
