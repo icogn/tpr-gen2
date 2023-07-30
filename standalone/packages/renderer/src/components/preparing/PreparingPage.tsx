@@ -1,11 +1,12 @@
 import {useState, useEffect} from 'react';
-import {cancelAutoInstall, askDbReady, askWebsiteReady} from '#preload';
+// import {cancelAutoInstall, askDbReady, askWebsiteReady} from '#preload';
+import {askDbReady, askWebsiteReady} from '#preload';
 import FullScreenPopup from '../FullScreenPopup';
 
-function handleCancelAutoInstall() {
-  console.log('cancel auto install');
-  cancelAutoInstall();
-}
+// function handleCancelAutoInstall() {
+//   console.log('cancel auto install');
+//   cancelAutoInstall();
+// }
 
 function PreparingPage() {
   const [dbReady, setDbReady] = useState('pending');
@@ -32,7 +33,7 @@ function PreparingPage() {
         <div>PreparingPage</div>
         <div>dbReady: {dbReady}</div>
         <div>websiteReady: {websiteReady}</div>
-        <button onClick={handleCancelAutoInstall}>cancelAutoInstall</button>
+        {/* <button onClick={handleCancelAutoInstall}>cancelAutoInstall</button> */}
       </FullScreenPopup>
     );
   }
