@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react';
 import styles from './AutoUpdatePopup.module.css';
 
 function AutoUpdatePopup() {
-  const [version, setVersion] = useState(false);
+  const [version, setVersion] = useState('');
 
   useEffect(() => {
     askStartupUpdateReady().then((response: string) => {
