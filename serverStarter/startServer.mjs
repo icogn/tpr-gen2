@@ -1,7 +1,7 @@
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
-import {spawnSync} from 'node:child_process';
-import prepareVolumeAndEnv from './prepareVolumeAndEnv.mjs';
 import prepareDb from './prepareDb.mjs';
+import prepareVolumeAndEnv from './prepareVolumeAndEnv.mjs';
 
 console.log('process.cwd()');
 console.log(process.cwd());

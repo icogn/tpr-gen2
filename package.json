@@ -4,7 +4,8 @@
     "serverStarter",
     "standalone",
     "standalone/packages/renderer",
-    "website"
+    "website",
+    "packages/*"
   ],
   "scripts": {
     "build": " yarn build:website && yarn build:main && yarn build:preload && yarn build:renderer",
@@ -45,6 +46,9 @@
     "electron": "25.2.0",
     "electron-builder": "24.4.0",
     "eslint": "8.40.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "9.13.0",
     "fs-extra": "^11.1.1",
     "glob": "^10.2.7",
@@ -55,6 +59,7 @@
     "node-windows": "^1.0.0-beta.8",
     "nodejs-file-downloader": "^4.12.1",
     "playwright": "^1.36.0",
+    "prettier": "^3.0.3",
     "prisma": "latest",
     "semver": "^7.5.4",
     "simple-git-hooks": "2.8.1",

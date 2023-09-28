@@ -1,0 +1,5 @@
+{
+  "name": "lint",
+  "private": true,
+  "packageManager": "yarn@3.5.1"
+}

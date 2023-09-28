@@ -58,7 +58,7 @@ function applyEnvValues(envObj, config, channelKey) {
   };
 
   if (config.byChannelKey && config.byChannelKey[channelKey]) {
-    const {env} = config.byChannelKey[channelKey];
+    const { env } = config.byChannelKey[channelKey];
     if (env && typeof env === 'object') {
       Object.keys(env).forEach(key => {
         if (validKeys[key]) {
@@ -92,7 +92,7 @@ function prepareVolumeAndEnv(envObj) {
   if (!testingMigration) {
     const channelVolumePath = path.join(envObj.TPR_ROOT_VOLUME_PATH, 'chn', channelKey);
     if (!fs.existsSync(channelVolumePath)) {
-      fs.mkdirSync(channelVolumePath, {recursive: true});
+      fs.mkdirSync(channelVolumePath, { recursive: true });
     }
     envObj.TPR_CHANNEL_VOLUME_PATH = channelVolumePath;
   }

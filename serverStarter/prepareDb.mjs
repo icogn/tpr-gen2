@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
-import {PrismaClient} from '/app/website-standalone/node_modules/@prisma/client/index.js';
+import { spawnSync } from 'node:child_process';
+import { PrismaClient } from '/app/website-standalone/node_modules/@prisma/client/index.js';
 
 const schemaPath = '/app/prisma/schema.prisma';
 
@@ -58,7 +58,7 @@ async function prepareDb(envObj) {
     needsMigration = true;
     // Prisma for whatever reason has trouble if the database file does not exist
     // yet, so just touch it here.
-    fs.mkdirSync(path.dirname(dbPath), {recursive: true});
+    fs.mkdirSync(path.dirname(dbPath), { recursive: true });
     fs.closeSync(fs.openSync(dbPath, 'w'));
   } else {
     try {
