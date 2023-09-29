@@ -34,7 +34,8 @@ function getChannelKeyFromVersion(version) {
   const prerelease = semver.prerelease(version);
   if (prerelease == null) {
     return 'stable';
-  } else if (prerelease.length > 0) {
+  }
+  if (prerelease.length > 0) {
     const prerelease0 = prerelease[0];
     if (prerelease0 === 'stable') {
       throw new Error(
@@ -47,12 +48,13 @@ function getChannelKeyFromVersion(version) {
     }
 
     return prerelease[0];
-  } else {
-    throw new Error(`semver parsed prerelease but has 0 length. Version was "${version}".`);
   }
+  throw new Error(`semver parsed prerelease but has 0 length. Version was "${version}".`);
 }
 
+// Mutates envObj
 function applyEnvValues(envObj, config, channelKey) {
+  /* eslint-disable no-param-reassign */
   const validKeys = {
     NEXTAUTH_URL: true,
   };
@@ -71,6 +73,7 @@ function applyEnvValues(envObj, config, channelKey) {
 
 // Mutates envObj
 function prepareVolumeAndEnv(envObj) {
+  /* eslint-disable no-param-reassign */
   console.log('in prepareVolumeAndEnv');
   validateInitialEnvObj(envObj);
 
@@ -83,7 +86,7 @@ function prepareVolumeAndEnv(envObj) {
   console.log(config);
   applyEnvValues(envObj, config, channelKey);
 
-  let testingMigration = false;
+  const testingMigration = false;
 
   if (config.testMigration && config.testMigration.enabled) {
     console.log('testMigration is enabled.');
@@ -98,7 +101,7 @@ function prepareVolumeAndEnv(envObj) {
   }
 
   envObj.DATABASE_URL = asLinuxPath(
-    'file:' + path.join(envObj.TPR_CHANNEL_VOLUME_PATH, 'db/app.db'),
+    `file:${path.join(envObj.TPR_CHANNEL_VOLUME_PATH, 'db/app.db')}`,
   );
   console.log('envObj');
   console.log(envObj);

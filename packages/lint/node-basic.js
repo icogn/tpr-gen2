@@ -5,6 +5,7 @@ module.exports = {
     node: true,
   },
   extends: [
+    'airbnb-base',
     // Prettier goes last to turn off any rules related to formatting since they will conflict.
     'prettier',
   ],
