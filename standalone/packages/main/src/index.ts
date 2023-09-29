@@ -2,21 +2,21 @@ process.env.DEBUG = 'electron-builder';
 
 // Note: it is important that `setEnv` be the very first import.
 import './setEnv';
-import {app, ipcMain} from 'electron';
+import { app, ipcMain } from 'electron';
 import './security-restrictions';
-import {restoreOrCreateWindow} from '/@/mainWindow';
-import {platform} from 'node:process';
+import { restoreOrCreateWindow } from '/@/mainWindow';
+import { platform } from 'node:process';
 import fs from 'node:fs';
 import path from 'node:path';
 import forkWebsiteProcess from './website/forkWebsiteProcess';
 import processManager from './processManager';
-import prepareDb, {dbPreparedEmitter} from './prisma/prepareDb';
+import prepareDb, { dbPreparedEmitter } from './prisma/prepareDb';
 import setupEventsIpc from './setupEventsIpc';
 // import {checkForUpdateOnChannel} from './updater/updaterInstance';
 // import {UpdateEndpoint, createCustomAppUpdater} from './updater/CustomAppUpdater';
-import {handleCheckForUpdatesRequest, setupUpdater} from './updater/updaterInstance';
-import {fetchBranchesConfig} from './updater/branches';
-import {channelKey} from './channel';
+import { handleCheckForUpdatesRequest, setupUpdater } from './updater/updaterInstance';
+import { fetchBranchesConfig } from './updater/branches';
+import { channelKey } from './channel';
 
 const volumePath = path.join(app.getPath('userData'), 'volume');
 console.log(`volumePath:${volumePath}`);

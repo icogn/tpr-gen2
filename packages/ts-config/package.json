@@ -1,0 +1,9 @@
+{
+  "name": "@tpr/ts-config",
+  "private": true,
+  "packageManager": "yarn@3.5.1",
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
+    "typescript": "5.0.4"
+  }
+}

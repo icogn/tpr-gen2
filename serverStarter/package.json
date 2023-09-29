@@ -3,5 +3,13 @@
   "dependencies": {
     "semver": "^7.5.4"
   },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@tpr/lint": "workspace:^",
+    "@tpr/ts-config": "workspace:^",
+    "typescript": "5.0.4"
+  },
   "packageManager": "yarn@3.5.1"
 }
