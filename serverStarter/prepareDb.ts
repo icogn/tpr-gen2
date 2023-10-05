@@ -11,8 +11,6 @@ const qePath = '/app/node_modules/@prisma/engines/libquery_engine-linux-musl-ope
 
 const latestMigration = '20230511161150_user_adjustments';
 
-// let prisma: PrismaClientClass;
-// let prisma: Prisma.PrismaClient;
 let prisma: Prisma.PrismaClient;
 
 async function initPrismaClient(dbUrl: string) {
