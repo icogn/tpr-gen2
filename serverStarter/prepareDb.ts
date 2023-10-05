@@ -1,7 +1,7 @@
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
-import { PrismaClient } from '/app/website-standalone/node_modules/@prisma/client/index.js';
+import { EnvObject } from './serverStarterTypes';
 
 const schemaPath = '/app/prisma/schema.prisma';
 
@@ -11,9 +11,20 @@ const qePath = '/app/node_modules/@prisma/engines/libquery_engine-linux-musl-ope
 
 const latestMigration = '20230511161150_user_adjustments';
 
-let prisma;
+// let prisma: PrismaClientClass;
+// let prisma: Prisma.PrismaClient;
+let prisma: Prisma.PrismaClient;
 
-function initPrismaClient(dbUrl) {
+async function initPrismaClient(dbUrl: string) {
+  // Dealing with typescript here is a bit of a pain. This is why we have
+  // `importPath` as a variable and why we cast to `Prisma.PrismaClient`
+  // manually rather than defining the type of the import's return. This means
+  // typescript will allow us to pass anything to the constructor, but it is
+  // either difficult or impossible to get this to work.
+
+  const importPath = '/app/website-standalone/node_modules/@prisma/client/index.js';
+  const { PrismaClient } = await import(importPath);
+
   prisma = new PrismaClient({
     log: [
       'info',
@@ -29,18 +40,18 @@ function initPrismaClient(dbUrl) {
         url: dbUrl,
       },
     },
-    // see https://github.com/prisma/prisma/discussions/5200
-    // @ts-expect-error internal prop
+    // //see https://github.com/prisma/prisma/discussions/5200
+    // //@ts-expect-error internal prop
     __internal: {
       engine: {
         binaryPath: qePath,
       },
     },
-  });
+  }) as Prisma.PrismaClient;
 }
 
-async function prepareDb(envObj) {
-  initPrismaClient(envObj.DATABASE_URL);
+async function prepareDb(envObj: EnvObject) {
+  await initPrismaClient(envObj.DATABASE_URL);
 
   let dbPath = envObj.DATABASE_URL;
   if (dbPath.startsWith('file:')) {
@@ -62,7 +73,9 @@ async function prepareDb(envObj) {
     fs.closeSync(fs.openSync(dbPath, 'w'));
   } else {
     try {
-      const latest = await prisma.$queryRaw`select * from _prisma_migrations order by finished_at`;
+      const latest = await prisma.$queryRaw<
+        Record<string, unknown>[]
+      >`select * from _prisma_migrations order by finished_at`;
       needsMigration = latest[latest.length - 1]?.migration_name !== latestMigration;
     } catch (e) {
       console.error(e);

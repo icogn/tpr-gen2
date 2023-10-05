@@ -1,3 +1,11 @@
 const config = require('@tpr/lint/node-basic');
 
-module.exports = config;
+const { parserOptions, ...other } = config;
+
+module.exports = {
+  ...other,
+  parserOptions: {
+    ...parserOptions,
+    project: require.resolve('./tsconfig.json'),
+  },
+};

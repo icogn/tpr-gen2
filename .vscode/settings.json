@@ -1,3 +1,7 @@
 {
-  "eslint.validate": ["typescript"]
+  // Have typescript errors show in VSCode. Typescript compilation errors cannot
+  // be handled by ESLint, but VSCode has the below built-in setting for showing
+  // the errors. This needs to be handled through a tsc command (not eslint) if
+  // we want the errors to show when running some sort of manual "lint" command.
+  "typescript.validate.enable": true
 }

@@ -2,10 +2,11 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import prepareDb from './prepareDb';
 import prepareVolumeAndEnv from './prepareVolumeAndEnv';
+import { EnvObject } from './serverStarterTypes';
 
 console.log('process.cwd()');
 console.log(process.cwd());
-const envObj = JSON.parse(fs.readFileSync('/app/website.env.json').toString());
+const envObj: EnvObject = JSON.parse(fs.readFileSync('/app/website.env.json').toString());
 prepareVolumeAndEnv(envObj);
 
 await prepareDb(envObj);

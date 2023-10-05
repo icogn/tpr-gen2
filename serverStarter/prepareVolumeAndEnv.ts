@@ -1,12 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import semver from 'semver';
+import { EnvObject, JsonObject } from './serverStarterTypes';
 
-function asLinuxPath(inputPath) {
+function asLinuxPath(inputPath: string) {
   return inputPath.replace(/\\/g, '/');
 }
 
-function validateInitialEnvObj(envObj) {
+function validateInitialEnvObj(envObj: EnvObject) {
   if (!envObj || typeof envObj !== 'object') {
     throw new Error('envObj is not an object!');
   }
@@ -16,7 +17,7 @@ function validateInitialEnvObj(envObj) {
   }
 }
 
-function validateFinalEnvObj(finalEnvObj) {
+function validateFinalEnvObj(finalEnvObj: EnvObject) {
   if (!finalEnvObj || typeof finalEnvObj !== 'object') {
     throw new Error('envObj is not an object!');
   }
@@ -26,7 +27,7 @@ function validateFinalEnvObj(finalEnvObj) {
   }
 }
 
-function getChannelKeyFromVersion(version) {
+function getChannelKeyFromVersion(version: string) {
   if (semver.parse(version) == null) {
     throw new Error(`semver failed to parse "${version}".`);
   }
@@ -47,15 +48,15 @@ function getChannelKeyFromVersion(version) {
       );
     }
 
-    return prerelease[0];
+    return String(prerelease[0]);
   }
   throw new Error(`semver parsed prerelease but has 0 length. Version was "${version}".`);
 }
 
 // Mutates envObj
-function applyEnvValues(envObj, config, channelKey) {
+function applyEnvValues(envObj: EnvObject, config: JsonObject, channelKey: string) {
   /* eslint-disable no-param-reassign */
-  const validKeys = {
+  const validKeys: { [key: string]: boolean } = {
     NEXTAUTH_URL: true,
   };
 
@@ -72,7 +73,7 @@ function applyEnvValues(envObj, config, channelKey) {
 }
 
 // Mutates envObj
-function prepareVolumeAndEnv(envObj) {
+function prepareVolumeAndEnv(envObj: EnvObject) {
   /* eslint-disable no-param-reassign */
   console.log('in prepareVolumeAndEnv');
   validateInitialEnvObj(envObj);

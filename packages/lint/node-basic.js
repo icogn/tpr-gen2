@@ -6,6 +6,7 @@ module.exports = {
   },
   extends: [
     'airbnb-base',
+    'airbnb-typescript/base',
     // Prettier goes last to turn off any rules related to formatting since they will conflict.
     'prettier',
   ],

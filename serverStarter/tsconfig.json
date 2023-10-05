@@ -2,5 +2,6 @@
   "extends": "@tpr/ts-config/tsconfig.node-electron.json",
   "compilerOptions": {
     "outDir": "./dist"
-  }
+  },
+  "include": ["**/*.ts", "../../node_modules/.prisma/client/index.d.ts"]
 }
