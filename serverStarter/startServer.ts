@@ -1,5 +1,5 @@
-import { spawnSync } from 'node:child_process';
-import fs from 'node:fs';
+import { spawnSync } from 'child_process';
+import fs from 'fs';
 import prepareDb from './prepareDb';
 import prepareVolumeAndEnv from './prepareVolumeAndEnv';
 import { EnvObject } from './serverStarterTypes';

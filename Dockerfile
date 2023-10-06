@@ -27,9 +27,18 @@ RUN node scripts/compile.mjs --from-dockerfile
 WORKDIR /serverStarterBuildDir
 COPY .yarn ./.yarn
 COPY .yarnrc.yml .
-COPY ./serverStarter/package.json ./package.json
+# COPY ./serverStarter/package.json ./package.json
+# RUN yarn
+# COPY ./serverStarter .
+COPY ./serverStarter/secondPackage.json ./package.json
+COPY ./packages/lint ./packages/lint
+COPY ./packages/ts-config ./packages/ts-config
+COPY ./serverStarter ./packages/serverStarter
 RUN yarn
-COPY ./serverStarter .
+WORKDIR /serverStarterBuildDir/packages/serverStarter
+RUN yarn build
+RUN rm -r node_modules
+RUN yarn workspaces focus --production
 
 
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
@@ -43,7 +52,9 @@ COPY --from=next-server-build /buildDir/node_modules/prisma /app/node_modules/pr
 COPY --from=next-server-build /buildDir/node_modules/@prisma/engines /app/node_modules/@prisma/engines
 
 COPY ./website/prisma /app/prisma
-COPY --from=next-server-build /serverStarterBuildDir /app/serverStarter
+# COPY --from=next-server-build /serverStarterBuildDir /app/serverStarter
+COPY --from=next-server-build /serverStarterBuildDir/packages/serverStarter/node_modules /app/serverStarter/node_modules
+COPY --from=next-server-build /serverStarterBuildDir/packages/serverStarter/dist /app/serverStarter/dist
 COPY ./tmp/website.env.json /app/website.env.json
 
 # Copy in Dockerfile for debugging purposes.
@@ -56,4 +67,5 @@ COPY Dockerfile .
 # 'localhost' does not work
 ENV HOSTNAME=127.0.0.1
 # ENTRYPOINT ["node", "/app/website-standalone/website/server.js"]
-ENTRYPOINT ["node", "/app/serverStarter/startServer.mjs"]
+# ENTRYPOINT ["node", "/app/serverStarter/startServer.mjs"]
+ENTRYPOINT ["node", "/app/serverStarter/dist/startServer.js"]

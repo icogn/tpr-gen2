@@ -1,5 +1,8 @@
 {
   "private": true,
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "dependencies": {
     "semver": "^7.5.4"
   },
@@ -9,6 +12,8 @@
   "devDependencies": {
     "@tpr/lint": "workspace:^",
     "@tpr/ts-config": "workspace:^",
+    "@types/node": "^20.8.2",
+    "@types/semver": "^7.5.3",
     "typescript": "5.0.4"
   },
   "packageManager": "yarn@3.5.1"
