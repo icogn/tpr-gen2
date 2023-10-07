@@ -3456,6 +3456,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"docker-entrypoint-c3047c@workspace:packages/docker-entrypoint":
+  version: 0.0.0-use.local
+  resolution: "docker-entrypoint-c3047c@workspace:packages/docker-entrypoint"
+  dependencies:
+    "@tpr/lint": "workspace:^"
+    "@tpr/ts-config": "workspace:^"
+    "@types/node": ^20.8.2
+    "@types/semver": ^7.5.3
+    semver: ^7.5.4
+    typescript: 5.0.4
+  languageName: unknown
+  linkType: soft
+
 "doctrine@npm:^2.1.0":
   version: 2.1.0
   resolution: "doctrine@npm:2.1.0"
@@ -7893,19 +7906,6 @@ __metadata:
   checksum: e0aba4dca2fc9fe74ae1baf38dbd99190e1945445a241ba646290f2176cdb2032281a76443b02ccf0caf30da5657d510746506368889a593b9835a497fc0732e
   languageName: node
   linkType: hard
-
-"serverStarter-78df8f@workspace:serverStarter":
-  version: 0.0.0-use.local
-  resolution: "serverStarter-78df8f@workspace:serverStarter"
-  dependencies:
-    "@tpr/lint": "workspace:^"
-    "@tpr/ts-config": "workspace:^"
-    "@types/node": ^20.8.2
-    "@types/semver": ^7.5.3
-    semver: ^7.5.4
-    typescript: 5.0.4
-  languageName: unknown
-  linkType: soft
 
 "set-blocking@npm:^2.0.0":
   version: 2.0.0

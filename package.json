@@ -1,7 +1,6 @@
 {
   "private": true,
   "workspaces": [
-    "serverStarter",
     "standalone",
     "standalone/packages/renderer",
     "website",

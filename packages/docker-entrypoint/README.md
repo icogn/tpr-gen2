@@ -1,4 +1,4 @@
-# serverStarter
+# docker-entrypoint
 
 - yarn plugin "workspace-tools" was added so we can install only production dependencies for this package for the docker build by using `yarn workspaces focus --production`
 

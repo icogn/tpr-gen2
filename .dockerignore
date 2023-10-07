@@ -10,4 +10,4 @@ website/build
 # be the same dir as serviceImpl.mjs
 scripts/updateService/daemon
 
-serverStarter/dist
+packages/docker-entrypoint/dist
