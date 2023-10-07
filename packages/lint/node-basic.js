@@ -11,6 +11,7 @@ module.exports = {
     'prettier',
   ],
   plugins: ['import', 'prettier'],
+  ignorePatterns: ['**/node_modules/**', '**/dist/**'],
   rules: {
     // Prettier formatting is set in the .prettierrc file at the repo root
     'prettier/prettier': ['error', {}, { usePrettierrc: true }],
