@@ -3,5 +3,5 @@
   "compilerOptions": {
     "outDir": "./dist"
   },
-  "include": ["**/*.ts", "../../node_modules/.prisma/client/index.d.ts"]
+  "include": ["src/**/*.ts", "../../node_modules/.prisma/client/index.d.ts"]
 }
