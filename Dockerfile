@@ -68,4 +68,4 @@ COPY Dockerfile .
 ENV HOSTNAME=127.0.0.1
 # ENTRYPOINT ["node", "/app/website-standalone/website/server.js"]
 # ENTRYPOINT ["node", "/app/serverStarter/startServer.mjs"]
-ENTRYPOINT ["node", "/app/docker-entrypoint/dist/startServer.js"]
+ENTRYPOINT ["node", "/app/docker-entrypoint/dist/index.js"]

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import semver from 'semver';
-import { EnvObject, JsonObject } from './serverStarterTypes';
+import { EnvObject, JsonObject } from './dockerEntrypointTypes';
 
 function asLinuxPath(inputPath: string) {
   return inputPath.replace(/\\/g, '/');

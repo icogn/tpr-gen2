@@ -1,8 +1,8 @@
 import { spawnSync } from 'child_process';
 import fs from 'fs';
+import { EnvObject } from './dockerEntrypointTypes';
 import prepareDb from './prepareDb';
 import prepareVolumeAndEnv from './prepareVolumeAndEnv';
-import { EnvObject } from './serverStarterTypes';
 
 async function main() {
   console.log('process.cwd()');
