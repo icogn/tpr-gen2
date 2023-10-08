@@ -1,82 +1,172 @@
+'use client';
+
 import clsx from 'clsx';
 import styles from './SharedSettingsPage.module.css';
 import DemoSlider from './DemoSlider';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { useState } from 'react';
 
 function SharedSettingsPage() {
+  const [tabIndex, setTabIndex] = useState(0);
+
+  const handleTabChange = (e: React.SyntheticEvent, newIndex: number) => {
+    setTabIndex(newIndex);
+  };
+
   return (
     <div className="flex justify-center">
       <div style={{ maxWidth: '1100px', width: '100%' }}>
-        <Box>
-          <Select
-            label="Logic Rules:"
-            options={['Glitchless', 'Glitched', 'No Logic']}
-            labelSameLine
-          />
-        </Box>
-        <div className="flex">
-          <Box title="Access Options">
-            <Select
-              label="Hyrule Castle Requirements"
-              options={['Open', 'Fused Shadows', 'Mirror Shards', 'All Dungeons', 'Vanilla']}
-              defaultValue="Vanilla"
-            />
-            <Select
-              label="Palace of Twilight Requirements"
-              options={['Open', 'Fused Shadows', 'Mirror Shards', 'Vanilla']}
-              defaultValue="Vanilla"
-            />
-            <Checkbox label="Open Faron Woods" />
-            <Checkbox label="Open Door of Time" />
-            <SubSection title="Dungeon Entrances" />
-            <Checkbox label="Lakebed does not require Water Bombs" />
-            <Checkbox label="Arbiter's does not require Bulblin Camp" />
-            <Checkbox label="Snowpeak does not require Reekfish" />
-            <Checkbox label="City does not require Skybook" />
-            <Select
-              label="Goron Mines Entrance"
-              options={['Closed', 'No Wrestling', 'Open']}
-            />
-            <Select
-              label="Temple of Time Entrance"
-              options={['Closed', 'Open Grove', 'Open']}
-            />
-          </Box>
-          <Box title="Shuffle">
-            <Checkbox label="Golden Bugs" />
-            <Checkbox label="Sky Characters" />
-            <Checkbox label="Gifts from NPCs" />
-            <Checkbox label="Shop Items" />
-            <Checkbox label="Hidden Skills" />
-            <Select
-              label="Poe Souls"
-              options={['Vanilla', 'Overworld', 'Dungeons', 'All']}
-            />
-            <DemoSlider
-              label="Agitha Rewards"
-              min={0}
-              max={24}
-            />
-            {/* <Checkbox label="Shuffle Poe Souls" /> */}
-          </Box>
-          <Box title="Dungeon Settings">
-            <Checkbox label="Unrequired Dungeons are Barren" />
-            <Select
-              label="Small Keys"
-              options={['Vanilla', 'Own Dungeon', 'Any Dungeon', 'Keysanity', 'Keysy']}
-            />
-            <Select
-              label="Big Keys"
-              options={['Vanilla', 'Own Dungeon', 'Any Dungeon', 'Keysanity', 'Keysy']}
-            />
-            <Select
-              label="Maps and Compasses"
-              options={['Vanilla', 'Own Dungeon', 'Any Dungeon', 'Anywhere', 'Start With']}
-            />
-          </Box>
+        <div className="mb-2 mx-1">
+          <div
+            className="flex justify-center rounded pb-1"
+            style={{ backgroundColor: '#eee' }}
+          >
+            <Tabs
+              value={tabIndex}
+              onChange={handleTabChange}
+            >
+              <Tab label="Main Rules" />
+              <Tab label="Excluded Checks" />
+              <Tab label="Starting Inventory" />
+              <Tab label="Other" />
+            </Tabs>
+          </div>
         </div>
+        <CustomTabPanel
+          index={0}
+          value={tabIndex}
+        >
+          <MainRulesPage />
+        </CustomTabPanel>
+        <CustomTabPanel
+          index={1}
+          value={tabIndex}
+        >
+          <ExcludedChecksPage />
+        </CustomTabPanel>
+        <CustomTabPanel
+          index={2}
+          value={tabIndex}
+        >
+          <StartingInventoryPage />
+        </CustomTabPanel>
+        <CustomTabPanel
+          index={3}
+          value={tabIndex}
+        >
+          <OtherPage />
+        </CustomTabPanel>
       </div>
     </div>
   );
+}
+
+type CustomTabPanelProps = {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+};
+
+function CustomTabPanel({ children, value, index, ...other }: CustomTabPanelProps) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {children}
+    </div>
+  );
+}
+
+function MainRulesPage() {
+  return (
+    <>
+      <Box>
+        <Select
+          label="Logic Rules:"
+          options={['Glitchless', 'Glitched', 'No Logic']}
+          labelSameLine
+        />
+      </Box>
+      <div className="flex">
+        <Box title="Access Options">
+          <Select
+            label="Hyrule Castle Requirements"
+            options={['Open', 'Fused Shadows', 'Mirror Shards', 'All Dungeons', 'Vanilla']}
+            defaultValue="Vanilla"
+          />
+          <Select
+            label="Palace of Twilight Requirements"
+            options={['Open', 'Fused Shadows', 'Mirror Shards', 'Vanilla']}
+            defaultValue="Vanilla"
+          />
+          <Checkbox label="Open Faron Woods" />
+          <Checkbox label="Open Door of Time" />
+          <SubSection title="Dungeon Entrances" />
+          <Checkbox label="Lakebed does not require Water Bombs" />
+          <Checkbox label="Arbiter's does not require Bulblin Camp" />
+          <Checkbox label="Snowpeak does not require Reekfish" />
+          <Checkbox label="City does not require Skybook" />
+          <Select
+            label="Goron Mines Entrance"
+            options={['Closed', 'No Wrestling', 'Open']}
+          />
+          <Select
+            label="Temple of Time Entrance"
+            options={['Closed', 'Open Grove', 'Open']}
+          />
+        </Box>
+        <Box title="Shuffle">
+          <Checkbox label="Golden Bugs" />
+          <Checkbox label="Sky Characters" />
+          <Checkbox label="Gifts from NPCs" />
+          <Checkbox label="Shop Items" />
+          <Checkbox label="Hidden Skills" />
+          <Select
+            label="Poe Souls"
+            options={['Vanilla', 'Overworld', 'Dungeons', 'All']}
+          />
+          <DemoSlider
+            label="Agitha Rewards"
+            min={0}
+            max={24}
+          />
+          {/* <Checkbox label="Shuffle Poe Souls" /> */}
+        </Box>
+        <Box title="Dungeon Settings">
+          <Checkbox label="Unrequired Dungeons are Barren" />
+          <Select
+            label="Small Keys"
+            options={['Vanilla', 'Own Dungeon', 'Any Dungeon', 'Keysanity', 'Keysy']}
+          />
+          <Select
+            label="Big Keys"
+            options={['Vanilla', 'Own Dungeon', 'Any Dungeon', 'Keysanity', 'Keysy']}
+          />
+          <Select
+            label="Maps and Compasses"
+            options={['Vanilla', 'Own Dungeon', 'Any Dungeon', 'Anywhere', 'Start With']}
+          />
+        </Box>
+      </div>
+    </>
+  );
+}
+
+function ExcludedChecksPage() {
+  return <Box>In excluded checks page</Box>;
+}
+
+function StartingInventoryPage() {
+  return <Box>In Starting Inventory page</Box>;
+}
+
+function OtherPage() {
+  return <Box>In Other page</Box>;
 }
 
 type BoxProps = {
