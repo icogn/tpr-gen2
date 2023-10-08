@@ -6,6 +6,7 @@ import DemoSlider from './DemoSlider';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useState } from 'react';
+import Button from '@mui/material/Button';
 
 function SharedSettingsPage() {
   const [tabIndex, setTabIndex] = useState(0);
@@ -86,11 +87,20 @@ function MainRulesPage() {
   return (
     <>
       <Box>
-        <Select
-          label="Logic Rules:"
-          options={['Glitchless', 'Glitched', 'No Logic']}
-          labelSameLine
-        />
+        <div className="flex pr-4">
+          <Select
+            label="Logic Rules:"
+            options={['Glitchless', 'Glitched', 'No Logic']}
+            labelSameLine
+          />
+          <Button
+            variant="contained"
+            disableElevation
+            sx={{ marginLeft: 'auto' }}
+          >
+            Load Preset
+          </Button>
+        </div>
       </Box>
       <div className="flex">
         <Box title="Access Options">
