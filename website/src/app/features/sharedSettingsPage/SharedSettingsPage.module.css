@@ -36,6 +36,10 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 
+.subsectionRoot.subsectionRootNoTopMargin {
+  margin-top: 0px;
+}
+
 .subsectionInner {
   padding: 2px 4px;
   color: rgba(255, 255, 255, 0.5);

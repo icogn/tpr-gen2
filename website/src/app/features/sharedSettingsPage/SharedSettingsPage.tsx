@@ -94,6 +94,10 @@ function MainRulesPage() {
       </Box>
       <div className="flex">
         <Box title="Access Options">
+          <SubSection
+            title="General"
+            noTopMargin
+          />
           <Select
             label="Hyrule Castle Requirements"
             options={['Open', 'Fused Shadows', 'Mirror Shards', 'All Dungeons', 'Vanilla']}
@@ -106,6 +110,7 @@ function MainRulesPage() {
           />
           <Checkbox label="Open Faron Woods" />
           <Checkbox label="Open Door of Time" />
+          <Checkbox label="Overworld Keysy" />
           <SubSection title="Dungeon Entrances" />
           <Checkbox label="Lakebed does not require Water Bombs" />
           <Checkbox label="Arbiter's does not require Bulblin Camp" />
@@ -166,7 +171,59 @@ function StartingInventoryPage() {
 }
 
 function OtherPage() {
-  return <Box>In Other page</Box>;
+  return (
+    <div className="flex">
+      <Box title="Timesavers">
+        <SubSection
+          title="Skips"
+          noTopMargin
+        />
+        <Checkbox label="Skip Prologue" />
+        <Checkbox label="Faron Twilight Cleared" />
+        <Checkbox label="Eldin Twilight Cleared" />
+        <Checkbox label="Lanayru Twilight Cleared" />
+        <Checkbox label="Skip Midna's Desperate Hour" />
+        <Checkbox label="Skip Minor Cutscenes" />
+        <SubSection title="Other" />
+        <Checkbox label="Fast Iron Boots" />
+        <Checkbox label="Fast Spinner" />
+        <Checkbox label="Quick Transform" />
+        <Checkbox label="Transform Anywhere" />
+        <Checkbox label="Instant Message Text" />
+        <Checkbox label="Unlock Map Regions" />
+      </Box>
+      <Box title="Shops & Rupees">
+        <Checkbox label="Shop Models Show the Replaced Item" />
+        <Checkbox label="Increase Wallet Capacity" />
+        <Checkbox label="First Malo Mart Donation Paid" />
+        <DemoSlider
+          label="Magic Armor Price"
+          min={0}
+          max={1000}
+          defaultValue={598}
+        />
+      </Box>
+      <Box title="Miscellaneous">
+        <Select
+          label="Hint Settings"
+          options={['None', '<New Stuff>', 'French Community S1']}
+          defaultValue="<New Stuff>"
+        />
+        <Select
+          label="Damage Multiplier"
+          options={['Glitchless', 'Glitched', 'No Logic']}
+        />
+        <Select
+          label="Item Scarcity"
+          options={['Vanilla', 'Minimal', 'Plentiful']}
+        />
+        <Select
+          label="Trap Item Frequency"
+          options={['None', 'Few', 'Many', 'Mayhem', 'Nightmare']}
+        />
+      </Box>
+    </div>
+  );
 }
 
 type BoxProps = {
@@ -239,11 +296,12 @@ function Select({ label, options, defaultValue = undefined, labelSameLine = fals
 
 type SubSectionProps = {
   title: string;
+  noTopMargin?: boolean;
 };
 
-function SubSection({ title }: SubSectionProps) {
+function SubSection({ title, noTopMargin = false }: SubSectionProps) {
   return (
-    <div className={styles.subsectionRoot}>
+    <div className={clsx(styles.subsectionRoot, noTopMargin && styles.subsectionRootNoTopMargin)}>
       <div className={clsx(styles.subsectionInner, 'text-sm')}>{title}</div>
     </div>
   );

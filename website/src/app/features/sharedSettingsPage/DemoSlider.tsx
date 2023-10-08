@@ -6,10 +6,12 @@ type DemoSliderProps = {
   label: string;
   min: number;
   max: number;
+  defaultValue?: number;
 };
 
-function DemoSlider({ label, min, max }: DemoSliderProps) {
-  const [value, setValue] = useState(String(min));
+function DemoSlider({ label, min, max, defaultValue = undefined }: DemoSliderProps) {
+  const defaultVal = String(defaultValue == null ? min : defaultValue);
+  const [value, setValue] = useState(defaultVal);
 
   return (
     <div className="py-1">
