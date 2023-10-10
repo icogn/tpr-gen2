@@ -7,6 +7,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useState } from 'react';
 import Button from '@mui/material/Button';
+// import ListPickerLeft from './ListPickerLeft';
+import Select from './Select';
 
 function SharedSettingsPage() {
   const [tabIndex, setTabIndex] = useState(0);
@@ -21,7 +23,7 @@ function SharedSettingsPage() {
         <div className="mb-2 mx-1">
           <div
             className="flex justify-center rounded pb-1"
-            style={{ backgroundColor: '#eee' }}
+            style={{ backgroundColor: '#202124' }}
           >
             <Tabs
               value={tabIndex}
@@ -176,8 +178,46 @@ function ExcludedChecksPage() {
   return <Box>In excluded checks page</Box>;
 }
 
+const startingInventory = [
+  'Shadow Crystal',
+  'Progressive Sword',
+  'Boomerang',
+  'Lantern',
+  'Slingshot',
+  'Progressive Fishing Rod',
+  'Iron Boots',
+  'Progressive Bow',
+  'Bomb Bag and Bombs',
+  'Giant Bomb Bag',
+  'Zora Armor',
+  'Progressive Clawshot',
+  "Auru's Memo",
+  "Ashei's Sketch",
+  'Spinner',
+  'Ball and Chain',
+  'Progressive Dominion Rod',
+  'Progressive Sky Book',
+  'Horse Call',
+  'Gate Keys',
+  'Empty Bottle',
+  'Progressive Hidden Skill',
+  'Magic Armor',
+  'Ordon Shield',
+  'Hylian Shield',
+  'Hawkeye',
+];
+
 function StartingInventoryPage() {
-  return <Box>In Starting Inventory page</Box>;
+  return <Box>In starting inventory page</Box>;
+  // return (
+  //   <Box>
+  //     <div>In Starting Inventory page</div>
+  //     <ListPickerLeft
+  //       items={startingInventory}
+  //       onAddClick={() => {}}
+  //     />
+  //   </Box>
+  // );
 }
 
 function OtherPage() {
@@ -264,43 +304,6 @@ function Checkbox({ label }: CheckboxProps) {
       />
       {label}
     </label>
-  );
-}
-
-type SelectProps = {
-  label: string;
-  options: string[];
-  defaultValue?: string;
-  labelSameLine?: boolean;
-};
-
-function Select({ label, options, defaultValue = undefined, labelSameLine = false }: SelectProps) {
-  return (
-    <div className="py-1">
-      <span
-        className={clsx(
-          labelSameLine ? styles.selectLabelSameLine : styles.selectLabelNotSameLine,
-          'leading-tight',
-        )}
-      >
-        {label}
-      </span>
-      <select
-        className={styles.select}
-        defaultValue={defaultValue}
-      >
-        {options.map(option => {
-          return (
-            <option
-              key={option}
-              value={option}
-            >
-              {option}
-            </option>
-          );
-        })}
-      </select>
-    </div>
   );
 }
 

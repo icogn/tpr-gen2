@@ -1,4 +1,5 @@
 import isEnvElectron from '@/util/isEnvElectron';
+import DarkThemeProvider from './features/sharedSettingsPage/DarkThemeProvider';
 import SharedSettingsPage from './features/sharedSettingsPage/SharedSettingsPage';
 
 export default function Home() {
@@ -15,7 +16,9 @@ export default function Home() {
         <div style={{ fontSize: '24px' }}>{'version: ' + process.env.TPR_IMAGE_VERSION}</div>
         <div>This is new junk text</div>
       </div>
-      <SharedSettingsPage />
+      <DarkThemeProvider>
+        <SharedSettingsPage />
+      </DarkThemeProvider>
     </main>
   );
 }
