@@ -3,14 +3,14 @@
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
-import {useState, useId} from 'react';
-import type {ChannelInfo} from '@/stateful/branches';
+import { useState, useId } from 'react';
+import type { ChannelInfo } from '@/stateful/branches';
 
 type ContainedClProps = {
   channels: ChannelInfo[];
 };
 
-function ContainedCl({channels}: ContainedClProps) {
+function ContainedCl({ channels }: ContainedClProps) {
   const btnId = useId();
   const menuId = useId();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -47,12 +47,12 @@ function ContainedCl({channels}: ContainedClProps) {
       >
         {channels.length > 0 ? (
           channels.map((channelInfo: ChannelInfo) => {
-            const {channel, name, latestVersion} = channelInfo;
+            const { channel, name, latestVersion } = channelInfo;
             return (
               <MenuItem
                 key={channel}
                 onClick={() => {
-                  window.top?.postMessage({type: 'changeToChannel', channelInfo}, '*');
+                  window.top?.postMessage({ type: 'changeToChannel', channelInfo }, '*');
                   handleClose();
                 }}
               >

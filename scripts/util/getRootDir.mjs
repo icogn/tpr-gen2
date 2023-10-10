@@ -1,5 +1,5 @@
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
+import { fileURLToPath } from 'node:url';
 import fs from 'fs-extra';
 import searchUpFileTree from './searchUpFileTree.mjs';
 

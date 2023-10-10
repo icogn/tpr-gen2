@@ -1,10 +1,10 @@
 // if baseUrl path doesn't ends with /, this path will be not prepended to passed pathname for new URL(input, base)
-import {URL} from 'node:url';
+import { URL } from 'node:url';
 import escapeRegExp from 'lodash.escaperegexp';
-import type {WindowsUpdateInfo} from 'builder-util-runtime';
-import {newError, safeStringifyJson} from 'builder-util-runtime';
-import type {ResolvedUpdateFileInfo, UpdateFileInfo, UpdateInfo} from 'electron-updater';
-import {load} from 'js-yaml';
+import type { WindowsUpdateInfo } from 'builder-util-runtime';
+import { newError, safeStringifyJson } from 'builder-util-runtime';
+import type { ResolvedUpdateFileInfo, UpdateFileInfo, UpdateInfo } from 'electron-updater';
+import { load } from 'js-yaml';
 
 interface UpdateInfoWithSha2 extends UpdateInfo {
   readonly sha2?: string;

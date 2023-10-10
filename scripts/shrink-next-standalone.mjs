@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'node:path';
-import {globSync} from 'glob';
-import {minify} from 'terser';
+import { globSync } from 'glob';
+import { minify } from 'terser';
 
 const standaloneDir = path.resolve('./website/.next/standalone');
 
@@ -9,7 +9,7 @@ function removeDevelopmentJsFiles() {
   console.log('Removing *.development.js files...');
   const devJsFileInput = path.join(standaloneDir, './**/*.development.js').replaceAll('\\', '/');
   // dot:true so we find the `.prisma` directory
-  const devJsFiles = globSync(devJsFileInput, {dot: true});
+  const devJsFiles = globSync(devJsFileInput, { dot: true });
   console.log(devJsFiles);
   devJsFiles.forEach(ff => {
     fs.rmSync(ff);
@@ -20,7 +20,7 @@ function removeDevelopmentJsFiles() {
 function findAllStandaloneFiles() {
   const b = path.join(standaloneDir, './**/*').replaceAll('\\', '/');
   // dot:true so we find the `.prisma` directory
-  return globSync(b, {dot: true});
+  return globSync(b, { dot: true });
 }
 
 async function processFiles(filePaths) {
@@ -46,7 +46,7 @@ async function _processFile(filePath, cb) {
 
 async function processJsFile(filePath) {
   await _processFile(filePath, async content => {
-    const minifiedContent = await minify(content, {mangle: false});
+    const minifiedContent = await minify(content, { mangle: false });
     return minifiedContent.code;
   });
 }

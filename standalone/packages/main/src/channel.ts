@@ -1,6 +1,6 @@
-import {app} from 'electron';
+import { app } from 'electron';
 import semver from 'semver';
-import type {ChannelInfo} from '../../shared/types';
+import type { ChannelInfo } from '../../shared/types';
 
 function computeChannelKey() {
   const appVersion = app.getVersion();
@@ -20,7 +20,7 @@ function computeChannelKey() {
 
 export const channelKey = computeChannelKey();
 
-export function channelInfoMatchesCurrentChannel({channel}: ChannelInfo) {
+export function channelInfoMatchesCurrentChannel({ channel }: ChannelInfo) {
   const channelKeyIn = channel === '' ? 'stable' : channel;
   return channelKeyIn === channelKey;
 }

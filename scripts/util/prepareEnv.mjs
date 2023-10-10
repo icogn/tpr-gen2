@@ -1,13 +1,13 @@
 import path from 'node:path';
 import getGitCommitHash from './getGitCommitHash.mjs';
 import getRootDir from './getRootDir.mjs';
-import {getVersion} from './getVersion.mjs';
+import { getVersion } from './getVersion.mjs';
 
 function asLinuxPath(inputPath) {
   return inputPath.replace(/\\/g, '/');
 }
 
-export function prepareWebsiteEnv({imageVersion}) {
+export function prepareWebsiteEnv({ imageVersion }) {
   if (!imageVersion) {
     throw new Error('imageVersion provided to prepareWebsiteEnv was falsy.');
   }

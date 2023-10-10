@@ -1,7 +1,7 @@
-import {fork} from 'node:child_process';
+import { fork } from 'node:child_process';
 import processManager from '../processManager';
-import {prismaEnvVars} from '../prisma/prismaConstants';
-import {serverJsDir, rootVolumePath, channelVolumePath} from '../paths';
+import { prismaEnvVars } from '../prisma/prismaConstants';
+import { serverJsDir, rootVolumePath, channelVolumePath } from '../paths';
 import pingWebsiteProcess from './pingWebsiteProcess';
 import basicEventEmitter from '../util/basicEventEmitter';
 

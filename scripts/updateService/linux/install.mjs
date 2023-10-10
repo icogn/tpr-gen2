@@ -1,7 +1,7 @@
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
+import { fileURLToPath } from 'node:url';
 import fs from 'fs-extra';
-import {spawnSync} from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import {
   checkThrowSpawnSyncResult,
   serviceDir,
@@ -61,11 +61,11 @@ function main() {
   fs.writeFileSync(serviceFilePath, serviceContents);
 
   // Notify of changes
-  const resultReload = spawnSync('systemctl', ['daemon-reload'], {stdio: 'inherit'});
+  const resultReload = spawnSync('systemctl', ['daemon-reload'], { stdio: 'inherit' });
   checkThrowSpawnSyncResult(resultReload);
 
   // Start service
-  const resultStart = spawnSync('systemctl', ['start', serviceNameNoExt], {stdio: 'inherit'});
+  const resultStart = spawnSync('systemctl', ['start', serviceNameNoExt], { stdio: 'inherit' });
   checkThrowSpawnSyncResult(resultStart);
 }
 

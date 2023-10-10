@@ -1,6 +1,6 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 // import {cancelAutoInstall, askDbReady, askWebsiteReady} from '#preload';
-import {askDbReady, askWebsiteReady} from '#preload';
+import { askDbReady, askWebsiteReady } from '#preload';
 import FullScreenPopup from '../FullScreenPopup';
 
 // function handleCancelAutoInstall() {

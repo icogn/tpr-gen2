@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import * as bcrypt from 'bcrypt';
-import {z} from 'zod';
+import { z } from 'zod';
 
 const UserSchema = z.object({
   email: z.string().trim().email().max(100),
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   // Fail if we have any users already.
   const numUsersInDb = await prisma.user.count();
   if (numUsersInDb > 0) {
-    return new Response(JSON.stringify({error: 'Denied'}));
+    return new Response(JSON.stringify({ error: 'Denied' }));
   }
 
   const body: User = await req.json();
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   // const { success, error, data } = UserSchema.safeParse(body);
   const result = UserSchema.safeParse(body);
   if (!result.success) {
-    return new Response(JSON.stringify({error: result.error}));
+    return new Response(JSON.stringify({ error: result.error }));
   }
 
   const data = result.data;
@@ -35,6 +35,6 @@ export async function POST(req: Request) {
     },
   });
 
-  const {password: _password, id: _id, ...safeUser} = user;
-  return new Response(JSON.stringify({data: safeUser}));
+  const { password: _password, id: _id, ...safeUser } = user;
+  return new Response(JSON.stringify({ data: safeUser }));
 }

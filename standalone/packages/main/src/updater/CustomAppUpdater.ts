@@ -1,7 +1,7 @@
-import {URL} from 'node:url';
-import type {AppUpdater, ResolvedUpdateFileInfo} from 'electron-updater';
-import {NsisUpdater, MacUpdater, Provider, CancellationToken} from 'electron-updater';
-import type {XElement, ReleaseNoteInfo} from 'builder-util-runtime';
+import { URL } from 'node:url';
+import type { AppUpdater, ResolvedUpdateFileInfo } from 'electron-updater';
+import { NsisUpdater, MacUpdater, Provider, CancellationToken } from 'electron-updater';
+import type { XElement, ReleaseNoteInfo } from 'builder-util-runtime';
 import {
   type AllPublishOptions,
   type UpdateInfo,
@@ -11,7 +11,7 @@ import {
   parseXml,
   HttpError,
 } from 'builder-util-runtime';
-import type {ProviderRuntimeOptions} from 'electron-updater/out/providers/Provider';
+import type { ProviderRuntimeOptions } from 'electron-updater/out/providers/Provider';
 import * as semver from 'semver';
 import {
   getChannelFilename,
@@ -20,8 +20,8 @@ import {
   parseUpdateInfo,
   resolveFiles,
 } from './updaterUtil';
-import type {ChannelInfo} from '../../../shared/types';
-import {channelInfoMatchesCurrentChannel} from '../channel';
+import type { ChannelInfo } from '../../../shared/types';
+import { channelInfoMatchesCurrentChannel } from '../channel';
 
 const hrefRegExp = /\/tag\/([^/]+)$/;
 
@@ -115,7 +115,7 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
 
     const feed = parseXml(feedXml);
 
-    const {latestRelease, tag} = await this.getTagAndReleaseFromFeed(
+    const { latestRelease, tag } = await this.getTagAndReleaseFromFeed(
       targetChannel,
       feed,
       feedXml,
@@ -206,7 +206,7 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
     feed: XElement,
     feedXml: string,
     cancellationToken: CancellationToken,
-  ): Promise<{tag: string | null; latestRelease: XElement | null}> {
+  ): Promise<{ tag: string | null; latestRelease: XElement | null }> {
     // Note the below line will THROW with the 3rd param as the message if the
     // element was not found.
     feed.element('entry', false, 'No published versions on GitHub');
@@ -274,13 +274,17 @@ class CustomUpdaterProvider extends BaseGitHubProvider<GithubUpdateInfo> {
             this.baseApiUrl,
           );
     try {
-      const rawData = await this.httpRequest(url, {Accept: 'application/json'}, cancellationToken);
+      const rawData = await this.httpRequest(
+        url,
+        { Accept: 'application/json' },
+        cancellationToken,
+      );
       if (rawData == null) {
         return null;
       }
 
       const releaseInfo: GithubReleaseInfo = JSON.parse(rawData);
-      const {tag_name} = releaseInfo;
+      const { tag_name } = releaseInfo;
 
       if (semver.parse(tag_name) == null) {
         throw new Error(`semver failed to parse tag_name ${tag_name}`);

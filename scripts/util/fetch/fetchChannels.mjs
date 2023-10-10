@@ -1,6 +1,6 @@
 import path from 'node:path';
 import getEnsureCacheDir from '../cache/getEnsureCacheDir.mjs';
-import {cacheData, tryGetCachedData} from '../cache/cachedData.mjs';
+import { cacheData, tryGetCachedData } from '../cache/cachedData.mjs';
 
 async function fetchData() {
   const res = await fetch(

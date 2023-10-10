@@ -4,8 +4,8 @@ import {
   CancellationToken,
   // ProgressCallbackTransform,
 } from 'builder-util-runtime';
-import {httpExecutor} from 'builder-util/out/nodeHttpExecutor.js';
-import {parse as parseUrl} from 'node:url';
+import { httpExecutor } from 'builder-util/out/nodeHttpExecutor.js';
+import { parse as parseUrl } from 'node:url';
 
 function githubRequest(path, token, data, method) {
   const baseUrl = parseUrl('https://api.github.com');
@@ -17,7 +17,7 @@ function githubRequest(path, token, data, method) {
           hostname: baseUrl.hostname,
           port: baseUrl.port,
           path,
-          headers: {accept: 'application/vnd.github.v3+json'},
+          headers: { accept: 'application/vnd.github.v3+json' },
           timeout: undefined,
         },
         token,

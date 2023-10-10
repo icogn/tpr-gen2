@@ -1,5 +1,5 @@
-import {spawnSync} from 'node:child_process';
-import {getVersion} from './util/getVersion.mjs';
+import { spawnSync } from 'node:child_process';
+import { getVersion } from './util/getVersion.mjs';
 import updateDraftReleaseTars from './githubRelease/updateDraftReleaseTars.mjs';
 import getImageStackHash from './githubRelease/getImageStackHash.mjs';
 

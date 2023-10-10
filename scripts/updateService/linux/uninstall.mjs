@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import {spawnSync} from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import {
   checkThrowSpawnSyncResult,
   serviceFilePath,
@@ -18,14 +18,14 @@ function main() {
   }
 
   // Stop service
-  const resultStop = spawnSync('systemctl', ['stop', serviceNameNoExt], {stdio: 'inherit'});
+  const resultStop = spawnSync('systemctl', ['stop', serviceNameNoExt], { stdio: 'inherit' });
   checkThrowSpawnSyncResult(resultStop);
 
   // Delete file
   fs.rmSync(serviceFilePath);
 
   // Notify of changes
-  const resultReload = spawnSync('systemctl', ['daemon-reload'], {stdio: 'inherit'});
+  const resultReload = spawnSync('systemctl', ['daemon-reload'], { stdio: 'inherit' });
   checkThrowSpawnSyncResult(resultReload);
 
   console.log(`Service "${serviceNameNoExt}" uninstalled.`);

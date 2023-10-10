@@ -1,10 +1,10 @@
-import {createCustomAppUpdater} from './CustomAppUpdater';
-import type {WebContents} from 'electron';
-import {ipcMain} from 'electron';
-import {IpcChannel} from '../../../shared/ipcChannels';
+import { createCustomAppUpdater } from './CustomAppUpdater';
+import type { WebContents } from 'electron';
+import { ipcMain } from 'electron';
+import { IpcChannel } from '../../../shared/ipcChannels';
 import isObjectChannelInfo from '../../../shared/isObjectChannelInfo';
-import type {ChannelInfo} from '../../../shared/types';
-import type {UpdateInfo, AppUpdater, ProgressInfo, UpdateDownloadedEvent} from 'electron-updater';
+import type { ChannelInfo } from '../../../shared/types';
+import type { UpdateInfo, AppUpdater, ProgressInfo, UpdateDownloadedEvent } from 'electron-updater';
 import basicEventEmitter from '../util/basicEventEmitter';
 
 // Ideally we would allow the user to cancel the update once it starts doing it.

@@ -1,8 +1,8 @@
 import semver from 'semver';
 import fetchReleasesInfo from '../util/fetch/fetchReleasesInfo.mjs';
 
-async function getChannelLatestReleaseInfo({owner, repo, channelKey, exactVersion}) {
-  const releases = await fetchReleasesInfo({owner, repo});
+async function getChannelLatestReleaseInfo({ owner, repo, channelKey, exactVersion }) {
+  const releases = await fetchReleasesInfo({ owner, repo });
 
   let latestRelease = null;
   let latestSemVer = null;

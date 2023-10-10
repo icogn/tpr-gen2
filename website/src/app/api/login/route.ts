@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   });
 
   if (user && (await bcrypt.compare(body.password, user?.password))) {
-    const {password: _password, id: _id, ...safeUserProps} = user;
+    const { password: _password, id: _id, ...safeUserProps } = user;
     return new Response(JSON.stringify(safeUserProps));
   } else {
     return new Response(JSON.stringify(null));

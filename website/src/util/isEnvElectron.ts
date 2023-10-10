@@ -1,4 +1,4 @@
-import {cookies} from 'next/headers';
+import { cookies } from 'next/headers';
 
 function isEnvElectron() {
   if (process.env.NODE_ENV === 'production') {

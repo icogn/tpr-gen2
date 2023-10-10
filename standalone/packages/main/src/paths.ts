@@ -1,6 +1,6 @@
 import path from 'node:path';
-import {app} from 'electron';
-import {channelKey} from './channel';
+import { app } from 'electron';
+import { channelKey } from './channel';
 // const channelKey = 'hardcoded';
 
 const isProduction = process.env.NODE_ENV === 'production';

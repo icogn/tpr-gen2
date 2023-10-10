@@ -1,4 +1,4 @@
-import type {NextAuthOptions} from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 import NextAuth from 'next-auth/next';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
@@ -12,8 +12,8 @@ export const authOptions: NextAuthOptions = {
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        email: {label: 'Email', type: 'text', placeholder: 'example@abc.com'},
-        password: {label: 'Password', type: 'password'},
+        email: { label: 'Email', type: 'text', placeholder: 'example@abc.com' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, _req) {
         // Add logic here to look up the user from the credentials supplied
@@ -49,4 +49,4 @@ export const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 
-export {handler as GET, handler as POST};
+export { handler as GET, handler as POST };

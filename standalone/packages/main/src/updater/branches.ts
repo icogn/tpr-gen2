@@ -1,4 +1,4 @@
-import {parseXml} from 'builder-util-runtime';
+import { parseXml } from 'builder-util-runtime';
 import * as semver from 'semver';
 
 interface GithubReleaseInfo {
@@ -115,7 +115,7 @@ export function newUrlFromBase(
   return result;
 }
 
-function getBasePath({owner, repo}: ChannelInfo) {
+function getBasePath({ owner, repo }: ChannelInfo) {
   return `/${owner}/${repo}/releases`;
 }
 
@@ -124,10 +124,10 @@ async function getLatestTagName(channelInfo: ChannelInfo): Promise<string | unde
   const url = newUrlFromBase(`${getBasePath(channelInfo)}/latest`, new URL('https://github.com/'));
   try {
     const releaseInfo: GithubReleaseInfo = await fetch(url, {
-      headers: {Accept: 'application/json'},
+      headers: { Accept: 'application/json' },
     }).then(res => res.json());
 
-    const {tag_name} = releaseInfo;
+    const { tag_name } = releaseInfo;
 
     if (semver.parse(tag_name) == null) {
       throw new Error(`semver failed to parse tag_name ${tag_name}`);

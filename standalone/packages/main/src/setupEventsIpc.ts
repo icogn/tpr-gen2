@@ -1,9 +1,9 @@
-import {ipcMain} from 'electron';
-import {websiteReadyEmitter} from './website/forkWebsiteProcess';
-import {dbPreparedEmitter} from './prisma/prepareDb';
-import {autoUpdater} from 'electron-updater';
-import {IpcChannel} from '../../shared/ipcChannels';
-import {startupUpdateReadyEmitter, triggerStartupUpdateInstall} from './updater/updaterInstance';
+import { ipcMain } from 'electron';
+import { websiteReadyEmitter } from './website/forkWebsiteProcess';
+import { dbPreparedEmitter } from './prisma/prepareDb';
+import { autoUpdater } from 'electron-updater';
+import { IpcChannel } from '../../shared/ipcChannels';
+import { startupUpdateReadyEmitter, triggerStartupUpdateInstall } from './updater/updaterInstance';
 
 function setupEventsIpc() {
   ipcMain.on(IpcChannel.askDatabaseReady, event => {

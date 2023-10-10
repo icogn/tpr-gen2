@@ -1,9 +1,9 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './LoginPageClient.module.css';
-import {signIn} from 'next-auth/react';
-import {useRouter} from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 enum BtnState {
   Loading,
@@ -78,7 +78,7 @@ export default function LoginPageClient() {
     <div className={styles.root}>
       <div className={styles.loginSection}>
         <div>LoginPagee</div>
-        <div style={{color: 'black'}}>
+        <div style={{ color: 'black' }}>
           <div>
             <input
               placeholder="username"

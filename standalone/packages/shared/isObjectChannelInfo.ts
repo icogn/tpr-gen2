@@ -12,7 +12,7 @@ function isObjectChannelInfo(data: unknown): boolean {
   if (typeof data !== 'object' || !data) {
     return false;
   }
-  const obj = data as {[key: string]: unknown};
+  const obj = data as { [key: string]: unknown };
 
   const propKeys = Object.keys(channelProps) as (keyof typeof channelProps)[];
   for (let i = 0; i < propKeys.length; i++) {

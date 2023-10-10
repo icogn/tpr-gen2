@@ -35,7 +35,7 @@ function updateEnvFromConfigOrSecrets(rootDir, yamlRoot) {
 // automatically.
 function envFromYaml(yamlPath) {
   const yamlContent = fs.readFileSync(yamlPath, 'utf8');
-  const {configs, secrets} = YAML.parse(yamlContent);
+  const { configs, secrets } = YAML.parse(yamlContent);
 
   const rootDir = path.dirname(yamlPath);
 

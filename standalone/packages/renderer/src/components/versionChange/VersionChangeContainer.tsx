@@ -1,6 +1,6 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import VersionChangePage from './VersionChangePage';
-import type {ChannelInfo} from '../../../../shared/types';
+import type { ChannelInfo } from '../../../../shared/types';
 import isObjectChannelInfo from '../../../../shared/isObjectChannelInfo';
 
 function VersionChangeContainer() {
@@ -10,7 +10,7 @@ function VersionChangeContainer() {
     const msgListener = (e: MessageEvent) => {
       const url = new URL(e.origin);
       if (url.hostname === 'localhost') {
-        const {data} = e;
+        const { data } = e;
         if (data.type === 'changeToChannel' && data.channelInfo) {
           if (isObjectChannelInfo(data.channelInfo)) {
             setChannelInfo(data.channelInfo as ChannelInfo);

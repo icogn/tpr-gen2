@@ -3,13 +3,13 @@
  */
 
 console.log('in preloadddda');
-import {ipcRenderer} from 'electron';
-import {IpcChannel} from '../../shared/ipcChannels';
-import type {ChannelInfo} from '../../shared/types';
-import type {UpdateInfo, UpdateDownloadedEvent} from 'electron-updater';
+import { ipcRenderer } from 'electron';
+import { IpcChannel } from '../../shared/ipcChannels';
+import type { ChannelInfo } from '../../shared/types';
+import type { UpdateInfo, UpdateDownloadedEvent } from 'electron-updater';
 import EventEmitter from 'events';
 import type TypedEventEmitter from 'typed-emitter';
-import type {ProgressInfo} from 'builder-util-runtime';
+import type { ProgressInfo } from 'builder-util-runtime';
 
 type AppUpdaterEvents = {
   error: (error: Error, message?: string) => void;
@@ -137,5 +137,5 @@ export function cancelUpdate() {
   ipcRenderer.send(IpcChannel.cancelUpdater);
 }
 
-export {sha256sum} from './nodeCrypto';
-export {versions} from './versions';
+export { sha256sum } from './nodeCrypto';
+export { versions } from './versions';

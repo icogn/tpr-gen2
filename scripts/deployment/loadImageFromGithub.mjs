@@ -3,7 +3,7 @@ import getImageStackHash from '../githubRelease/getImageStackHash.mjs';
 import downloadFile from './downloadFile.mjs';
 import getChannelLatestReleaseInfo from './getChannelLatestReleaseInfo.mjs';
 import getChannelKeyFromVersion from '../util/getChannelKeyFromVersion.mjs';
-import {loadDockerImage} from '../util/docker/runDockerCommand.mjs';
+import { loadDockerImage } from '../util/docker/runDockerCommand.mjs';
 import fetchChannelObj from '../util/fetch/fetchChannelObj.mjs';
 
 function getAssetIfValid(release) {
@@ -28,7 +28,7 @@ async function loadImageFromGithub(version, tmpDir) {
   if (!channelObj) {
     throw new Error(`fetchChannelObj return null for channelKey "${channelKey}".`);
   }
-  const {owner, repo} = channelObj;
+  const { owner, repo } = channelObj;
   if (!owner || !repo) {
     throw new Error(`owner or repo was falsy for channelKey "${channelKey}".`);
   }

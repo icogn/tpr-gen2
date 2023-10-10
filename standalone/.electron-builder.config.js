@@ -25,7 +25,7 @@ importMjsFiles();
  * @see https://www.electron.build/configuration/configuration
  */
 module.exports = async function () {
-  const {getVersion} = await import('./version/getVersion.mjs');
+  const { getVersion } = await import('./version/getVersion.mjs');
 
   // Note: the "name" in the root package.json seems to be used when creating
   // the "updaterCacheDirName" in the app-update.yml (for example,

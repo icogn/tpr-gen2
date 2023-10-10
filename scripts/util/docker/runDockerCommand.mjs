@@ -1,9 +1,9 @@
-import {spawnSync} from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import getRootDir from '../getRootDir.mjs';
 
 const rootDir = getRootDir();
 
-const spawnOptions = {stdio: 'inherit', cwd: rootDir};
+const spawnOptions = { stdio: 'inherit', cwd: rootDir };
 
 export function loadDockerImage(imagePath) {
   const result = spawnSync('docker', ['load', '-i', imagePath], spawnOptions);

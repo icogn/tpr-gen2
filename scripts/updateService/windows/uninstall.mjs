@@ -1,5 +1,5 @@
-import {Service} from 'node-windows';
-import {windowsServiceName, serviceScriptPath} from './constants.mjs';
+import { Service } from 'node-windows';
+import { windowsServiceName, serviceScriptPath } from './constants.mjs';
 
 const svc = new Service({
   name: windowsServiceName,

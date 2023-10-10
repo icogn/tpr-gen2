@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type {ChannelInfo} from './RendererTypes';
+import type { ChannelInfo } from './RendererTypes';
 
 const props = defineProps<{
   channelInfo: ChannelInfo | null;

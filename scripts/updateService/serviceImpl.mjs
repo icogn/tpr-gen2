@@ -1,4 +1,4 @@
-import {spawnSync} from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import semver from 'semver';
 import getChannelLatestReleaseInfo from '../deployment/getChannelLatestReleaseInfo.mjs';
 import getYarnCommand from '../util/getYarnCommand.mjs';
@@ -12,11 +12,11 @@ let logEvent = () => {
   // do nothing
 };
 
-async function processChannel({owner, repo, channelKey}) {
+async function processChannel({ owner, repo, channelKey }) {
   // Service only replaces containers; it does not deploy one if there is not
   // already one deployed or if there are multiple so we do not know which one
   // to replace.
-  const {containerInfo} = findContainerForChannelKey(channelKey);
+  const { containerInfo } = findContainerForChannelKey(channelKey);
   if (!containerInfo) {
     return;
   }
@@ -64,7 +64,7 @@ async function doServiceIteration() {
   for (let i = 0; i < channelKeys.length; i++) {
     const channelKey = channelKeys[i];
     try {
-      await processChannel({...channelsConfig[channelKey], channelKey});
+      await processChannel({ ...channelsConfig[channelKey], channelKey });
     } catch (e) {
       // We base64 encode the error message since it will fail to log otherwise.
       // It appears no escaping is done on the input, but handling escaping

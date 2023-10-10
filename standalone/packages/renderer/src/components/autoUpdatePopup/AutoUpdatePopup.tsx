@@ -1,5 +1,5 @@
-import {askStartupUpdateReady, triggerStartupUpdate} from '#preload';
-import {useState, useEffect} from 'react';
+import { askStartupUpdateReady, triggerStartupUpdate } from '#preload';
+import { useState, useEffect } from 'react';
 import styles from './AutoUpdatePopup.module.css';
 
 function AutoUpdatePopup() {

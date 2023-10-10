@@ -1,6 +1,6 @@
-import {createHash} from 'crypto';
-import {expect, test, vi} from 'vitest';
-import {sha256sum, versions} from '../src';
+import { createHash } from 'crypto';
+import { expect, test, vi } from 'vitest';
+import { sha256sum, versions } from '../src';
 
 // mock copied from packages/main/tests/unit.spec.ts
 vi.mock('electron', () => {
@@ -10,7 +10,7 @@ vi.mock('electron', () => {
     },
   };
 
-  return {ipcRenderer};
+  return { ipcRenderer };
 });
 
 test('versions', async () => {

@@ -1,14 +1,14 @@
-import type {ElectronApplication, JSHandle} from 'playwright';
-import {_electron as electron} from 'playwright';
-import {afterAll, beforeAll, expect, test} from 'vitest';
+import type { ElectronApplication, JSHandle } from 'playwright';
+import { _electron as electron } from 'playwright';
+import { afterAll, beforeAll, expect, test } from 'vitest';
 // import {createHash} from 'crypto';
-import type {BrowserWindow} from 'electron';
+import type { BrowserWindow } from 'electron';
 
 let electronApp: ElectronApplication;
 
 beforeAll(async () => {
   // electronApp = await electron.launch({args: ['.']});
-  electronApp = await electron.launch({args: ['standalone']});
+  electronApp = await electron.launch({ args: ['standalone'] });
 
   electronApp.process().stdout.on('data', data => console.log(`stdout: ${data.toString()}`));
   electronApp.process().stderr.on('data', error => console.log(`stderr: ${error.toString()}`));
@@ -18,7 +18,7 @@ afterAll(async () => {
   // Manually kill the child processes. It hangs when trying to close on linux
   // in GitHub Actions otherwise. This is specifically caused by the website
   // server (not from running prisma on startup).
-  await electronApp.evaluate(async ({ipcMain}) => {
+  await electronApp.evaluate(async ({ ipcMain }) => {
     // This runs in the main Electron process, parameter here is always
     // the result of the require('electron') in the main app script.
     ipcMain.emit('kill-child-processes');
@@ -31,7 +31,9 @@ test('Main window state', async () => {
   const page = await electronApp.firstWindow();
   const window: JSHandle<BrowserWindow> = await electronApp.browserWindow(page);
   const windowState = await window.evaluate(
-    (mainWindow): Promise<{isVisible: boolean; isDevToolsOpened: boolean; isCrashed: boolean}> => {
+    (
+      mainWindow,
+    ): Promise<{ isVisible: boolean; isDevToolsOpened: boolean; isCrashed: boolean }> => {
       const getState = () => ({
         isVisible: mainWindow.isVisible(),
         isDevToolsOpened: mainWindow.webContents.isDevToolsOpened(),
@@ -57,7 +59,7 @@ test('Main window state', async () => {
 
 test('Main window web content', async () => {
   const page = await electronApp.firstWindow();
-  const element = await page.$('#root', {strict: true});
+  const element = await page.$('#root', { strict: true });
   expect(element, 'Was unable to find the root element').toBeDefined();
   expect((await element.innerHTML()).trim(), 'Window content was empty').not.equal('');
 });

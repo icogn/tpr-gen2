@@ -1,5 +1,5 @@
-import {app, BrowserWindow, session} from 'electron';
-import {join, resolve} from 'node:path';
+import { app, BrowserWindow, session } from 'electron';
+import { join, resolve } from 'node:path';
 
 // Modify ts file so lint workflow runs
 async function createWindow() {

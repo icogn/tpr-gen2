@@ -1,15 +1,15 @@
 import path from 'node:path';
 import fs from 'fs-extra';
-import {spawnSync} from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import getRootDir from './util/getRootDir.mjs';
-import {applyEnv, prepareDeployEnv} from './util/prepareEnv.mjs';
+import { applyEnv, prepareDeployEnv } from './util/prepareEnv.mjs';
 import yargs from 'yargs';
 import semver from 'semver';
 import singleImageWithTagExists from './util/docker/singleImageWithTagExists.mjs';
 import loadImageFromGithub from './deployment/loadImageFromGithub.mjs';
 import findContainerForChannelKey from './util/docker/findSingleContainerForChannelKey.mjs';
 import getChannelKeyFromVersion from './util/getChannelKeyFromVersion.mjs';
-import {getVersion} from './util/getVersion.mjs';
+import { getVersion } from './util/getVersion.mjs';
 import {
   stopContainerById,
   rmContainerById,
@@ -18,7 +18,7 @@ import {
 import getYarnCommand from './util/getYarnCommand.mjs';
 import envFromYaml from './deployment/envFromYaml.mjs';
 
-const {argv} = yargs(process.argv.slice(2))
+const { argv } = yargs(process.argv.slice(2))
   .option('image-version', {
     alias: 'i',
     describe: 'image version to deploy',
@@ -78,14 +78,14 @@ const version = argv.imageVersion || getVersion();
 // Stop an existing container if there is exactly one to stop.
 if (argv.replace) {
   const channelKey = getChannelKeyFromVersion(version);
-  const {numContainers, containerInfo} = findContainerForChannelKey(channelKey);
+  const { numContainers, containerInfo } = findContainerForChannelKey(channelKey);
   if (numContainers >= 2) {
     throw new Error(
       `"replace" is true, but there are 2 or more (${numContainers}) containers for the "${channelKey}" channel. Cannot know which one to replace.`,
     );
   }
   if (containerInfo) {
-    const {containerId} = containerInfo;
+    const { containerId } = containerInfo;
     const stopped = stopContainerById(containerId);
     if (!stopped) {
       throw new Error(`Stopping docker container "${containerId}" has a non-zero exit code.`);
@@ -118,7 +118,7 @@ if (!argv.imageVersion) {
 const stackFilePath = path.join(rootDir, 'compose.yml');
 envFromYaml(stackFilePath);
 
-applyEnv(prepareDeployEnv({imageVersion: version}));
+applyEnv(prepareDeployEnv({ imageVersion: version }));
 
 // process.env.HOST_PORT = 2999;
 spawnSync('docker', ['compose', '-f', stackFilePath, 'up', '-d'], {

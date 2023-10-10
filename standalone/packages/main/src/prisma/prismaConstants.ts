@@ -1,6 +1,6 @@
 import path from 'node:path';
 // import {app} from 'electron';
-import {nodeModulesDir, channelVolumePath} from '../paths';
+import { nodeModulesDir, channelVolumePath } from '../paths';
 
 export const isDev = process.env.NODE_ENV === 'development';
 // export const dbPath = path.join(app.getPath('userData'), 'app.db');

@@ -1,8 +1,8 @@
 // import log from 'electron-log';
 // import {PrismaClient} from '../generated/client';
-import {PrismaClient} from '@prisma/client';
-import {dbUrl, mePath, qePath, prismaPath} from './prismaConstants';
-import {fork} from 'child_process';
+import { PrismaClient } from '@prisma/client';
+import { dbUrl, mePath, qePath, prismaPath } from './prismaConstants';
+import { fork } from 'child_process';
 import processManager from '../processManager';
 
 console.log('DB URL', dbUrl);

@@ -1,4 +1,4 @@
-import type {ChildProcess} from 'node:child_process';
+import type { ChildProcess } from 'node:child_process';
 
 type ProcessManagerItem = {
   pid: number;
@@ -13,7 +13,7 @@ class ProcessManager {
   }
 
   addChildProcess(childProcess: ChildProcess, name: string) {
-    const {pid} = childProcess;
+    const { pid } = childProcess;
     if (typeof pid !== 'number') {
       return;
     }
@@ -24,7 +24,7 @@ class ProcessManager {
     }
 
     console.log(`procMgr: adding childProcess "${name}" with pid: ${pid}`);
-    this._pidArr.push({pid, name});
+    this._pidArr.push({ pid, name });
 
     childProcess.on('exit', () => {
       console.log(`procMgr: removing childProcess "${name}" with pid: ${pid}`);
@@ -33,7 +33,7 @@ class ProcessManager {
   }
 
   killAll() {
-    this._pidArr.forEach(({name, pid}) => {
+    this._pidArr.forEach(({ name, pid }) => {
       console.log(`procMgr: killing process "${name}" with pid: ${pid}`);
       process.kill(pid);
     });

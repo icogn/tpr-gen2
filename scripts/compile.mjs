@@ -3,16 +3,16 @@
 process.env.MODE = 'production';
 process.env.NODE_ENV = 'production';
 
-import {execa} from 'execa';
+import { execa } from 'execa';
 import path from 'node:path';
-import fs, {readFileSync, writeFileSync} from 'node:fs';
+import fs, { readFileSync, writeFileSync } from 'node:fs';
 import searchUpFileTree from './util/searchUpFileTree.mjs';
-import {fileURLToPath} from 'node:url';
+import { fileURLToPath } from 'node:url';
 import yargs from 'yargs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const {argv} = yargs(process.argv.slice(2))
+const { argv } = yargs(process.argv.slice(2))
   .option('from-dockerfile', {
     describe: 'set to true when calling compile.mjs from the Dockerfile',
     type: 'boolean',
@@ -71,11 +71,11 @@ function updateWebsiteEnv() {
 function copyPublicAndStaticFolders() {
   const publicSrcPath = path.join(websiteDir, 'public');
   const publicDestPath = path.join(websiteDir, '.next/standalone/website/public');
-  fs.cpSync(publicSrcPath, publicDestPath, {recursive: true});
+  fs.cpSync(publicSrcPath, publicDestPath, { recursive: true });
 
   const staticSrcPath = path.join(websiteDir, '.next/static');
   const staticDestPath = path.join(websiteDir, '.next/standalone/website/.next/static');
-  fs.cpSync(staticSrcPath, staticDestPath, {recursive: true});
+  fs.cpSync(staticSrcPath, staticDestPath, { recursive: true });
 }
 
 async function runBuild() {

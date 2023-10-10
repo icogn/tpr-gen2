@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import {ref, onMounted} from 'vue';
-import {cancelAutoInstall, askDbReady, askWebsiteReady} from '#preload';
+import { ref, onMounted } from 'vue';
+import { cancelAutoInstall, askDbReady, askWebsiteReady } from '#preload';
 import VersionChangePopup from './VersionChangePopup.vue';
-import type {ChannelInfo} from './RendererTypes';
+import type { ChannelInfo } from './RendererTypes';
 
 const channelProps = {
   name: 'string',
@@ -18,7 +18,7 @@ function isObjectChannelInfo(data: unknown): boolean {
   if (typeof data !== 'object' || !data) {
     return false;
   }
-  const obj = data as {[key: string]: unknown};
+  const obj = data as { [key: string]: unknown };
 
   const propKeys = Object.keys(channelProps) as (keyof typeof channelProps)[];
   for (let i = 0; i < propKeys.length; i++) {
@@ -95,7 +95,7 @@ onMounted(() => {
     console.log(e);
     const url = new URL(e.origin);
     if (url.hostname === 'localhost') {
-      const {data} = e;
+      const { data } = e;
       if (data.type === 'changeToChannel' && data.channelInfo) {
         if (isObjectChannelInfo(data.channelInfo)) {
           console.log('object is channelInfo');

@@ -2,16 +2,16 @@
 
 process.env.NODE_ENV = 'development';
 
-import {build, createServer} from 'vite';
+import { build, createServer } from 'vite';
 import electronPath from 'electron';
-import {spawn} from 'child_process';
-import {execa} from 'execa';
+import { spawn } from 'child_process';
+import { execa } from 'execa';
 import path from 'path';
 // import getRootDir from './util/getRootDir.mjs';
 // import getGitCommitHash from './util/getGitCommitHash.mjs';
 // import getChannelString from './util/getChannelString.mjs';
-import {prepareWebsiteEnv} from './util/prepareEnv.mjs';
-import {getVersion} from './util/getVersion.mjs';
+import { prepareWebsiteEnv } from './util/prepareEnv.mjs';
+import { getVersion } from './util/getVersion.mjs';
 
 // const rootDir = getRootDir();
 // process.chdir(path.join(rootDir, 'standalone'));
@@ -28,7 +28,7 @@ const logLevel = 'warn';
  * @param {import('vite').ViteDevServer} watchServer Renderer watch server instance.
  * Needs to set up `VITE_DEV_SERVER_URL` environment variable from {@link import('vite').ViteDevServer.resolvedUrls}
  */
-function setupMainPackageWatcher({resolvedUrls}) {
+function setupMainPackageWatcher({ resolvedUrls }) {
   process.env.VITE_DEV_SERVER_URL = resolvedUrls.local[0];
   // process.env.VITE_DEV_SERVER_URL = 'http://localhost:3000';
 
@@ -83,7 +83,7 @@ function setupMainPackageWatcher({resolvedUrls}) {
  * @param {import('vite').ViteDevServer} watchServer Renderer watch server instance.
  * Required to access the web socket of the page. By sending the `full-reload` command to the socket, it reloads the web page.
  */
-function setupPreloadPackageWatcher({ws}) {
+function setupPreloadPackageWatcher({ ws }) {
   return build({
     mode,
     logLevel,

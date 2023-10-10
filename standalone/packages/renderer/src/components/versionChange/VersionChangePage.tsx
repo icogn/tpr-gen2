@@ -1,8 +1,8 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import FullScreenPopup from '../FullScreenPopup';
-import type {ChannelInfo} from '../../../../shared/types';
-import {cancelUpdate, checkForUpdates, downloadUpdate, updaterEmitter} from '#preload';
-import type {ProgressInfo, UpdateInfo} from 'electron-updater';
+import type { ChannelInfo } from '../../../../shared/types';
+import { cancelUpdate, checkForUpdates, downloadUpdate, updaterEmitter } from '#preload';
+import type { ProgressInfo, UpdateInfo } from 'electron-updater';
 import styles from './VersionChangePopup.module.css';
 
 type VersionChangePopupProps = {
@@ -10,7 +10,7 @@ type VersionChangePopupProps = {
   onCancel: () => void;
 };
 
-function VersionChangePage({channelInfo, onCancel}: VersionChangePopupProps) {
+function VersionChangePage({ channelInfo, onCancel }: VersionChangePopupProps) {
   const [updateVersion, setUpdateVersion] = useState('');
   const [downloadStarted, setDownloadStarted] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState<ProgressInfo | null>(null);

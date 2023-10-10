@@ -4,15 +4,15 @@ import {
   CancellationToken,
   ProgressCallbackTransform,
 } from 'builder-util-runtime';
-import {httpExecutor} from 'builder-util/out/nodeHttpExecutor.js';
-import {parse as parseUrl} from 'node:url';
-import {getVersion} from '../util/getVersion.mjs';
+import { httpExecutor } from 'builder-util/out/nodeHttpExecutor.js';
+import { parse as parseUrl } from 'node:url';
+import { getVersion } from '../util/getVersion.mjs';
 import mime from 'mime';
 import fs from 'fs-extra';
 import getOwnerAndRepo from './getOwnerAndRepo.mjs';
 
 let cachedAssets = undefined;
-const {owner, repo} = await getOwnerAndRepo();
+const { owner, repo } = await getOwnerAndRepo();
 const version = getVersion();
 const tag = `v${version}`;
 const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN || null;
@@ -30,7 +30,7 @@ function githubRequest(path, token, data, method) {
           hostname: baseUrl.hostname,
           port: baseUrl.port,
           path,
-          headers: {accept: 'application/vnd.github.v3+json'},
+          headers: { accept: 'application/vnd.github.v3+json' },
           timeout: undefined,
         },
         token,

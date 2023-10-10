@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type {Migration} from './prismaConstants';
-import {dbPath, dbUrl, latestMigration} from './prismaConstants';
-import {prisma, runPrismaCommand} from './prisma';
-import {prismaSchemaPath} from '../paths';
+import type { Migration } from './prismaConstants';
+import { dbPath, dbUrl, latestMigration } from './prismaConstants';
+import { prisma, runPrismaCommand } from './prisma';
+import { prismaSchemaPath } from '../paths';
 import basicEventEmitter from '../util/basicEventEmitter';
 
 export const dbPreparedEmitter = basicEventEmitter<boolean>();
@@ -28,7 +28,7 @@ async function prepareDb() {
     // prisma for whatever reason has trouble if the database file does not exist yet.
     // So just touch it here
 
-    fs.mkdirSync(path.dirname(dbPath), {recursive: true}); // mkdirp
+    fs.mkdirSync(path.dirname(dbPath), { recursive: true }); // mkdirp
     fs.closeSync(fs.openSync(dbPath, 'w'));
   } else {
     try {

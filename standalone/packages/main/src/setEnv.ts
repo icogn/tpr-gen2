@@ -1,4 +1,4 @@
-import {app} from 'electron';
+import { app } from 'electron';
 import path from 'node:path';
 import dotenv from 'dotenv';
 
@@ -11,5 +11,5 @@ if (process.env.NODE_ENV === 'production') {
   const resourcesDir = path.dirname(app.getAppPath());
   const envFile = path.join(resourcesDir, 'myenv.env');
 
-  dotenv.config({path: envFile});
+  dotenv.config({ path: envFile });
 }

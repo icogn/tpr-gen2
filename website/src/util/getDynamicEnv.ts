@@ -1,4 +1,4 @@
-let env: {[key: string]: string | undefined};
+let env: { [key: string]: string | undefined };
 
 function getDynamicEnv() {
   if (!env) {
