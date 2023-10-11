@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { LeftData } from './startingInventoryListTypes';
+import type { LeftData } from './startingInventoryListShared';
 import Button from '@mui/material/Button';
 
 type StartingInventoryListRightProps = {

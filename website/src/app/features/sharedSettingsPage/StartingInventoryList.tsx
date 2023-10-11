@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import StartingInventoryListLeft from './StartingInventoryListLeft';
 import StartingInventoryListRight from './StartingInventoryListRight';
-import type { LeftData } from './startingInventoryListTypes';
+import type { LeftData } from './startingInventoryListShared';
 
 const startingInventory = [
   'Shadow Crystal',
