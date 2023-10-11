@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import type { LeftData } from './startingInventoryListShared';
+import type { StartingItemFullDef } from './startingInventoryListShared';
 import Button from '@mui/material/Button';
 
 type StartingInventoryListLeftProps = {
-  data: LeftData[];
+  data: StartingItemFullDef[];
   onAdd(selected: Record<number, boolean>): void;
 };
 
@@ -28,12 +28,12 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
         Add
       </Button>
       <div>
-        {data.map(({ index, name }) => {
-          const isSelected = Boolean(selected[index]);
+        {data.map(({ id, name }) => {
+          const isSelected = Boolean(selected[id]);
 
           return (
             <div
-              key={index}
+              key={id}
               className="border"
               style={{
                 userSelect: 'none',
@@ -42,7 +42,7 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
               onClick={() => {
                 setSelected({
                   ...selected,
-                  [index]: !selected[index],
+                  [id]: !selected[id],
                 });
               }}
             >

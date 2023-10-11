@@ -3,55 +3,32 @@
 import { useMemo, useState } from 'react';
 import StartingInventoryListLeft from './StartingInventoryListLeft';
 import StartingInventoryListRight from './StartingInventoryListRight';
-import type { LeftData } from './startingInventoryListShared';
-
-const startingInventory = [
-  'Shadow Crystal',
-  'Progressive Sword',
-  'Boomerang',
-  'Lantern',
-  'Slingshot',
-  'Progressive Fishing Rod',
-  'Iron Boots',
-  'Progressive Bow',
-  'Bomb Bag and Bombs',
-  'Giant Bomb Bag',
-  'Zora Armor',
-  'Progressive Clawshot',
-  "Auru's Memo",
-  "Ashei's Sketch",
-  'Spinner',
-  'Ball and Chain',
-  'Progressive Dominion Rod',
-  'Progressive Sky Book',
-  'Horse Call',
-  'Gate Keys',
-  'Empty Bottle',
-  'Progressive Hidden Skill',
-  'Magic Armor',
-  'Ordon Shield',
-  'Hylian Shield',
-  'Hawkeye',
-];
+import type { StartingItemFullDef } from './startingInventoryListShared';
+import { ItemId } from './startingInventoryListShared';
+import { startingItemDefsOrder, startingItemDefs } from './startingInventoryListShared';
 
 function StartingInventoryList() {
-  const [selectedIndexes, setSelectedIndexes] = useState<Record<number, boolean>>({ 3: true });
+  const [selectedIndexes, setSelectedIndexes] = useState<Record<number, boolean>>({
+    [ItemId.ProgressiveBow]: true,
+  });
 
   const [leftData, rightData] = useMemo(() => {
-    const left: LeftData[] = [];
-    const right: LeftData[] = [];
+    const left: StartingItemFullDef[] = [];
+    const right: StartingItemFullDef[] = [];
 
-    for (let i = 0; i < startingInventory.length; i++) {
+    startingItemDefsOrder.forEach((itemId: ItemId) => {
+      const startingItemDef = startingItemDefs[itemId];
+
       const obj = {
-        index: i,
-        name: startingInventory[i],
+        ...startingItemDef,
+        id: itemId,
       };
-      if (selectedIndexes[i]) {
+      if (selectedIndexes[itemId]) {
         right.push(obj);
       } else {
         left.push(obj);
       }
-    }
+    });
 
     return [left, right];
   }, [selectedIndexes]);

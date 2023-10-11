@@ -10,6 +10,7 @@ import Button from '@mui/material/Button';
 // import ListPickerLeft from './ListPickerLeft';
 import Select from './Select';
 import StartingInventoryList from './StartingInventoryList';
+// import { useForm } from 'react-hook-form';
 
 function SharedSettingsPage() {
   const [tabIndex, setTabIndex] = useState(2);
@@ -225,6 +226,10 @@ function ExcludedChecksPage() {
 // ];
 
 function StartingInventoryPage() {
+  // const useFormRet = useForm({
+  //   values:
+  // })
+
   // return <Box>In starting inventory page</Box>;
   return (
     <Box>
