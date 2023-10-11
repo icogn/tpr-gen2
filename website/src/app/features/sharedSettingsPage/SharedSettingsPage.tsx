@@ -9,9 +9,10 @@ import { useState } from 'react';
 import Button from '@mui/material/Button';
 // import ListPickerLeft from './ListPickerLeft';
 import Select from './Select';
+import StartingInventoryList from './StartingInventoryList';
 
 function SharedSettingsPage() {
-  const [tabIndex, setTabIndex] = useState(0);
+  const [tabIndex, setTabIndex] = useState(2);
 
   const handleTabChange = (e: React.SyntheticEvent, newIndex: number) => {
     setTabIndex(newIndex);
@@ -178,6 +179,22 @@ function ExcludedChecksPage() {
   return <Box>In excluded checks page</Box>;
 }
 
+// const abc = {
+//   'Shadow Crystal': {},
+//   'Progressive Sword': {
+//     max: 4,
+//   },
+//   'Progressive Sky Book': {
+//     max: 7,
+//     onSubtext(count: number) {
+//       if (count > 0) {
+//         return `Sky Book and ${count - 1}/6 characters`;
+//       }
+//       return '';
+//     },
+//   },
+// };
+
 // const startingInventory = [
 //   'Shadow Crystal',
 //   'Progressive Sword',
@@ -208,7 +225,12 @@ function ExcludedChecksPage() {
 // ];
 
 function StartingInventoryPage() {
-  return <Box>In starting inventory page</Box>;
+  // return <Box>In starting inventory page</Box>;
+  return (
+    <Box>
+      <StartingInventoryList />
+    </Box>
+  );
   // return (
   //   <Box>
   //     <div>In Starting Inventory page</div>
