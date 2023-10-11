@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import type { StartingItemFullDef } from './startingInventoryListShared';
 import Button from '@mui/material/Button';
+import { startingItemDefs, type ItemId } from './startingInventoryListShared';
 
 type StartingInventoryListRightProps = {
-  data: StartingItemFullDef[];
+  data: ItemId[];
   onRemove(deselected: Record<number, boolean>): void;
 };
 
@@ -28,28 +28,33 @@ function StartingInventoryListRight({ data, onRemove }: StartingInventoryListRig
         Remove
       </Button>
       <div>
-        {data.map(({ id, name }) => {
-          const isSelected = Boolean(selected[id]);
+        {data
+          .filter(itemId => {
+            return startingItemDefs[itemId];
+          })
+          .map(itemId => {
+            const isSelected = Boolean(selected[itemId]);
+            const startingItemDef = startingItemDefs[itemId]!;
 
-          return (
-            <div
-              key={id}
-              className="border"
-              style={{
-                userSelect: 'none',
-                backgroundColor: isSelected ? '#cc0000' : undefined,
-              }}
-              onClick={() => {
-                setSelected({
-                  ...selected,
-                  [id]: !selected[id],
-                });
-              }}
-            >
-              {name}
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={itemId}
+                className="border"
+                style={{
+                  userSelect: 'none',
+                  backgroundColor: isSelected ? '#cc0000' : undefined,
+                }}
+                onClick={() => {
+                  setSelected({
+                    ...selected,
+                    [itemId]: !selected[itemId],
+                  });
+                }}
+              >
+                {startingItemDef.name}
+              </div>
+            );
+          })}
       </div>
     </div>
   );

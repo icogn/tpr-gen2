@@ -3,30 +3,23 @@
 import { useMemo, useState } from 'react';
 import StartingInventoryListLeft from './StartingInventoryListLeft';
 import StartingInventoryListRight from './StartingInventoryListRight';
-import type { StartingItemFullDef } from './startingInventoryListShared';
 import { ItemId } from './startingInventoryListShared';
-import { startingItemDefsOrder, startingItemDefs } from './startingInventoryListShared';
+import { startingItemDefsOrder } from './startingInventoryListShared';
 
 function StartingInventoryList() {
   const [selectedIndexes, setSelectedIndexes] = useState<Record<number, boolean>>({
-    [ItemId.ProgressiveBow]: true,
+    [ItemId.Hawkeye]: true,
   });
 
   const [leftData, rightData] = useMemo(() => {
-    const left: StartingItemFullDef[] = [];
-    const right: StartingItemFullDef[] = [];
+    const left: ItemId[] = [];
+    const right: ItemId[] = [];
 
     startingItemDefsOrder.forEach((itemId: ItemId) => {
-      const startingItemDef = startingItemDefs[itemId];
-
-      const obj = {
-        ...startingItemDef,
-        id: itemId,
-      };
       if (selectedIndexes[itemId]) {
-        right.push(obj);
+        right.push(itemId);
       } else {
-        left.push(obj);
+        left.push(itemId);
       }
     });
 

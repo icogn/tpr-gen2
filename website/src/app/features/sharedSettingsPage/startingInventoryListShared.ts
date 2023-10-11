@@ -40,9 +40,10 @@ export enum ItemId {
   ProgressiveHiddenSkill = 225,
   ProgressiveSkyBook = 233,
   GateKeys = 243,
+  Dog = 7,
 }
 
-export const startingItemDefs: Record<ItemId, StartingItemDef> = {
+export const startingItemDefs: { [key in ItemId]?: StartingItemDef } = {
   [ItemId.ShadowCrystal]: { name: 'Shadow Crystal' },
   [ItemId.ProgressiveSword]: { name: 'Progressive Sword', max: 4 },
   [ItemId.Boomerang]: { name: 'Boomerang' },
