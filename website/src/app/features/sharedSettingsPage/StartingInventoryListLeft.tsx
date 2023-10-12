@@ -28,7 +28,13 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
 
           startingItemDefsOrder.forEach(itemId => {
             if (selected[itemId]) {
-              itemFields.push({ itemId });
+              const obj: StartingItemField = { itemId };
+              const startingItemDef = startingItemDefs[itemId]!;
+              if (startingItemDef.max) {
+                obj.count = 1;
+              }
+
+              itemFields.push(obj);
             }
           });
 
@@ -50,7 +56,7 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
             return (
               <div
                 key={itemId}
-                className="border"
+                className="border px-1"
                 style={{
                   userSelect: 'none',
                   backgroundColor: isSelected ? '#cc0000' : undefined,

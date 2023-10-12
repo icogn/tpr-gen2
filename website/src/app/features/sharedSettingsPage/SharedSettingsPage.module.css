@@ -64,3 +64,9 @@
     background-color: unset;
   }
 }
+
+.startingItemNumInput {
+  max-width: 56px;
+  color: #000;
+  text-align: end;
+}

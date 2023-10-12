@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import StartingInventoryListLeft from './StartingInventoryListLeft';
 import StartingInventoryListRight from './StartingInventoryListRight';
-import type { FormSchema, StartingItemField } from './startingInventoryListShared';
-import { ItemId } from './startingInventoryListShared';
+import type { FormSchema, ItemId, StartingItemField } from './startingInventoryListShared';
 import { startingItemDefsOrder } from './startingInventoryListShared';
 import { useFieldArray, type UseFormReturn } from 'react-hook-form';
 
@@ -62,12 +61,6 @@ function StartingInventoryList({ useFormRet }: StartingInventoryListProps) {
   //   [ItemId.Hawkeye]: true,
   // });
 
-  useEffect(() => {
-    setTimeout(() => {
-      useFormRet.setValue('list', [{ itemId: ItemId.AurusMemo }]);
-    }, 2000);
-  }, []);
-
   // right list - state is ordered list of which itemIds are in the list, as
   // well as state for certain rows.
 
@@ -90,7 +83,10 @@ function StartingInventoryList({ useFormRet }: StartingInventoryListProps) {
         data={leftData}
         onAdd={handleAdd}
       />
-      <StartingInventoryListRight useFieldArrayRet={useFieldArrayRet} />
+      <StartingInventoryListRight
+        useFormRet={useFormRet}
+        useFieldArrayRet={useFieldArrayRet}
+      />
     </div>
   );
 }
