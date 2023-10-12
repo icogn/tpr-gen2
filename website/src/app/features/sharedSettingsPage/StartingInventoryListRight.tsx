@@ -5,6 +5,8 @@ import Button from '@mui/material/Button';
 import type { FormSchema } from './startingInventoryListShared';
 import { startingItemDefs } from './startingInventoryListShared';
 import { type UseFieldArrayReturn } from 'react-hook-form';
+import styles from './SharedSettingsPage.module.css';
+import clsx from 'clsx';
 
 type StartingInventoryListRightProps = {
   useFieldArrayRet: UseFieldArrayReturn<FormSchema, 'list'>;
@@ -16,7 +18,7 @@ function StartingInventoryListRight({ useFieldArrayRet }: StartingInventoryListR
   console.log('fields');
   console.log(fields);
 
-  const [selected, setSelected] = useState<Record<number, boolean>>({});
+  const [selected, setSelected] = useState<Record<string, boolean>>({});
 
   return (
     <div className="border p-3">
@@ -27,40 +29,44 @@ function StartingInventoryListRight({ useFieldArrayRet }: StartingInventoryListR
           marginBottom: '8px',
         }}
         onClick={() => {
-          remove();
+          const toRemove: number[] = [];
+
+          fields.forEach(({ id }, index) => {
+            if (selected[id]) {
+              toRemove.push(index);
+            }
+          });
+
+          remove(toRemove);
           setSelected({});
         }}
       >
         Remove
       </Button>
       <div>
-        {fields
-          // .filter(({ itemId }) => {
-          //   return startingItemDefs[itemId];
-          // })
-          .map(({ itemId, id }) => {
-            const isSelected = Boolean(selected[itemId]);
-            const startingItemDef = startingItemDefs[itemId]!;
+        {fields.map(({ itemId, id }) => {
+          const isSelected = Boolean(selected[id]);
+          const startingItemDef = startingItemDefs[itemId]!;
 
-            return (
-              <div
-                key={id}
-                className="border"
-                style={{
-                  userSelect: 'none',
-                  backgroundColor: isSelected ? '#cc0000' : undefined,
-                }}
-                onClick={() => {
-                  setSelected({
-                    ...selected,
-                    [itemId]: !selected[itemId],
-                  });
-                }}
-              >
-                {startingItemDef.name}
-              </div>
-            );
-          })}
+          return (
+            <div
+              key={id}
+              className={clsx('border', styles.anim)}
+              style={{
+                userSelect: 'none',
+                backgroundColor: isSelected ? '#cc0000' : undefined,
+              }}
+              onClick={() => {
+                setSelected({
+                  ...selected,
+                  [id]: !selected[id],
+                });
+              }}
+            >
+              {startingItemDef.name}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

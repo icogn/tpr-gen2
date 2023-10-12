@@ -44,3 +44,23 @@
   padding: 2px 4px;
   color: rgba(255, 255, 255, 0.5);
 }
+
+.anim {
+  animation-name: color_change;
+  animation-duration: 0.75s;
+  animation-iteration-count: initial;
+}
+
+@keyframes color_change {
+  0% {
+    background-color: unset;
+  }
+
+  50% {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  100% {
+    background-color: unset;
+  }
+}
