@@ -112,4 +112,5 @@ export const startingItemDefsOrder: ItemId[] = [
 
 export type FormSchema = {
   list: ItemId[];
+  exBool: boolean;
 };

@@ -185,9 +185,11 @@ function StartingInventoryPage() {
   const useFormRet = useForm<FormSchema>({
     values: {
       list: [],
+      exBool: false,
     },
     defaultValues: {
       list: [],
+      exBool: false,
     },
   });
 
@@ -195,6 +197,13 @@ function StartingInventoryPage() {
   return (
     <Box>
       <StartingInventoryList useFormRet={useFormRet} />
+      <div className="mt-4 pl-3 flex items-center">
+        <input
+          type="checkbox"
+          {...useFormRet.register('exBool')}
+        />
+        <span className="ml-2">checkbox</span>
+      </div>
     </Box>
   );
   // return (
