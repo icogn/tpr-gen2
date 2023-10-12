@@ -109,3 +109,7 @@ export const startingItemDefsOrder: ItemId[] = [
   ItemId.HylianShield,
   ItemId.Hawkeye,
 ];
+
+export type FormSchema = {
+  list: ItemId[];
+};

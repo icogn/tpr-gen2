@@ -10,7 +10,8 @@ import Button from '@mui/material/Button';
 // import ListPickerLeft from './ListPickerLeft';
 import Select from './Select';
 import StartingInventoryList from './StartingInventoryList';
-// import { useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { type FormSchema } from './startingInventoryListShared';
 
 function SharedSettingsPage() {
   const [tabIndex, setTabIndex] = useState(2);
@@ -180,60 +181,20 @@ function ExcludedChecksPage() {
   return <Box>In excluded checks page</Box>;
 }
 
-// const abc = {
-//   'Shadow Crystal': {},
-//   'Progressive Sword': {
-//     max: 4,
-//   },
-//   'Progressive Sky Book': {
-//     max: 7,
-//     onSubtext(count: number) {
-//       if (count > 0) {
-//         return `Sky Book and ${count - 1}/6 characters`;
-//       }
-//       return '';
-//     },
-//   },
-// };
-
-// const startingInventory = [
-//   'Shadow Crystal',
-//   'Progressive Sword',
-//   'Boomerang',
-//   'Lantern',
-//   'Slingshot',
-//   'Progressive Fishing Rod',
-//   'Iron Boots',
-//   'Progressive Bow',
-//   'Bomb Bag and Bombs',
-//   'Giant Bomb Bag',
-//   'Zora Armor',
-//   'Progressive Clawshot',
-//   "Auru's Memo",
-//   "Ashei's Sketch",
-//   'Spinner',
-//   'Ball and Chain',
-//   'Progressive Dominion Rod',
-//   'Progressive Sky Book',
-//   'Horse Call',
-//   'Gate Keys',
-//   'Empty Bottle',
-//   'Progressive Hidden Skill',
-//   'Magic Armor',
-//   'Ordon Shield',
-//   'Hylian Shield',
-//   'Hawkeye',
-// ];
-
 function StartingInventoryPage() {
-  // const useFormRet = useForm({
-  //   values:
-  // })
+  const useFormRet = useForm<FormSchema>({
+    values: {
+      list: [],
+    },
+    defaultValues: {
+      list: [],
+    },
+  });
 
   // return <Box>In starting inventory page</Box>;
   return (
     <Box>
-      <StartingInventoryList />
+      <StartingInventoryList useFormRet={useFormRet} />
     </Box>
   );
   // return (

@@ -1,15 +1,38 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import StartingInventoryListLeft from './StartingInventoryListLeft';
 import StartingInventoryListRight from './StartingInventoryListRight';
+import type { FormSchema } from './startingInventoryListShared';
 import { ItemId } from './startingInventoryListShared';
 import { startingItemDefsOrder } from './startingInventoryListShared';
+import type { useForm } from 'react-hook-form';
 
-function StartingInventoryList() {
+type StartingInventoryListProps = {
+  useFormRet: ReturnType<typeof useForm<FormSchema>>;
+};
+
+function StartingInventoryList({ useFormRet }: StartingInventoryListProps) {
+  const watchList = useFormRet.watch('list');
+
+  console.log('watchList');
+  console.log(watchList);
+
   const [selectedIndexes, setSelectedIndexes] = useState<Record<number, boolean>>({
     [ItemId.Hawkeye]: true,
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      useFormRet.setValue('list', [ItemId.AurusMemo]);
+    }, 2000);
+  }, []);
+
+  // right list - state is ordered list of which itemIds are in the list, as
+  // well as state for certain rows.
+
+  // The parsed settings will be a single array with multiple of some itemIds.
+  // This gets passed down to the root list.
 
   const [leftData, rightData] = useMemo(() => {
     const left: ItemId[] = [];
