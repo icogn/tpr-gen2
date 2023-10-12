@@ -240,9 +240,26 @@ function OtherPage() {
         <Checkbox label="Unlock Map Regions" />
       </Box>
       <Box title="Shops & Rupees">
+        <SubSection
+          title="General"
+          noTopMargin
+        />
         <Checkbox label="Shop Models Show the Replaced Item" />
         <Checkbox label="Increase Wallet Capacity" />
-        <Checkbox label="First Malo Mart Donation Paid" />
+        <SubSection title="Malo Mart Quest" />
+        <Checkbox label="Bridge Donation Completed" />
+        <DemoSlider
+          label="Malo Mart New Branch Donation"
+          min={0}
+          max={2000}
+          defaultValue={2000}
+        />
+        <DemoSlider
+          label="Malo Mart New Branch Donation (reduced)"
+          min={0}
+          max={2000}
+          defaultValue={200}
+        />
         <DemoSlider
           label="Magic Armor Price"
           min={0}
