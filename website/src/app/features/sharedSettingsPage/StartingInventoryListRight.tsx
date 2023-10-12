@@ -2,14 +2,20 @@
 
 import { useState } from 'react';
 import Button from '@mui/material/Button';
-import { startingItemDefs, type ItemId } from './startingInventoryListShared';
+import type { FormSchema } from './startingInventoryListShared';
+import { startingItemDefs } from './startingInventoryListShared';
+import { type UseFieldArrayReturn } from 'react-hook-form';
 
 type StartingInventoryListRightProps = {
-  data: ItemId[];
-  onRemove(deselected: Record<number, boolean>): void;
+  useFieldArrayRet: UseFieldArrayReturn<FormSchema, 'list'>;
 };
 
-function StartingInventoryListRight({ data, onRemove }: StartingInventoryListRightProps) {
+function StartingInventoryListRight({ useFieldArrayRet }: StartingInventoryListRightProps) {
+  const { fields, remove } = useFieldArrayRet;
+
+  console.log('fields');
+  console.log(fields);
+
   const [selected, setSelected] = useState<Record<number, boolean>>({});
 
   return (
@@ -21,24 +27,24 @@ function StartingInventoryListRight({ data, onRemove }: StartingInventoryListRig
           marginBottom: '8px',
         }}
         onClick={() => {
-          onRemove(selected);
+          remove();
           setSelected({});
         }}
       >
         Remove
       </Button>
       <div>
-        {data
-          .filter(itemId => {
-            return startingItemDefs[itemId];
-          })
-          .map(itemId => {
+        {fields
+          // .filter(({ itemId }) => {
+          //   return startingItemDefs[itemId];
+          // })
+          .map(({ itemId, id }) => {
             const isSelected = Boolean(selected[itemId]);
             const startingItemDef = startingItemDefs[itemId]!;
 
             return (
               <div
-                key={itemId}
+                key={id}
                 className="border"
                 style={{
                   userSelect: 'none',

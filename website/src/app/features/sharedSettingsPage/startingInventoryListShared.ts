@@ -110,7 +110,18 @@ export const startingItemDefsOrder: ItemId[] = [
   ItemId.Hawkeye,
 ];
 
+export type StartingItemField = {
+  itemId: ItemId;
+  count?: number;
+};
+
 export type FormSchema = {
-  list: ItemId[];
+  // list: ItemId[];
+  // list: ItemId[];
+  list: StartingItemField[];
   exBool: boolean;
+};
+
+export type ItemIdRecord<T> = {
+  [key in ItemId]?: T;
 };

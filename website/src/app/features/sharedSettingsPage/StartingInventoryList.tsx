@@ -1,30 +1,70 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import StartingInventoryListLeft from './StartingInventoryListLeft';
 import StartingInventoryListRight from './StartingInventoryListRight';
-import type { FormSchema } from './startingInventoryListShared';
+import type { FormSchema, StartingItemField } from './startingInventoryListShared';
 import { ItemId } from './startingInventoryListShared';
 import { startingItemDefsOrder } from './startingInventoryListShared';
-import type { useForm } from 'react-hook-form';
+import { useFieldArray, type UseFormReturn } from 'react-hook-form';
 
 type StartingInventoryListProps = {
-  useFormRet: ReturnType<typeof useForm<FormSchema>>;
+  useFormRet: UseFormReturn<FormSchema>;
 };
 
 function StartingInventoryList({ useFormRet }: StartingInventoryListProps) {
-  const watchList = useFormRet.watch('list');
+  // const watchList = useFormRet.watch('list');
 
-  console.log('watchList');
-  console.log(watchList);
+  // Don't want to have to define encoding and decoding of settings string in C#
+  // as well as website. This causes problems with the ease of maintaining
+  // backwards compatibility. Note that we should be able to add unit testing
+  // for backwards compatibility if the only code is typescript.
 
-  const [selectedIndexes, setSelectedIndexes] = useState<Record<number, boolean>>({
-    [ItemId.Hawkeye]: true,
+  // As such, we want to provide the settings to the C# as base64-encoded json
+  // settings which can be easily parsed into a class instance.
+
+  // The downside is that getting the string to test will be a little more
+  // difficult. Possibly let people manually set a localStorage value to
+  // indicate they want "dev" things in the UI. Maybe a button for generating
+  // this string.
+
+  // Settings string <=> website form
+  // website form => c# settings
+
+  // Will need to watch out for character limits related to the length of the
+  // base64 input. May need to do some stdin pipe stuff. Can wait until an
+  // actual issue pops up though.
+
+  // console.log('watchList');
+  // console.log(watchList);
+
+  const useFieldArrayRet = useFieldArray({
+    name: 'list',
+    control: useFormRet.control,
   });
+
+  const leftData = useMemo(() => {
+    const selectedItemIds: { [key in ItemId]?: boolean } = {};
+    useFieldArrayRet.fields.forEach(({ itemId }) => {
+      selectedItemIds[itemId] = true;
+    });
+
+    const ret: ItemId[] = [];
+    startingItemDefsOrder.forEach((itemId: ItemId) => {
+      if (!selectedItemIds[itemId]) {
+        ret.push(itemId);
+      }
+    });
+    return ret;
+  }, [useFieldArrayRet.fields]);
+
+  // const [selectedIndexes, setSelectedIndexes] = useState<Abc>({
+  //   [ItemId.Hawkeye]: true,
+  // });
 
   useEffect(() => {
     setTimeout(() => {
-      useFormRet.setValue('list', [ItemId.AurusMemo]);
+      useFormRet.setValue('list', [{ itemId: ItemId.AurusMemo }]);
     }, 2000);
   }, []);
 
@@ -34,39 +74,14 @@ function StartingInventoryList({ useFormRet }: StartingInventoryListProps) {
   // The parsed settings will be a single array with multiple of some itemIds.
   // This gets passed down to the root list.
 
-  const [leftData, rightData] = useMemo(() => {
-    const left: ItemId[] = [];
-    const right: ItemId[] = [];
-
-    startingItemDefsOrder.forEach((itemId: ItemId) => {
-      if (selectedIndexes[itemId]) {
-        right.push(itemId);
-      } else {
-        left.push(itemId);
-      }
-    });
-
-    return [left, right];
-  }, [selectedIndexes]);
-
-  const handleAdd = (selected: Record<number, boolean>) => {
-    setSelectedIndexes({
-      ...selectedIndexes,
-      ...selected,
-    });
-  };
-
-  const handleRemove = (deselected: Record<number, boolean>) => {
-    const newSelectedIndexes: Record<number, boolean> = {};
-
-    Object.keys(selectedIndexes).forEach((idxStr: string) => {
-      const index = parseInt(idxStr, 10);
-      if (!deselected[index]) {
-        newSelectedIndexes[index] = true;
-      }
-    });
-
-    setSelectedIndexes(newSelectedIndexes);
+  const handleAdd = (selected: StartingItemField[]) => {
+    console.log('selected');
+    console.log(selected);
+    useFieldArrayRet.prepend(selected);
+    // setSelectedIndexes({
+    //   ...selectedIndexes,
+    //   ...selected,
+    // });
   };
 
   return (
@@ -75,10 +90,7 @@ function StartingInventoryList({ useFormRet }: StartingInventoryListProps) {
         data={leftData}
         onAdd={handleAdd}
       />
-      <StartingInventoryListRight
-        data={rightData}
-        onRemove={handleRemove}
-      />
+      <StartingInventoryListRight useFieldArrayRet={useFieldArrayRet} />
     </div>
   );
 }

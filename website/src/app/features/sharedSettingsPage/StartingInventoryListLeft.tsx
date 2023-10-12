@@ -1,17 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import type { ItemId } from './startingInventoryListShared';
-import { startingItemDefs } from './startingInventoryListShared';
+import type { ItemId, StartingItemField, ItemIdRecord } from './startingInventoryListShared';
+import { startingItemDefs, startingItemDefsOrder } from './startingInventoryListShared';
 import Button from '@mui/material/Button';
 
 type StartingInventoryListLeftProps = {
   data: ItemId[];
-  onAdd(selected: Record<number, boolean>): void;
+  onAdd(selected: StartingItemField[]): void;
 };
 
 function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftProps) {
-  const [selected, setSelected] = useState<Record<number, boolean>>({});
+  const [selected, setSelected] = useState<ItemIdRecord<boolean>>({});
 
   return (
     <div className="border p-3">
@@ -22,7 +22,17 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
           marginBottom: '8px',
         }}
         onClick={() => {
-          onAdd(selected);
+          // Order should match what it looked like on the left side once added
+          // to the right.
+          const itemFields: StartingItemField[] = [];
+
+          startingItemDefsOrder.forEach(itemId => {
+            if (selected[itemId]) {
+              itemFields.push({ itemId });
+            }
+          });
+
+          onAdd(itemFields);
           setSelected({});
         }}
       >
