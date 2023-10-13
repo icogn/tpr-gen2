@@ -14,6 +14,7 @@ type StartingInventoryListLeftProps = {
 
 function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftProps) {
   const [selected, setSelected] = useState<ItemIdRecord<boolean>>({});
+  const [searchText, setSearchText] = useState('');
 
   const numSelected = useMemo(() => {
     return Object.keys(selected).reduce((acc, key) => {
@@ -27,7 +28,7 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
 
   return (
     <div className="border p-3">
-      <div className="flex items-center justify-end full-width">
+      <div className="flex items-center full-width">
         <Button
           variant="contained"
           disableElevation
@@ -35,6 +36,7 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
           endIcon={<ChevronRight />}
           sx={{
             marginBottom: '8px',
+            marginLeft: 'auto',
           }}
           onClick={() => {
             // Order should match what it looked like on the left side once added
@@ -67,12 +69,20 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
           placeholder="Search"
           className="px-2 ml-1 flex-1 min-w-0"
           style={{ color: '#000' }}
+          value={searchText}
+          onChange={e => {
+            setSearchText(e.target.value);
+          }}
         />
       </div>
       <div>
         {data
           .filter(itemId => {
-            return startingItemDefs[itemId];
+            const itemDef = startingItemDefs[itemId];
+            if (!itemDef) {
+              return false;
+            }
+            return itemDef.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0;
           })
           .map(itemId => {
             const isSelected = Boolean(selected[itemId]);
@@ -93,7 +103,13 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
                   });
                 }}
               >
-                {startingItemDef.name}
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  readOnly
+                  className="mr-2"
+                />
+                <span className="mr-1">{startingItemDef.name}</span>
               </div>
             );
           })}
