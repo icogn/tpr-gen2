@@ -79,7 +79,22 @@ export const startingItemDefs: { [key in ItemId]?: StartingItemDef } = {
     },
   },
   [ItemId.IronBoots]: { name: 'Iron Boots' },
-  [ItemId.ProgressiveBow]: { name: 'Progressive Bow', max: 3 },
+  [ItemId.ProgressiveBow]: {
+    name: 'Progressive Bow',
+    max: 3,
+    onSubtext(count: number) {
+      switch (count) {
+        case 3:
+          return 'Giant Quiver (100)';
+        case 2:
+          return 'Big Quiver (60)';
+        case 1:
+          return 'Base Quiver (30)';
+        default:
+          return '';
+      }
+    },
+  },
   [ItemId.BombBagAndBombs]: { name: 'Bomb Bag and Bombs', max: 3 },
   [ItemId.GiantBombBag]: { name: 'Giant Bomb Bag' },
   [ItemId.ZoraArmor]: { name: 'Zora Armor' },
