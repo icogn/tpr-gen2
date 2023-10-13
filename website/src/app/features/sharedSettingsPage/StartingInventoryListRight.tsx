@@ -94,7 +94,7 @@ function StartingInventoryListRight({
               className={clsx('border px-1', styles.anim)}
               style={{
                 userSelect: 'none',
-                backgroundColor: isSelected ? '#cc0000' : undefined,
+                backgroundColor: isSelected ? 'rgba(255,255,255,0.3)' : undefined,
               }}
               onClick={() => {
                 setSelected({
@@ -117,6 +117,7 @@ function StartingInventoryListRight({
                       type="number"
                       className={clsx('ml-auto text-sm', styles.startingItemNumInput)}
                       {...useFormRet.register(`list.${index}.count`, {
+                        valueAsNumber: true,
                         min: {
                           value: 1,
                           message: 'Min is 1',
@@ -137,7 +138,7 @@ function StartingInventoryListRight({
                 )}
               </div>
               {currentError && <span style={{ color: 'pink' }}>{currentError}</span>}
-              {!currentError && subtext && <span>{subtext}</span>}
+              {!currentError && subtext && <span className="text-sm">{subtext}</span>}
             </div>
           );
         })}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { ItemId, StartingItemField, ItemIdRecord } from './startingInventoryListShared';
 import { startingItemDefs, startingItemDefsOrder } from './startingInventoryListShared';
 import Button from '@mui/material/Button';
@@ -13,11 +13,22 @@ type StartingInventoryListLeftProps = {
 function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftProps) {
   const [selected, setSelected] = useState<ItemIdRecord<boolean>>({});
 
+  const numSelected = useMemo(() => {
+    return Object.keys(selected).reduce((acc, key) => {
+      const itemId = parseInt(key, 10) as ItemId;
+      if (selected[itemId]) {
+        acc += 1;
+      }
+      return acc;
+    }, 0);
+  }, [selected]);
+
   return (
     <div className="border p-3">
       <Button
         variant="contained"
         disableElevation
+        disabled={numSelected < 1}
         sx={{
           marginBottom: '8px',
         }}
@@ -59,7 +70,7 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
                 className="border px-1"
                 style={{
                   userSelect: 'none',
-                  backgroundColor: isSelected ? '#cc0000' : undefined,
+                  backgroundColor: isSelected ? 'rgba(255,255,255,0.3)' : undefined,
                 }}
                 onClick={() => {
                   setSelected({

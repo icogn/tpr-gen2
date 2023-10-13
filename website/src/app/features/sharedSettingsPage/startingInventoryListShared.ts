@@ -45,22 +45,72 @@ export enum ItemId {
 
 export const startingItemDefs: { [key in ItemId]?: StartingItemDef } = {
   [ItemId.ShadowCrystal]: { name: 'Shadow Crystal' },
-  [ItemId.ProgressiveSword]: { name: 'Progressive Sword', max: 4 },
+  [ItemId.ProgressiveSword]: {
+    name: 'Progressive Sword',
+    max: 4,
+    onSubtext(count: number) {
+      switch (count) {
+        case 4:
+          return 'Light Sword';
+        case 3:
+          return 'Master Sword';
+        case 2:
+          return 'Ordon Sword';
+        case 1:
+          return 'Wooden Sword';
+        default:
+          return '';
+      }
+    },
+  },
   [ItemId.Boomerang]: { name: 'Boomerang' },
   [ItemId.Lantern]: { name: 'Lantern' },
   [ItemId.Slingshot]: { name: 'Slingshot' },
-  [ItemId.ProgressiveFishingRod]: { name: 'Progressive Fishing Rod', max: 2 },
+  [ItemId.ProgressiveFishingRod]: {
+    name: 'Progressive Fishing Rod',
+    max: 2,
+    onSubtext(count: number) {
+      if (count === 2) {
+        return 'Fishing Rod with Coral Earring';
+      } else if (count === 1) {
+        return 'Fishing Rod';
+      }
+      return '';
+    },
+  },
   [ItemId.IronBoots]: { name: 'Iron Boots' },
   [ItemId.ProgressiveBow]: { name: 'Progressive Bow', max: 3 },
   [ItemId.BombBagAndBombs]: { name: 'Bomb Bag and Bombs', max: 3 },
   [ItemId.GiantBombBag]: { name: 'Giant Bomb Bag' },
   [ItemId.ZoraArmor]: { name: 'Zora Armor' },
-  [ItemId.ProgressiveClawshot]: { name: 'Progressive Clawshot', max: 2 },
+  [ItemId.ProgressiveClawshot]: {
+    name: 'Progressive Clawshot',
+    max: 2,
+    onSubtext(count: number) {
+      if (count === 2) {
+        return 'Double Clawshots';
+      } else if (count === 1) {
+        return 'Clawshot';
+      }
+      return '';
+    },
+  },
   [ItemId.AurusMemo]: { name: "Auru's Memo" },
   [ItemId.AsheisSketch]: { name: "Ashei's Sketch" },
   [ItemId.Spinner]: { name: 'Spinner' },
   [ItemId.BallAndChain]: { name: 'Ball and Chain' },
-  [ItemId.ProgressiveDominionRod]: { name: 'Progressive Dominion Rod', max: 2 },
+  [ItemId.ProgressiveDominionRod]: {
+    name: 'Progressive Dominion Rod',
+    max: 2,
+    onSubtext(count: number) {
+      if (count === 2) {
+        return 'Dominion Rod (restored)';
+      } else if (count === 1) {
+        return 'Dominion Rod';
+      }
+      return '';
+    },
+  },
   [ItemId.ProgressiveSkyBook]: {
     name: 'Progressive Sky Book',
     max: 7,
@@ -74,7 +124,37 @@ export const startingItemDefs: { [key in ItemId]?: StartingItemDef } = {
   [ItemId.HorseCall]: { name: 'Horse Call' },
   [ItemId.GateKeys]: { name: 'Gate Keys' },
   [ItemId.EmptyBottle]: { name: 'Empty Bottle' },
-  [ItemId.ProgressiveHiddenSkill]: { name: 'Progressive Hidden Skill', max: 7 },
+  [ItemId.ProgressiveHiddenSkill]: {
+    name: 'Progressive Hidden Skill',
+    max: 7,
+    onSubtext(count: number) {
+      let str = '';
+      switch (count) {
+        case 7:
+          return 'All hidden skills';
+        case 6:
+          str = 'Jump Strike';
+          break;
+        case 5:
+          str = 'Mortal Draw';
+          break;
+        case 4:
+          str = 'Helm Splitter';
+          break;
+        case 3:
+          str = 'Back Slice';
+          break;
+        case 2:
+          str = 'Shield Attack';
+          break;
+        case 1:
+          return 'Ending Blow';
+        default:
+          return '';
+      }
+      return str + ' and earlier skills';
+    },
+  },
   [ItemId.MagicArmor]: { name: 'Magic Armor' },
   [ItemId.OrdonShield]: { name: 'Ordon Shield' },
   [ItemId.HylianShield]: { name: 'Hylian Shield' },
@@ -116,8 +196,6 @@ export type StartingItemField = {
 };
 
 export type FormSchema = {
-  // list: ItemId[];
-  // list: ItemId[];
   list: StartingItemField[];
   exBool: boolean;
 };
