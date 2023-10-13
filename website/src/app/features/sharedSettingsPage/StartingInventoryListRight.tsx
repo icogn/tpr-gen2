@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Button from '@mui/material/Button';
 import type { FormSchema } from './startingInventoryListShared';
 import { startingItemDefs } from './startingInventoryListShared';
@@ -29,11 +29,21 @@ function StartingInventoryListRight({
 
   const [selected, setSelected] = useState<Record<string, boolean>>({});
 
+  const numSelected = useMemo(() => {
+    return Object.keys(selected).reduce((acc, key) => {
+      if (selected[key]) {
+        acc += 1;
+      }
+      return acc;
+    }, 0);
+  }, [selected]);
+
   return (
     <div className="border p-3">
       <Button
         variant="contained"
         disableElevation
+        disabled={numSelected < 1}
         sx={{
           marginBottom: '8px',
         }}
