@@ -29,13 +29,13 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
   return (
     <div className="border p-3">
       <div className="flex items-center full-width">
+        {numSelected > 0 && <span className="ml-1 text-sm">{`${numSelected} selected`}</span>}
         <Button
           variant="contained"
           disableElevation
           disabled={numSelected < 1}
           endIcon={<ChevronRight />}
           sx={{
-            marginBottom: '8px',
             marginLeft: 'auto',
           }}
           onClick={() => {
