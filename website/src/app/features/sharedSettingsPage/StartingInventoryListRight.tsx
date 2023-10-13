@@ -18,6 +18,10 @@ function StartingInventoryListRight({
   useFormRet,
   useFieldArrayRet,
 }: StartingInventoryListRightProps) {
+  const {
+    formState: { errors },
+    getValues,
+  } = useFormRet;
   const { fields, remove } = useFieldArrayRet;
 
   console.log('fields');
@@ -53,10 +57,31 @@ function StartingInventoryListRight({
           const isSelected = Boolean(selected[id]);
           const startingItemDef = startingItemDefs[itemId]!;
 
+          let currentError = '';
+          let maxValue = 0;
+          let shouldRenderInput = false;
+          let subtext = '';
+
+          if (startingItemDef.onSubtext) {
+            let val = getValues(`list.${index}.count`);
+            if (val == null) {
+              val = 1;
+            }
+            subtext = startingItemDef.onSubtext(val);
+          }
+
+          if (startingItemDef.max != null) {
+            shouldRenderInput = true;
+            maxValue = startingItemDef.max;
+            if (errors?.list?.[index]?.count?.message) {
+              currentError = errors?.list?.[index]?.count?.message || '';
+            }
+          }
+
           return (
             <div
               key={id}
-              className={clsx('border px-1 flex items-center', styles.anim)}
+              className={clsx('border px-1', styles.anim)}
               style={{
                 userSelect: 'none',
                 backgroundColor: isSelected ? '#cc0000' : undefined,
@@ -68,25 +93,41 @@ function StartingInventoryListRight({
                 });
               }}
             >
-              <input
-                type="checkbox"
-                checked={isSelected}
-                readOnly
-                className="mr-2"
-              />
-              <span className="mr-1">{startingItemDef.name}</span>
-              {startingItemDef.max != null && (
+              <div className={'flex items-center'}>
                 <input
-                  type="number"
-                  className={clsx('ml-auto text-sm', styles.startingItemNumInput)}
-                  {...useFormRet.register(`list.${index}.count`)}
-                  min={1}
-                  max={startingItemDef.max}
-                  onClick={e => {
-                    e.stopPropagation();
-                  }}
+                  type="checkbox"
+                  checked={isSelected}
+                  readOnly
+                  className="mr-2"
                 />
-              )}
+                <span className="mr-1">{startingItemDef.name}</span>
+                {shouldRenderInput && (
+                  <>
+                    <input
+                      type="number"
+                      className={clsx('ml-auto text-sm', styles.startingItemNumInput)}
+                      {...useFormRet.register(`list.${index}.count`, {
+                        min: {
+                          value: 1,
+                          message: 'Min is 1',
+                        },
+                        max: {
+                          value: maxValue,
+                          message: `Max is ${maxValue}`,
+                        },
+                        required: 'Required',
+                      })}
+                      min={1}
+                      max={startingItemDef.max}
+                      onClick={e => {
+                        e.stopPropagation();
+                      }}
+                    />
+                  </>
+                )}
+              </div>
+              {currentError && <span style={{ color: 'pink' }}>{currentError}</span>}
+              {!currentError && subtext && <span>{subtext}</span>}
             </div>
           );
         })}

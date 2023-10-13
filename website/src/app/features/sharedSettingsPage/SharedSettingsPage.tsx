@@ -10,10 +10,27 @@ import Button from '@mui/material/Button';
 // import ListPickerLeft from './ListPickerLeft';
 import Select from './Select';
 import StartingInventoryList from './StartingInventoryList';
+import type { UseFormReturn } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { type FormSchema } from './startingInventoryListShared';
+import FormWatcher from './FormWatcher';
 
 function SharedSettingsPage() {
+  const useFormRet = useForm<FormSchema>({
+    values: {
+      list: [],
+      exBool: false,
+    },
+    defaultValues: {
+      list: [],
+      exBool: false,
+    },
+    mode: 'onChange',
+  });
+
+  console.log('useFormRet.formState.errors');
+  console.log(useFormRet.formState.errors);
+
   const [tabIndex, setTabIndex] = useState(2);
 
   const handleTabChange = (e: React.SyntheticEvent, newIndex: number) => {
@@ -22,6 +39,7 @@ function SharedSettingsPage() {
 
   return (
     <div className="flex justify-center">
+      <FormWatcher useFormRet={useFormRet} />
       <div style={{ maxWidth: '1100px', width: '100%' }}>
         <div className="mb-2 mx-1">
           <div
@@ -55,7 +73,7 @@ function SharedSettingsPage() {
           index={2}
           value={tabIndex}
         >
-          <StartingInventoryPage />
+          <StartingInventoryPage useFormRet={useFormRet} />
         </CustomTabPanel>
         <CustomTabPanel
           index={3}
@@ -181,18 +199,11 @@ function ExcludedChecksPage() {
   return <Box>In excluded checks page</Box>;
 }
 
-function StartingInventoryPage() {
-  const useFormRet = useForm<FormSchema>({
-    values: {
-      list: [],
-      exBool: false,
-    },
-    defaultValues: {
-      list: [],
-      exBool: false,
-    },
-  });
+type StartingInventoryPageProps = {
+  useFormRet: UseFormReturn<FormSchema>;
+};
 
+function StartingInventoryPage({ useFormRet }: StartingInventoryPageProps) {
   // return <Box>In starting inventory page</Box>;
   return (
     <Box>
