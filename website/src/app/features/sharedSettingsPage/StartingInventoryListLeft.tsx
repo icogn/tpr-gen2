@@ -5,6 +5,7 @@ import type { ItemId, StartingItemField, ItemIdRecord } from './startingInventor
 import { startingItemDefs, startingItemDefsOrder } from './startingInventoryListShared';
 import Button from '@mui/material/Button';
 import { ChevronRight } from '@mui/icons-material';
+import { Checkbox } from '@mui/material';
 
 type StartingInventoryListLeftProps = {
   data: ItemId[];
@@ -58,6 +59,15 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
         >
           Add
         </Button>
+      </div>
+      <div className="flex items-center mb-1 w-full">
+        <Checkbox sx={{ marginLeft: '-8px' }} />
+        <input
+          type="text"
+          placeholder="Search"
+          className="px-2 ml-1 flex-1 min-w-0"
+          style={{ color: '#000' }}
+        />
       </div>
       <div>
         {data
