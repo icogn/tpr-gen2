@@ -8,6 +8,7 @@ import type { UseFormReturn } from 'react-hook-form';
 import { type UseFieldArrayReturn } from 'react-hook-form';
 import styles from './SharedSettingsPage.module.css';
 import clsx from 'clsx';
+import { ChevronLeft } from '@mui/icons-material';
 
 type StartingInventoryListRightProps = {
   useFormRet: UseFormReturn<FormSchema>;
@@ -44,6 +45,7 @@ function StartingInventoryListRight({
         variant="contained"
         disableElevation
         disabled={numSelected < 1}
+        startIcon={<ChevronLeft />}
         sx={{
           marginBottom: '8px',
         }}

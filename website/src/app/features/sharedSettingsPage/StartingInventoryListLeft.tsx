@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import type { ItemId, StartingItemField, ItemIdRecord } from './startingInventoryListShared';
 import { startingItemDefs, startingItemDefsOrder } from './startingInventoryListShared';
 import Button from '@mui/material/Button';
+import { ChevronRight } from '@mui/icons-material';
 
 type StartingInventoryListLeftProps = {
   data: ItemId[];
@@ -25,36 +26,39 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
 
   return (
     <div className="border p-3">
-      <Button
-        variant="contained"
-        disableElevation
-        disabled={numSelected < 1}
-        sx={{
-          marginBottom: '8px',
-        }}
-        onClick={() => {
-          // Order should match what it looked like on the left side once added
-          // to the right.
-          const itemFields: StartingItemField[] = [];
+      <div className="flex items-center justify-end full-width">
+        <Button
+          variant="contained"
+          disableElevation
+          disabled={numSelected < 1}
+          endIcon={<ChevronRight />}
+          sx={{
+            marginBottom: '8px',
+          }}
+          onClick={() => {
+            // Order should match what it looked like on the left side once added
+            // to the right.
+            const itemFields: StartingItemField[] = [];
 
-          startingItemDefsOrder.forEach(itemId => {
-            if (selected[itemId]) {
-              const obj: StartingItemField = { itemId };
-              const startingItemDef = startingItemDefs[itemId]!;
-              if (startingItemDef.max) {
-                obj.count = 1;
+            startingItemDefsOrder.forEach(itemId => {
+              if (selected[itemId]) {
+                const obj: StartingItemField = { itemId };
+                const startingItemDef = startingItemDefs[itemId]!;
+                if (startingItemDef.max) {
+                  obj.count = 1;
+                }
+
+                itemFields.push(obj);
               }
+            });
 
-              itemFields.push(obj);
-            }
-          });
-
-          onAdd(itemFields);
-          setSelected({});
-        }}
-      >
-        Add
-      </Button>
+            onAdd(itemFields);
+            setSelected({});
+          }}
+        >
+          Add
+        </Button>
+      </div>
       <div>
         {data
           .filter(itemId => {
