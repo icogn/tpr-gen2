@@ -16,7 +16,7 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
   const [selected, setSelected] = useState<ItemIdRecord<boolean>>({});
   const [searchText, setSearchText] = useState('');
 
-  const numSelected = useMemo(() => {
+  const totalSelected = useMemo(() => {
     return Object.keys(selected).reduce((acc, key) => {
       const itemId = parseInt(key, 10) as ItemId;
       if (selected[itemId]) {
@@ -26,14 +26,39 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
     }, 0);
   }, [selected]);
 
+  const { filteredData, indeterminateChecked, allChecked } = useMemo(() => {
+    let numFilteredSelected = 0;
+
+    const filtered = data.filter(itemId => {
+      const itemDef = startingItemDefs[itemId];
+      if (!itemDef) {
+        return false;
+      }
+      if (itemDef.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0) {
+        if (selected[itemId]) {
+          numFilteredSelected += 1;
+        }
+        return true;
+      }
+    });
+
+    const allChecks = filtered.length === numFilteredSelected && numFilteredSelected > 0;
+
+    return {
+      filteredData: filtered,
+      indeterminateChecked: !allChecks && numFilteredSelected > 0,
+      allChecked: allChecks,
+    };
+  }, [data, selected, searchText]);
+
   return (
     <div className="border p-3">
       <div className="flex items-center full-width">
-        {numSelected > 0 && <span className="ml-1 text-sm">{`${numSelected} selected`}</span>}
+        {totalSelected > 0 && <span className="ml-1 text-sm">{`${totalSelected} selected`}</span>}
         <Button
           variant="contained"
           disableElevation
-          disabled={numSelected < 1}
+          disabled={totalSelected < 1}
           endIcon={<ChevronRight />}
           sx={{
             marginLeft: 'auto',
@@ -63,7 +88,25 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
         </Button>
       </div>
       <div className="flex items-center mb-1 w-full">
-        <Checkbox sx={{ marginLeft: '-8px' }} />
+        <Checkbox
+          sx={{ marginLeft: '-8px' }}
+          indeterminate={indeterminateChecked}
+          checked={indeterminateChecked || allChecked}
+          onChange={e => {
+            console.log('e.target.checked');
+            console.log(e.target.checked);
+
+            const diff: ItemIdRecord<boolean> = {};
+            filteredData.forEach(itemId => {
+              diff[itemId] = e.target.checked;
+            });
+
+            setSelected({
+              ...selected,
+              ...diff,
+            });
+          }}
+        />
         <input
           type="text"
           placeholder="Search"
@@ -76,43 +119,43 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
         />
       </div>
       <div>
-        {data
+        {/* {data
           .filter(itemId => {
             const itemDef = startingItemDefs[itemId];
             if (!itemDef) {
               return false;
             }
             return itemDef.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0;
-          })
-          .map(itemId => {
-            const isSelected = Boolean(selected[itemId]);
-            const startingItemDef = startingItemDefs[itemId]!;
+          }) */}
+        {filteredData.map(itemId => {
+          const isSelected = Boolean(selected[itemId]);
+          const startingItemDef = startingItemDefs[itemId]!;
 
-            return (
-              <div
-                key={itemId}
-                className="border px-1"
-                style={{
-                  userSelect: 'none',
-                  backgroundColor: isSelected ? 'rgba(255,255,255,0.3)' : undefined,
-                }}
-                onClick={() => {
-                  setSelected({
-                    ...selected,
-                    [itemId]: !selected[itemId],
-                  });
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  readOnly
-                  className="mr-2"
-                />
-                <span className="mr-1">{startingItemDef.name}</span>
-              </div>
-            );
-          })}
+          return (
+            <div
+              key={itemId}
+              className="border px-1"
+              style={{
+                userSelect: 'none',
+                backgroundColor: isSelected ? 'rgba(255,255,255,0.3)' : undefined,
+              }}
+              onClick={() => {
+                setSelected({
+                  ...selected,
+                  [itemId]: !selected[itemId],
+                });
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={isSelected}
+                readOnly
+                className="mr-2"
+              />
+              <span className="mr-1">{startingItemDef.name}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
