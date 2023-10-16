@@ -119,14 +119,6 @@ function StartingInventoryListLeft({ data, onAdd }: StartingInventoryListLeftPro
         />
       </div>
       <div>
-        {/* {data
-          .filter(itemId => {
-            const itemDef = startingItemDefs[itemId];
-            if (!itemDef) {
-              return false;
-            }
-            return itemDef.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0;
-          }) */}
         {filteredData.map(itemId => {
           const isSelected = Boolean(selected[itemId]);
           const startingItemDef = startingItemDefs[itemId]!;
