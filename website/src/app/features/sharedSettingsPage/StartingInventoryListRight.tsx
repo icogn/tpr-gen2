@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import type { FormSchema } from './startingInventoryListShared';
 import { startingItemDefs } from './startingInventoryListShared';
@@ -10,6 +10,7 @@ import styles from './SharedSettingsPage.module.css';
 import clsx from 'clsx';
 import { ChevronLeft } from '@mui/icons-material';
 import { Checkbox } from '@mui/material';
+import { usePrevious, usePreviousDistinct } from 'react-use';
 
 type FilteredItem = {
   fieldIndex: number;
@@ -31,11 +32,70 @@ function StartingInventoryListRight({
   } = useFormRet;
   const { fields, remove } = useFieldArrayRet;
 
-  console.log('fields');
-  console.log(fields);
-
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [searchText, setSearchText] = useState('');
+  const preventAnims = useRef(true);
+
+  const prevFields = usePreviousDistinct(fields, (prev, next) => {
+    const prevIsArray = Array.isArray(prev);
+    const nextIsArray = Array.isArray(next);
+
+    if (prevIsArray !== nextIsArray) {
+      return false;
+    } else if (!prevIsArray) {
+      return prev === next;
+    }
+
+    const prevArr = prev!;
+    const nextArr = next!;
+
+    if (prevArr.length !== nextArr.length) {
+      return false;
+    }
+
+    for (let i = 0; i < prevArr.length; i++) {
+      const prevVal = prevArr[i];
+      const nextVal = nextArr[i];
+      if (prevVal.id !== nextVal.id) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+  const prevSearchText = usePrevious(searchText);
+
+  // Can only play anims if filters haven't changed. Once filters change, we
+  // cannot play anims again until fields are added (size increases). And then,
+  // we can only play anims for fields which are new.
+  useEffect(() => {
+    if (searchText !== prevSearchText) {
+      preventAnims.current = true;
+    }
+  }, [searchText, prevSearchText]);
+
+  const fieldIdsCanAnim = useMemo(() => {
+    if (prevFields && fields.length > prevFields.length) {
+      preventAnims.current = false;
+
+      const oldFieldIds: Record<string, boolean> = {};
+      if (prevFields) {
+        prevFields.forEach(({ id }) => {
+          oldFieldIds[id] = true;
+        });
+      }
+
+      const res: Record<string, boolean> = {};
+      fields.forEach(({ id }) => {
+        if (!oldFieldIds[id]) {
+          res[id] = true;
+        }
+      });
+      return res;
+    }
+
+    return {};
+  }, [fields, prevFields]);
 
   const totalSelected = useMemo(() => {
     return Object.keys(selected).reduce((acc, key) => {
@@ -137,7 +197,6 @@ function StartingInventoryListRight({
         />
       </div>
       <div>
-        {/* {fields.map(({ itemId, id }, index) => { */}
         {filteredData.map(({ fieldIndex: index, field: { itemId, id } }) => {
           const isSelected = Boolean(selected[id]);
           const startingItemDef = startingItemDefs[itemId]!;
@@ -163,10 +222,12 @@ function StartingInventoryListRight({
             }
           }
 
+          const showAnim = !preventAnims.current && Boolean(fieldIdsCanAnim[id]);
+
           return (
             <div
               key={id}
-              className={clsx('border px-1', styles.anim)}
+              className={clsx('border px-1', showAnim && styles.anim)}
               style={{
                 userSelect: 'none',
                 backgroundColor: isSelected ? 'rgba(255,255,255,0.3)' : undefined,

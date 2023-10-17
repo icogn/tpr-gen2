@@ -31,7 +31,7 @@ function SharedSettingsPage() {
   console.log('useFormRet.formState.errors');
   console.log(useFormRet.formState.errors);
 
-  const [tabIndex, setTabIndex] = useState(2);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = (e: React.SyntheticEvent, newIndex: number) => {
     setTabIndex(newIndex);
