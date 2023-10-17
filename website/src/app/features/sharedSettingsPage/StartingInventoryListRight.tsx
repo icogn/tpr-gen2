@@ -37,7 +37,7 @@ function StartingInventoryListRight({
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [searchText, setSearchText] = useState('');
 
-  const numSelected = useMemo(() => {
+  const totalSelected = useMemo(() => {
     return Object.keys(selected).reduce((acc, key) => {
       if (selected[key]) {
         acc += 1;
@@ -79,48 +79,51 @@ function StartingInventoryListRight({
 
   return (
     <div className="border p-3">
-      <Button
-        variant="contained"
-        disableElevation
-        disabled={numSelected < 1}
-        startIcon={<ChevronLeft />}
-        sx={{
-          marginRight: 'auto',
-        }}
-        onClick={() => {
-          const toRemove: number[] = [];
+      <div className="flex items-center full-width">
+        <Button
+          variant="contained"
+          disableElevation
+          disabled={totalSelected < 1}
+          startIcon={<ChevronLeft />}
+          sx={{
+            marginRight: 'auto',
+          }}
+          onClick={() => {
+            const toRemove: number[] = [];
 
-          fields.forEach(({ id }, index) => {
-            if (selected[id]) {
-              toRemove.push(index);
-            }
-          });
+            fields.forEach(({ id }, index) => {
+              if (selected[id]) {
+                toRemove.push(index);
+              }
+            });
 
-          remove(toRemove);
-          setSelected({});
-        }}
-      >
-        Remove
-      </Button>
+            remove(toRemove);
+            setSelected({});
+          }}
+        >
+          Remove
+        </Button>
+        {totalSelected > 0 && <span className="ml-1 text-sm">{`${totalSelected} selected`}</span>}
+      </div>
       <div className="flex items-center mb-1 w-full">
         <Checkbox
           sx={{ marginLeft: '-8px' }}
           indeterminate={indeterminateChecked}
           checked={indeterminateChecked || allChecked}
-          // onChange={e => {
-          //   console.log('e.target.checked');
-          //   console.log(e.target.checked);
+          onChange={e => {
+            console.log('e.target.checked');
+            console.log(e.target.checked);
 
-          //   const diff: ItemIdRecord<boolean> = {};
-          //   filteredData.forEach(itemId => {
-          //     diff[itemId] = e.target.checked;
-          //   });
+            const diff: Record<string, boolean> = {};
+            filteredData.forEach(({ field: { id } }) => {
+              diff[id] = e.target.checked;
+            });
 
-          //   setSelected({
-          //     ...selected,
-          //     ...diff,
-          //   });
-          // }}
+            setSelected({
+              ...selected,
+              ...diff,
+            });
+          }}
         />
         <input
           type="text"
