@@ -31,6 +31,10 @@
     "deploy": "node scripts/deploy.mjs",
     "deploy:check-hash": "node scripts/checkDeployHash.mjs"
   },
+  "resolutions": {
+    "@types/react": "18.2.6",
+    "@types/react-dom": "18.2.4"
+  },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",
     "@types/lodash.escaperegexp": "^4.1.7",

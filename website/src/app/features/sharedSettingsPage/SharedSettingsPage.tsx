@@ -14,6 +14,7 @@ import type { UseFormReturn } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { type FormSchema } from './startingInventoryListShared';
 import FormWatcher from './FormWatcher';
+import ExcludedChecks from './ExcludedChecks';
 
 function SharedSettingsPage() {
   const useFormRet = useForm<FormSchema>({
@@ -31,7 +32,7 @@ function SharedSettingsPage() {
   console.log('useFormRet.formState.errors');
   console.log(useFormRet.formState.errors);
 
-  const [tabIndex, setTabIndex] = useState(0);
+  const [tabIndex, setTabIndex] = useState(1);
 
   const handleTabChange = (e: React.SyntheticEvent, newIndex: number) => {
     setTabIndex(newIndex);
@@ -196,7 +197,12 @@ function MainRulesPage() {
 }
 
 function ExcludedChecksPage() {
-  return <Box>In excluded checks page</Box>;
+  // return <Box>In excluded checks page</Box>;
+  return (
+    <Box>
+      <ExcludedChecks />
+    </Box>
+  );
 }
 
 type StartingInventoryPageProps = {
