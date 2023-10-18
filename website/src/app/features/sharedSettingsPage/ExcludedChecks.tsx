@@ -31,20 +31,32 @@
 import { Virtuoso } from 'react-virtuoso';
 import { excludedChecksList } from './excludedChecksList';
 
-// type RowProps = {
-//   index: number;
-//   style: React.CSSProperties;
-// };
+type RowProps = {
+  index: number;
+};
 
-// function Row({ index, style }: RowProps) {
-//   return <div style={style}>Row {index}</div>;
-// }
+function Row({ index }: RowProps) {
+  return (
+    <div>
+      <input type="checkbox" />
+      <span>{`${index} ${excludedChecksList[index]}`}</span>
+    </div>
+  );
+}
 
 function ExcludedChecks() {
   return (
-    <div>
+    <div className="flex">
       <Virtuoso
         style={{ height: '400px' }}
+        className="flex-1"
+        totalCount={excludedChecksList.length}
+        // itemContent={index => <div>{`${index} ${excludedChecksList[index]}`}</div>}
+        itemContent={index => <Row index={index} />}
+      />
+      <Virtuoso
+        style={{ height: '400px' }}
+        className="flex-1"
         totalCount={excludedChecksList.length}
         itemContent={index => <div>{`${index} ${excludedChecksList[index]}`}</div>}
       />
