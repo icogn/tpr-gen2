@@ -20,10 +20,12 @@ function SharedSettingsPage() {
   const useFormRet = useForm<FormSchema>({
     values: {
       list: [],
+      excludedChecks: [],
       exBool: false,
     },
     defaultValues: {
       list: [],
+      excludedChecks: [],
       exBool: false,
     },
     mode: 'onChange',
@@ -68,7 +70,7 @@ function SharedSettingsPage() {
           index={1}
           value={tabIndex}
         >
-          <ExcludedChecksPage />
+          <ExcludedChecksPage useFormRet={useFormRet} />
         </CustomTabPanel>
         <CustomTabPanel
           index={2}
@@ -196,11 +198,15 @@ function MainRulesPage() {
   );
 }
 
-function ExcludedChecksPage() {
+type ExcludedChecksPageProps = {
+  useFormRet: UseFormReturn<FormSchema>;
+};
+
+function ExcludedChecksPage({ useFormRet }: ExcludedChecksPageProps) {
   // return <Box>In excluded checks page</Box>;
   return (
     <Box>
-      <ExcludedChecks />
+      <ExcludedChecks useFormRet={useFormRet} />
     </Box>
   );
 }

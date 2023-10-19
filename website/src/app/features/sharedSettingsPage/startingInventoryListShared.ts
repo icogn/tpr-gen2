@@ -1,3 +1,5 @@
+import type { CheckId } from './checks';
+
 export type LeftData = {
   index: number;
   name: string;
@@ -239,8 +241,15 @@ export type StartingItemField = {
   count?: number;
 };
 
+export type ExcludedCheckField = {
+  checkId: CheckId;
+};
+
 export type FormSchema = {
   list: StartingItemField[];
+  // Note react-hook-form requires field arrays to be arrays of objects. This is
+  // why `excludedChecks` is not simply an array of CheckId.
+  excludedChecks: ExcludedCheckField[];
   exBool: boolean;
 };
 
