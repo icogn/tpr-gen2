@@ -30,8 +30,10 @@
 
 import { Virtuoso } from 'react-virtuoso';
 import { excludedChecksList } from './excludedChecksList';
+import type { ChangeEvent } from 'react';
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
+import { Checkbox } from '@mui/material';
 
 type RowProps = {
   index: number;
@@ -96,9 +98,11 @@ type IndexInfo = {
   isSubRow?: boolean;
 };
 
+type OnCheckChange = (e: ChangeEvent<HTMLInputElement>, tgtChecked: boolean) => void;
+
 function ExcludedChecks() {
-  const [expandedGroups] = useState<Record<string, boolean>>({ 'Golden Wolves': true });
-  // const [expandedGroups] = useState<Record<string, boolean>>({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [checkedChecks, setCheckedChecks] = useState<Record<string, boolean>>({});
 
   const { groupsToShow, checksInGroups } = useMemo(() => {
     const selectedChecksByName: Record<string, boolean> = {};
@@ -215,10 +219,68 @@ function ExcludedChecks() {
         totalCount={totalRows}
         itemContent={index => {
           const indexInfo = indexMapping[index];
+
+          let onClick = () => {};
+          let onCheckChange: OnCheckChange = () => {};
+          let checked = false;
+          let indeterminate = false;
+          let expanded = false;
+
+          if (indexInfo.checkName) {
+            const { checkName } = indexInfo;
+            checked = Boolean(checkedChecks[checkName]);
+            onClick = () => {
+              setCheckedChecks({
+                ...checkedChecks,
+                [checkName]: !checked,
+              });
+            };
+            onCheckChange = onClick;
+          } else if (indexInfo.groupName) {
+            const { groupName } = indexInfo;
+
+            let numChecked = 0;
+
+            const groupDef = groupDefs[groupName];
+            for (let i = 0; i < groupDef.length; i++) {
+              if (checkedChecks[groupDef[i]]) {
+                numChecked += 1;
+              }
+            }
+
+            checked = numChecked === groupDef.length;
+            indeterminate = !checked && numChecked > 0;
+
+            expanded = Boolean(expandedGroups[groupName]);
+            onClick = () => {
+              setExpandedGroups({
+                ...expandedGroups,
+                [groupName]: !expanded,
+              });
+            };
+            onCheckChange = (e, tgtChecked) => {
+              const diff: Record<string, boolean> = {};
+
+              const groupDef = groupDefs[groupName];
+              groupDef.forEach(checkName => {
+                diff[checkName] = tgtChecked;
+              });
+
+              setCheckedChecks({
+                ...checkedChecks,
+                ...diff,
+              });
+            };
+          }
+
           return (
             <FancyRow
               {...indexInfo}
-              expanded={Boolean(indexInfo.groupName && expandedGroups[indexInfo.groupName])}
+              checked={checked}
+              indeterminate={indeterminate}
+              expanded={expanded}
+              onClick={onClick}
+              onCheckChange={onCheckChange}
             />
           );
         }}
@@ -228,10 +290,23 @@ function ExcludedChecks() {
 }
 
 type FancyRowProps = IndexInfo & {
+  checked: boolean;
+  indeterminate: boolean;
   expanded?: boolean;
+  onClick(): void;
+  onCheckChange: OnCheckChange;
 };
 
-function FancyRow({ groupName, checkName, isSubRow, expanded }: FancyRowProps) {
+function FancyRow({
+  groupName,
+  checkName,
+  isSubRow,
+  checked,
+  indeterminate,
+  expanded,
+  onClick,
+  onCheckChange,
+}: FancyRowProps) {
   let text = '';
   if (groupName) {
     text = `${groupName} (${groupDefs[groupName].length})`;
@@ -240,10 +315,21 @@ function FancyRow({ groupName, checkName, isSubRow, expanded }: FancyRowProps) {
   }
 
   return (
-    <div className={clsx('flex items-center px-2', isSubRow && 'pl-5')}>
-      <input
-        type="checkbox"
-        className="mr-2"
+    <div
+      className={clsx('flex items-center px-2', isSubRow && 'pl-5')}
+      style={{ userSelect: 'none' }}
+      onClick={onClick}
+    >
+      <Checkbox
+        size="small"
+        disableRipple
+        sx={{ padding: 0, marginRight: '0.5rem' }}
+        indeterminate={indeterminate}
+        checked={indeterminate || checked}
+        onClick={e => {
+          e.stopPropagation();
+        }}
+        onChange={onCheckChange}
       />
       <span>{text}</span>
       {groupName && <div className="ml-auto">{expanded ? 'A' : 'V'}</div>}
