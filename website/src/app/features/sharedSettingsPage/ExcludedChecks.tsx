@@ -30,7 +30,7 @@
 
 import { Virtuoso } from 'react-virtuoso';
 import { excludedChecksList } from './excludedChecksList';
-import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Checkbox } from '@mui/material';
@@ -589,6 +589,7 @@ type IndexInfo = CheckRowInfo | GroupRowInfo;
 
 type OnCheckChange = (e: ChangeEvent<HTMLInputElement>, tgtChecked: boolean) => void;
 type UpdateCheckedChecks = (checkIds: CheckId | CheckId[], checked: boolean) => void;
+type UpdateExpandedGroups = (groupName: string, expanded: boolean) => void;
 
 type ExcludedChecksProps = {
   useFormRet: UseFormReturn<FormSchema>;
@@ -618,8 +619,8 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
     }, 3000);
   }, [replace]);
 
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [checkedChecks, setCheckedChecks] = useState<Record<string, boolean>>({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const updateCheckedChecks: UpdateCheckedChecks = useCallback(
     (checkIds: CheckId | CheckId[], checked: boolean) => {
@@ -642,6 +643,16 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
       }
     },
     [setCheckedChecks],
+  );
+
+  const updateExpandedGroups = useCallback(
+    (groupName: string, expanded: boolean) => {
+      setExpandedGroups(prevVal => ({
+        ...prevVal,
+        [groupName]: expanded,
+      }));
+    },
+    [setExpandedGroups],
   );
 
   const { groupsToShow, checksInGroups } = useMemo(() => {
@@ -768,13 +779,14 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
               />
             );
           } else if ('groupName' in indexInfo) {
+            const { groupName } = indexInfo;
             return (
               <FancyRowGroup
                 groupRowInfo={indexInfo}
                 checkedChecks={checkedChecks}
-                setCheckedChecks={setCheckedChecks}
-                expandedGroups={expandedGroups}
-                setExpandedGroups={setExpandedGroups}
+                updateCheckedChecks={updateCheckedChecks}
+                expanded={expandedGroups[groupName]}
+                updateExpandedGroups={updateExpandedGroups}
               />
             );
           }
@@ -865,22 +877,22 @@ function FancyRowCheck({ checkRowInfo, checked = false, updateCheckedChecks }: F
 type FancyRowGroupProps = {
   groupRowInfo: GroupRowInfo;
   checkedChecks: Record<string, boolean>;
-  setCheckedChecks: Dispatch<SetStateAction<Record<string, boolean>>>;
-  expandedGroups: Record<string, boolean>;
-  setExpandedGroups: Dispatch<SetStateAction<Record<string, boolean>>>;
+  updateCheckedChecks: UpdateCheckedChecks;
+  expanded?: boolean;
+  updateExpandedGroups: UpdateExpandedGroups;
 };
 
 function FancyRowGroup({
   groupRowInfo,
   checkedChecks,
-  setCheckedChecks,
-  expandedGroups,
-  setExpandedGroups,
+  updateCheckedChecks,
+  expanded = false,
+  updateExpandedGroups,
 }: FancyRowGroupProps) {
+  const { groupName } = groupRowInfo;
+
   const memoedProps = useMemo(() => {
-    const { groupName } = groupRowInfo;
     console.log(`doing memo for: ${groupName}`);
-    const text = `${groupName} (${groupDefs[groupName].length})`;
 
     let numChecked = 0;
 
@@ -894,40 +906,33 @@ function FancyRowGroup({
     const checked = numChecked === groupDef.length;
     const indeterminate = !checked && numChecked > 0;
 
-    const expanded = Boolean(expandedGroups[groupName]);
-    const onClick = () => {
-      setExpandedGroups({
-        ...expandedGroups,
-        [groupName]: !expanded,
-      });
-    };
-    const onCheckChange: OnCheckChange = (e, tgtChecked) => {
-      const diff: Record<string, boolean> = {};
-
-      const groupDef = groupDefs[groupName];
-      groupDef.forEach(checkName => {
-        diff[checkName] = tgtChecked;
-      });
-
-      setCheckedChecks({
-        ...checkedChecks,
-        ...diff,
-      });
-    };
-
     return {
       checked,
-      text,
-      onClick,
-      onCheckChange,
       indeterminate,
-      expanded,
     };
-  }, [groupRowInfo, checkedChecks, setCheckedChecks, expandedGroups, setExpandedGroups]);
+  }, [groupName, checkedChecks]);
+
+  const text = useMemo(() => {
+    return `${groupName} (${groupDefs[groupName].length})`;
+  }, [groupName]);
+
+  const handleClick = useCallback(() => {
+    updateExpandedGroups(groupName, !expanded);
+  }, [groupName, updateExpandedGroups, expanded]);
+
+  const handleCheckChange: OnCheckChange = useCallback(
+    (e, tgtChecked) => {
+      updateCheckedChecks(groupDefs[groupName], tgtChecked);
+    },
+    [groupName, updateCheckedChecks],
+  );
 
   return (
     <FancyRow
       {...memoedProps}
+      text={text}
+      onClick={handleClick}
+      onCheckChange={handleCheckChange}
       isGroupNameRow
     />
   );
