@@ -735,15 +735,26 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
         itemContent={index => {
           const indexInfo = indexMapping[index];
 
-          return (
-            <FancyRow
-              indexInfo={indexInfo}
-              checkedChecks={checkedChecks}
-              setCheckedChecks={setCheckedChecks}
-              expandedGroups={expandedGroups}
-              setExpandedGroups={setExpandedGroups}
-            />
-          );
+          if ('checkId' in indexInfo) {
+            return (
+              <FancyRowCheck
+                checkRowInfo={indexInfo}
+                checkedChecks={checkedChecks}
+                setCheckedChecks={setCheckedChecks}
+              />
+            );
+          } else if ('groupName' in indexInfo) {
+            return (
+              <FancyRowGroup
+                groupRowInfo={indexInfo}
+                checkedChecks={checkedChecks}
+                setCheckedChecks={setCheckedChecks}
+                expandedGroups={expandedGroups}
+                setExpandedGroups={setExpandedGroups}
+              />
+            );
+          }
+          return null; // Expected to never return null.
         }}
       />
     </div>
@@ -751,105 +762,26 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
 }
 
 type FancyRowProps = {
-  indexInfo: IndexInfo;
-  checkedChecks: Record<string, boolean>;
-  setCheckedChecks: Dispatch<SetStateAction<Record<string, boolean>>>;
-  expandedGroups: Record<string, boolean>;
-  setExpandedGroups: Dispatch<SetStateAction<Record<string, boolean>>>;
+  onClick(): void;
+  onCheckChange: OnCheckChange;
+  checked: boolean;
+  indeterminate?: boolean;
+  expanded?: boolean;
+  text?: string;
+  isGroupNameRow?: boolean;
+  isSubRow?: boolean;
 };
 
 function FancyRow({
-  indexInfo,
-  checkedChecks,
-  setCheckedChecks,
-  expandedGroups,
-  setExpandedGroups,
+  onClick,
+  onCheckChange,
+  checked,
+  indeterminate = false,
+  expanded = false,
+  text = '',
+  isGroupNameRow = false,
+  isSubRow = false,
 }: FancyRowProps) {
-  const {
-    onClick,
-    onCheckChange,
-    checked,
-    indeterminate,
-    expanded,
-    text,
-    isGroupNameRow,
-    isSubRow,
-  } = useMemo(() => {
-    let onClick = () => {};
-    let onCheckChange: OnCheckChange = () => {};
-    let checked = false;
-    let indeterminate = false;
-    let expanded = false;
-    let text = '';
-    let isGroupNameRow = false;
-    let isSubRow = false;
-
-    if ('checkId' in indexInfo) {
-      const { checkId } = indexInfo;
-      console.log(`doing memo for: ${checkIdToName(checkId)}`);
-      isSubRow = Boolean(indexInfo.isSubRow);
-      text = checkIdToName(indexInfo.checkId) || '';
-
-      checked = Boolean(checkedChecks[checkId]);
-      onClick = () => {
-        setCheckedChecks({
-          ...checkedChecks,
-          [checkId]: !checked,
-        });
-      };
-      onCheckChange = onClick;
-    } else if ('groupName' in indexInfo) {
-      isGroupNameRow = true;
-      const { groupName } = indexInfo;
-      console.log(`doing memo for: ${groupName}`);
-      text = `${groupName} (${groupDefs[groupName].length})`;
-
-      let numChecked = 0;
-
-      const groupDef = groupDefs[groupName];
-      for (let i = 0; i < groupDef.length; i++) {
-        if (checkedChecks[groupDef[i]]) {
-          numChecked += 1;
-        }
-      }
-
-      checked = numChecked === groupDef.length;
-      indeterminate = !checked && numChecked > 0;
-
-      expanded = Boolean(expandedGroups[groupName]);
-      onClick = () => {
-        setExpandedGroups({
-          ...expandedGroups,
-          [groupName]: !expanded,
-        });
-      };
-      onCheckChange = (e, tgtChecked) => {
-        const diff: Record<string, boolean> = {};
-
-        const groupDef = groupDefs[groupName];
-        groupDef.forEach(checkName => {
-          diff[checkName] = tgtChecked;
-        });
-
-        setCheckedChecks({
-          ...checkedChecks,
-          ...diff,
-        });
-      };
-    }
-
-    return {
-      onClick,
-      onCheckChange,
-      checked,
-      indeterminate,
-      expanded,
-      text,
-      isGroupNameRow,
-      isSubRow,
-    };
-  }, [indexInfo, checkedChecks, setCheckedChecks, expandedGroups, setExpandedGroups]);
-
   return (
     <div
       className={clsx('flex items-center px-2', isSubRow && 'pl-5')}
@@ -870,6 +802,111 @@ function FancyRow({
       <span>{text}</span>
       {isGroupNameRow && <div className="ml-auto">{expanded ? 'A' : 'V'}</div>}
     </div>
+  );
+}
+
+type FancyRowCheckProps = {
+  checkRowInfo: CheckRowInfo;
+  checkedChecks: Record<string, boolean>;
+  setCheckedChecks: Dispatch<SetStateAction<Record<string, boolean>>>;
+};
+
+function FancyRowCheck({ checkRowInfo, checkedChecks, setCheckedChecks }: FancyRowCheckProps) {
+  const memoedProps = useMemo(() => {
+    const { checkId } = checkRowInfo;
+    console.log(`doing memo for: ${checkIdToName(checkId)}`);
+    const isSubRow = Boolean(checkRowInfo.isSubRow);
+    const text = checkIdToName(checkRowInfo.checkId) || '';
+
+    const checked = Boolean(checkedChecks[checkId]);
+    const onClick = () => {
+      setCheckedChecks({
+        ...checkedChecks,
+        [checkId]: !checked,
+      });
+    };
+    const onCheckChange = onClick;
+
+    return {
+      checked,
+      text,
+      isSubRow,
+      onClick,
+      onCheckChange,
+    };
+  }, [checkRowInfo, checkedChecks, setCheckedChecks]);
+
+  return <FancyRow {...memoedProps} />;
+}
+
+type FancyRowGroupProps = {
+  groupRowInfo: GroupRowInfo;
+  checkedChecks: Record<string, boolean>;
+  setCheckedChecks: Dispatch<SetStateAction<Record<string, boolean>>>;
+  expandedGroups: Record<string, boolean>;
+  setExpandedGroups: Dispatch<SetStateAction<Record<string, boolean>>>;
+};
+
+function FancyRowGroup({
+  groupRowInfo,
+  checkedChecks,
+  setCheckedChecks,
+  expandedGroups,
+  setExpandedGroups,
+}: FancyRowGroupProps) {
+  const memoedProps = useMemo(() => {
+    const { groupName } = groupRowInfo;
+    console.log(`doing memo for: ${groupName}`);
+    const text = `${groupName} (${groupDefs[groupName].length})`;
+
+    let numChecked = 0;
+
+    const groupDef = groupDefs[groupName];
+    for (let i = 0; i < groupDef.length; i++) {
+      if (checkedChecks[groupDef[i]]) {
+        numChecked += 1;
+      }
+    }
+
+    const checked = numChecked === groupDef.length;
+    const indeterminate = !checked && numChecked > 0;
+
+    const expanded = Boolean(expandedGroups[groupName]);
+    const onClick = () => {
+      setExpandedGroups({
+        ...expandedGroups,
+        [groupName]: !expanded,
+      });
+    };
+    const onCheckChange: OnCheckChange = (e, tgtChecked) => {
+      const diff: Record<string, boolean> = {};
+
+      const groupDef = groupDefs[groupName];
+      groupDef.forEach(checkName => {
+        diff[checkName] = tgtChecked;
+      });
+
+      setCheckedChecks({
+        ...checkedChecks,
+        ...diff,
+      });
+    };
+
+    return {
+      checked,
+      text,
+      onClick,
+      onCheckChange,
+      indeterminate,
+      expanded,
+    };
+  }, [groupRowInfo, checkedChecks, setCheckedChecks, expandedGroups, setExpandedGroups]);
+
+  return (
+    <FancyRow
+      {...memoedProps}
+      isGroupNameRow
+    />
   );
 }
 
