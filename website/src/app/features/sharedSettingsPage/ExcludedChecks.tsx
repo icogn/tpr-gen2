@@ -815,7 +815,6 @@ function FancyRowCheck({ checkRowInfo, checkedChecks, setCheckedChecks }: FancyR
   const memoedProps = useMemo(() => {
     const { checkId } = checkRowInfo;
     console.log(`doing memo for: ${checkIdToName(checkId)}`);
-    const isSubRow = Boolean(checkRowInfo.isSubRow);
     const text = checkIdToName(checkRowInfo.checkId) || '';
 
     const checked = Boolean(checkedChecks[checkId]);
@@ -830,13 +829,17 @@ function FancyRowCheck({ checkRowInfo, checkedChecks, setCheckedChecks }: FancyR
     return {
       checked,
       text,
-      isSubRow,
       onClick,
       onCheckChange,
     };
   }, [checkRowInfo, checkedChecks, setCheckedChecks]);
 
-  return <FancyRow {...memoedProps} />;
+  return (
+    <FancyRow
+      {...memoedProps}
+      isSubRow={checkRowInfo.isSubRow}
+    />
+  );
 }
 
 type FancyRowGroupProps = {
