@@ -31,7 +31,7 @@
 import { Virtuoso } from 'react-virtuoso';
 import { excludedChecksList } from './excludedChecksList';
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Checkbox } from '@mui/material';
 import { CheckId, checkIdToName } from './checks';
@@ -588,6 +588,7 @@ type IndexInfo = CheckRowInfo | GroupRowInfo;
 // };
 
 type OnCheckChange = (e: ChangeEvent<HTMLInputElement>, tgtChecked: boolean) => void;
+type UpdateCheckedChecks = (checkIds: CheckId | CheckId[], checked: boolean) => void;
 
 type ExcludedChecksProps = {
   useFormRet: UseFormReturn<FormSchema>;
@@ -619,6 +620,29 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
 
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [checkedChecks, setCheckedChecks] = useState<Record<string, boolean>>({});
+
+  const updateCheckedChecks: UpdateCheckedChecks = useCallback(
+    (checkIds: CheckId | CheckId[], checked: boolean) => {
+      if (Array.isArray(checkIds)) {
+        const diff: Record<string, boolean> = {};
+
+        checkIds.forEach(checkId => {
+          diff[checkId] = checked;
+        });
+
+        setCheckedChecks(currVal => ({
+          ...currVal,
+          ...diff,
+        }));
+      } else {
+        setCheckedChecks(currVal => ({
+          ...currVal,
+          [checkIds]: checked,
+        }));
+      }
+    },
+    [setCheckedChecks],
+  );
 
   const { groupsToShow, checksInGroups } = useMemo(() => {
     const selectedChecksById: Record<number, boolean> = {};
@@ -739,8 +763,8 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
             return (
               <FancyRowCheck
                 checkRowInfo={indexInfo}
-                checkedChecks={checkedChecks}
-                setCheckedChecks={setCheckedChecks}
+                checked={checkedChecks[indexInfo.checkId]}
+                updateCheckedChecks={updateCheckedChecks}
               />
             );
           } else if ('groupName' in indexInfo) {
@@ -764,7 +788,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
 type FancyRowProps = {
   onClick(): void;
   onCheckChange: OnCheckChange;
-  checked: boolean;
+  checked?: boolean;
   indeterminate?: boolean;
   expanded?: boolean;
   text?: string;
@@ -775,7 +799,7 @@ type FancyRowProps = {
 function FancyRow({
   onClick,
   onCheckChange,
-  checked,
+  checked = false,
   indeterminate = false,
   expanded = false,
   text = '',
@@ -807,36 +831,32 @@ function FancyRow({
 
 type FancyRowCheckProps = {
   checkRowInfo: CheckRowInfo;
-  checkedChecks: Record<string, boolean>;
-  setCheckedChecks: Dispatch<SetStateAction<Record<string, boolean>>>;
+  checked?: boolean;
+  updateCheckedChecks: UpdateCheckedChecks;
 };
 
-function FancyRowCheck({ checkRowInfo, checkedChecks, setCheckedChecks }: FancyRowCheckProps) {
+function FancyRowCheck({ checkRowInfo, checked = false, updateCheckedChecks }: FancyRowCheckProps) {
   const memoedProps = useMemo(() => {
     const { checkId } = checkRowInfo;
     console.log(`doing memo for: ${checkIdToName(checkId)}`);
     const text = checkIdToName(checkRowInfo.checkId) || '';
 
-    const checked = Boolean(checkedChecks[checkId]);
     const onClick = () => {
-      setCheckedChecks({
-        ...checkedChecks,
-        [checkId]: !checked,
-      });
+      updateCheckedChecks(checkId, !checked);
     };
     const onCheckChange = onClick;
 
     return {
-      checked,
       text,
       onClick,
       onCheckChange,
     };
-  }, [checkRowInfo, checkedChecks, setCheckedChecks]);
+  }, [checkRowInfo, checked, updateCheckedChecks]);
 
   return (
     <FancyRow
       {...memoedProps}
+      checked={checked}
       isSubRow={checkRowInfo.isSubRow}
     />
   );
