@@ -570,15 +570,22 @@ const groupDefs: { [key: string]: CheckId[] } = {
 //   checkIndex?: number;
 // };
 
-// type GroupInfo = {
-//   groupName: string;
-// };
-
-type IndexInfo = {
-  groupName?: string;
-  checkId?: CheckId;
+type CheckRowInfo = {
+  checkId: CheckId;
   isSubRow?: boolean;
 };
+
+type GroupRowInfo = {
+  groupName: string;
+};
+
+type IndexInfo = CheckRowInfo | GroupRowInfo;
+
+// type IndexInfo = {
+//   groupName?: string;
+//   checkId?: CheckId;
+//   isSubRow?: boolean;
+// };
 
 type OnCheckChange = (e: ChangeEvent<HTMLInputElement>, tgtChecked: boolean) => void;
 
@@ -727,7 +734,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
           let indeterminate = false;
           let expanded = false;
 
-          if (indexInfo.checkId) {
+          if ('checkId' in indexInfo) {
             const { checkId } = indexInfo;
             checked = Boolean(checkedChecks[checkId]);
             onClick = () => {
@@ -737,7 +744,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
               });
             };
             onCheckChange = onClick;
-          } else if (indexInfo.groupName) {
+          } else if ('groupName' in indexInfo) {
             const { groupName } = indexInfo;
 
             let numChecked = 0;
@@ -776,7 +783,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
 
           return (
             <FancyRow
-              {...indexInfo}
+              indexInfo={indexInfo}
               checked={checked}
               indeterminate={indeterminate}
               expanded={expanded}
@@ -790,7 +797,8 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
   );
 }
 
-type FancyRowProps = IndexInfo & {
+type FancyRowProps = {
+  indexInfo: IndexInfo;
   checked: boolean;
   indeterminate: boolean;
   expanded?: boolean;
@@ -799,9 +807,10 @@ type FancyRowProps = IndexInfo & {
 };
 
 function FancyRow({
-  groupName,
-  checkId,
-  isSubRow,
+  indexInfo,
+  // groupName,
+  // checkId,
+  // isSubRow,
   checked,
   indeterminate,
   expanded,
@@ -809,14 +818,16 @@ function FancyRow({
   onCheckChange,
 }: FancyRowProps) {
   let text = '';
-  if (groupName) {
+  let isGroupNameRow = false;
+  let isSubRow = false;
+
+  if ('groupName' in indexInfo) {
+    isGroupNameRow = true;
+    const { groupName } = indexInfo;
     text = `${groupName} (${groupDefs[groupName].length})`;
-  } else if (checkId != null) {
-    text = checkIdToName(checkId) || '';
-  }
-  if (!text) {
-    console.log('empty text for checkId:');
-    console.log(checkId);
+  } else if ('checkId' in indexInfo) {
+    isSubRow = Boolean(indexInfo.isSubRow);
+    text = checkIdToName(indexInfo.checkId) || '';
   }
 
   return (
@@ -837,7 +848,7 @@ function FancyRow({
         onChange={onCheckChange}
       />
       <span>{text}</span>
-      {groupName && <div className="ml-auto">{expanded ? 'A' : 'V'}</div>}
+      {isGroupNameRow && <div className="ml-auto">{expanded ? 'A' : 'V'}</div>}
     </div>
   );
 }
