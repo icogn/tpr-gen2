@@ -30,7 +30,7 @@
 
 import { Virtuoso } from 'react-virtuoso';
 import { excludedChecksList } from './excludedChecksList';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Checkbox } from '@mui/material';
@@ -735,68 +735,13 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
         itemContent={index => {
           const indexInfo = indexMapping[index];
 
-          let onClick = () => {};
-          let onCheckChange: OnCheckChange = () => {};
-          let checked = false;
-          let indeterminate = false;
-          let expanded = false;
-
-          if ('checkId' in indexInfo) {
-            const { checkId } = indexInfo;
-            checked = Boolean(checkedChecks[checkId]);
-            onClick = () => {
-              setCheckedChecks({
-                ...checkedChecks,
-                [checkId]: !checked,
-              });
-            };
-            onCheckChange = onClick;
-          } else if ('groupName' in indexInfo) {
-            const { groupName } = indexInfo;
-
-            let numChecked = 0;
-
-            const groupDef = groupDefs[groupName];
-            for (let i = 0; i < groupDef.length; i++) {
-              if (checkedChecks[groupDef[i]]) {
-                numChecked += 1;
-              }
-            }
-
-            checked = numChecked === groupDef.length;
-            indeterminate = !checked && numChecked > 0;
-
-            expanded = Boolean(expandedGroups[groupName]);
-            onClick = () => {
-              setExpandedGroups({
-                ...expandedGroups,
-                [groupName]: !expanded,
-              });
-            };
-            onCheckChange = (e, tgtChecked) => {
-              const diff: Record<string, boolean> = {};
-
-              const groupDef = groupDefs[groupName];
-              groupDef.forEach(checkName => {
-                diff[checkName] = tgtChecked;
-              });
-
-              setCheckedChecks({
-                ...checkedChecks,
-                ...diff,
-              });
-            };
-          }
-
           return (
             <FancyRow
-              index={index}
               indexInfo={indexInfo}
-              checked={checked}
-              indeterminate={indeterminate}
-              expanded={expanded}
-              onClick={onClick}
-              onCheckChange={onCheckChange}
+              checkedChecks={checkedChecks}
+              setCheckedChecks={setCheckedChecks}
+              expandedGroups={expandedGroups}
+              setExpandedGroups={setExpandedGroups}
             />
           );
         }}
@@ -806,38 +751,104 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
 }
 
 type FancyRowProps = {
-  index: number;
   indexInfo: IndexInfo;
-  checked: boolean;
-  indeterminate: boolean;
-  expanded?: boolean;
-  onClick(): void;
-  onCheckChange: OnCheckChange;
+  checkedChecks: Record<string, boolean>;
+  setCheckedChecks: Dispatch<SetStateAction<Record<string, boolean>>>;
+  expandedGroups: Record<string, boolean>;
+  setExpandedGroups: Dispatch<SetStateAction<Record<string, boolean>>>;
 };
 
 function FancyRow({
-  index,
   indexInfo,
-  checked,
-  indeterminate,
-  expanded,
-  onClick,
-  onCheckChange,
+  checkedChecks,
+  setCheckedChecks,
+  expandedGroups,
+  setExpandedGroups,
 }: FancyRowProps) {
-  let text = '';
-  let isGroupNameRow = false;
-  let isSubRow = false;
+  const {
+    onClick,
+    onCheckChange,
+    checked,
+    indeterminate,
+    expanded,
+    text,
+    isGroupNameRow,
+    isSubRow,
+  } = useMemo(() => {
+    let onClick = () => {};
+    let onCheckChange: OnCheckChange = () => {};
+    let checked = false;
+    let indeterminate = false;
+    let expanded = false;
+    let text = '';
+    let isGroupNameRow = false;
+    let isSubRow = false;
 
-  console.log(`rendering row index: ${index}`);
+    if ('checkId' in indexInfo) {
+      const { checkId } = indexInfo;
+      console.log(`doing memo for: ${checkIdToName(checkId)}`);
+      isSubRow = Boolean(indexInfo.isSubRow);
+      text = checkIdToName(indexInfo.checkId) || '';
 
-  if ('groupName' in indexInfo) {
-    isGroupNameRow = true;
-    const { groupName } = indexInfo;
-    text = `${groupName} (${groupDefs[groupName].length})`;
-  } else if ('checkId' in indexInfo) {
-    isSubRow = Boolean(indexInfo.isSubRow);
-    text = checkIdToName(indexInfo.checkId) || '';
-  }
+      checked = Boolean(checkedChecks[checkId]);
+      onClick = () => {
+        setCheckedChecks({
+          ...checkedChecks,
+          [checkId]: !checked,
+        });
+      };
+      onCheckChange = onClick;
+    } else if ('groupName' in indexInfo) {
+      isGroupNameRow = true;
+      const { groupName } = indexInfo;
+      console.log(`doing memo for: ${groupName}`);
+      text = `${groupName} (${groupDefs[groupName].length})`;
+
+      let numChecked = 0;
+
+      const groupDef = groupDefs[groupName];
+      for (let i = 0; i < groupDef.length; i++) {
+        if (checkedChecks[groupDef[i]]) {
+          numChecked += 1;
+        }
+      }
+
+      checked = numChecked === groupDef.length;
+      indeterminate = !checked && numChecked > 0;
+
+      expanded = Boolean(expandedGroups[groupName]);
+      onClick = () => {
+        setExpandedGroups({
+          ...expandedGroups,
+          [groupName]: !expanded,
+        });
+      };
+      onCheckChange = (e, tgtChecked) => {
+        const diff: Record<string, boolean> = {};
+
+        const groupDef = groupDefs[groupName];
+        groupDef.forEach(checkName => {
+          diff[checkName] = tgtChecked;
+        });
+
+        setCheckedChecks({
+          ...checkedChecks,
+          ...diff,
+        });
+      };
+    }
+
+    return {
+      onClick,
+      onCheckChange,
+      checked,
+      indeterminate,
+      expanded,
+      text,
+      isGroupNameRow,
+      isSubRow,
+    };
+  }, [indexInfo, checkedChecks, setCheckedChecks, expandedGroups, setExpandedGroups]);
 
   return (
     <div
