@@ -35,7 +35,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Checkbox } from '@mui/material';
 import { CheckId, checkIdToName } from './checks';
-import type { UseFormReturn } from 'react-hook-form';
+import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
 
@@ -581,12 +581,6 @@ type GroupRowInfo = {
 
 type IndexInfo = CheckRowInfo | GroupRowInfo;
 
-// type IndexInfo = {
-//   groupName?: string;
-//   checkId?: CheckId;
-//   isSubRow?: boolean;
-// };
-
 type OnCheckChange = (e: ChangeEvent<HTMLInputElement>, tgtChecked: boolean) => void;
 type UpdateCheckedChecks = (checkIds: CheckId | CheckId[], checked: boolean) => void;
 type UpdateExpandedGroups = (groupName: string, expanded: boolean) => void;
@@ -601,23 +595,44 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
     control: useFormRet.control,
   });
 
-  const { fields, replace } = useFieldArrayRet;
-
-  console.log('useFieldArrayRet.fields');
-  console.log(fields);
+  const { replace } = useFieldArrayRet;
 
   useEffect(() => {
-    console.log('abcdef');
     setTimeout(() => {
       const newVal = selectedChecks.reduce<ExcludedCheckField[]>((acc, checkId) => {
         acc.push({ checkId });
         return acc;
       }, []);
 
-      // useFieldArrayRet.replace({ checkId: CheckId.Agitha_Female_Ant_Reward });
       replace(newVal);
     }, 3000);
   }, [replace]);
+
+  return (
+    <div className="flex">
+      <Virtuoso
+        style={{ height: '400px' }}
+        className="flex-1"
+        totalCount={excludedChecksList.length}
+        itemContent={index => {
+          if (index === 22) {
+            return <OtherRow />;
+          } else {
+            return <Row index={index} />;
+          }
+        }}
+      />
+      <RightList useFieldArrayRet={useFieldArrayRet} />
+    </div>
+  );
+}
+
+type RightListProps = {
+  useFieldArrayRet: UseFieldArrayReturn<FormSchema, 'excludedChecks'>;
+};
+
+function RightList({ useFieldArrayRet }: RightListProps) {
+  const { fields } = useFieldArrayRet;
 
   const [checkedChecks, setCheckedChecks] = useState<Record<string, boolean>>({});
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
@@ -709,7 +724,6 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
       }
     });
 
-    // selectedChecks.forEach(checkId => {
     fields.forEach(({ checkId }) => {
       if (!checksInGroups[checkId]) {
         idxMapping[currentIndex] = { checkId };
@@ -723,77 +737,37 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
     };
   }, [expandedGroups, groupsToShow, checksInGroups, fields]);
 
-  // Group state => selected or not. This can be derived at render time. Only
-  // mess with if necessary.
-
-  // Group state => expanded or not. This state is updated by callbacks on the
-  // group row. Can be stored as a Record of groupName to boolean as state.
-
-  // Info for rendering is memoed based off of the expanded state and groupInfo
-  // output.
-
-  // convert group
-
-  // need total number of rows (add 1 for each group)
-
-  // Render groups first, then the non-grouped.
-
-  // Non-grouped just needs to know what the first index is. Then if the index
-  // is >= to that, then we render from the non-grouped items.
-
-  // Need the early indexes to quickly map to a group.
-
-  // (requires groupState) Total number of rows (1 extra per group, only 1 for group is not expanded).
-  // index to { groupId and checkIndex }
-
-  // group info =>
-
   return (
-    <div className="flex">
-      <Virtuoso
-        style={{ height: '400px' }}
-        className="flex-1"
-        totalCount={excludedChecksList.length}
-        // itemContent={index => <div>{`${index} ${excludedChecksList[index]}`}</div>}
-        itemContent={index => {
-          if (index === 22) {
-            return <OtherRow />;
-          } else {
-            return <Row index={index} />;
-          }
-        }}
-      />
-      <Virtuoso
-        style={{ height: '400px' }}
-        className="flex-1"
-        totalCount={totalRows}
-        itemContent={index => {
-          const indexInfo = indexMapping[index];
+    <Virtuoso
+      style={{ height: '400px' }}
+      className="flex-1"
+      totalCount={totalRows}
+      itemContent={index => {
+        const indexInfo = indexMapping[index];
 
-          if ('checkId' in indexInfo) {
-            return (
-              <FancyRowCheck
-                checkRowInfo={indexInfo}
-                checked={checkedChecks[indexInfo.checkId]}
-                updateCheckedChecks={updateCheckedChecks}
-              />
-            );
-          } else if ('groupName' in indexInfo) {
-            const { groupName } = indexInfo;
-            return (
-              <FancyRowGroup
-                groupRowInfo={indexInfo}
-                checkedChecks={checkedChecks}
-                updateCheckedChecks={updateCheckedChecks}
-                expanded={expandedGroups[groupName]}
-                updateExpandedGroups={updateExpandedGroups}
-              />
-            );
-          }
-          return null; // Expected to never return null.
-        }}
-      />
-    </div>
+        if ('checkId' in indexInfo) {
+          return (
+            <FancyRowCheck
+              checkRowInfo={indexInfo}
+              checked={checkedChecks[indexInfo.checkId]}
+              updateCheckedChecks={updateCheckedChecks}
+            />
+          );
+        } else if ('groupName' in indexInfo) {
+          const { groupName } = indexInfo;
+          return (
+            <FancyRowGroup
+              groupRowInfo={indexInfo}
+              checkedChecks={checkedChecks}
+              updateCheckedChecks={updateCheckedChecks}
+              expanded={expandedGroups[groupName]}
+              updateExpandedGroups={updateExpandedGroups}
+            />
+          );
+        }
+        return null; // Expected to never return null.
+      }}
+    />
   );
 }
 
