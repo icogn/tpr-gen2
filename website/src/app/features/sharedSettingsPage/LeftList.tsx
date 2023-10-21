@@ -250,6 +250,7 @@ function SelectRow({ value, options, onChange }: SelectRowProps) {
         onChange={onChange}
         className="my-react-select-container"
         classNamePrefix="my-react-select"
+        placeholder="(All)"
         isClearable
       />
       {/* <div style={{ visibility: 'hidden' }}>
