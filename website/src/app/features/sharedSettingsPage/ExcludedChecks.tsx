@@ -645,6 +645,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
   return (
     <div className="flex">
       <LeftList
+        isAdd
         totalRenderedRows={leftContent.length}
         onSubmit={handleAdd}
         onRenderRowIndex={({ index, checkedRows, updateChecked }) => {

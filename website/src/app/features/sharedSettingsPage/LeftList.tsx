@@ -15,6 +15,7 @@ type OnRenderRowIndexParam = {
 type OnRenderRowIndex = (param: OnRenderRowIndexParam) => React.ReactNode;
 
 type LeftListProps = {
+  isAdd: boolean;
   // Note `totalRenderedRows` is the number of rows which will be rendered in
   // the list. This does necessarily equal the number of base entities in the
   // list since we might render rows which do not correspond one-to-one with the
@@ -28,7 +29,7 @@ type LeftListProps = {
   onRenderRowIndex: OnRenderRowIndex;
 };
 
-function LeftList({ totalRenderedRows, onSubmit, onRenderRowIndex }: LeftListProps) {
+function LeftList({ isAdd, totalRenderedRows, onSubmit, onRenderRowIndex }: LeftListProps) {
   const [checkedRows, setCheckedRows] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState('');
 
@@ -117,7 +118,7 @@ function LeftList({ totalRenderedRows, onSubmit, onRenderRowIndex }: LeftListPro
   return (
     <div className="flex-1">
       <ListBtnRow
-        isAdd
+        isAdd={isAdd}
         onBtnClick={() => {
           onSubmit(checkedRows);
           setCheckedRows({});
