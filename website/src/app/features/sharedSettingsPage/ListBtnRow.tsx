@@ -59,7 +59,7 @@ function ListBtnRow({ totalSelected = 0, isAdd, onBtnClick }: ListBtnRowProps) {
     tryPushTotalSelectedSpan();
   }
 
-  return <div className="flex items-center full-width">{nodes}</div>;
+  return <div className="flex items-center full-width pb-2">{nodes}</div>;
 }
 
 export default ListBtnRow;

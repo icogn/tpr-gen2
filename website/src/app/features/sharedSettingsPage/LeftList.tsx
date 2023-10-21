@@ -217,16 +217,35 @@ const selOptions = [
     value: '1',
     label: 'LLLL',
   },
+  {
+    value: '2',
+    label: 'Dog',
+  },
+  {
+    value: '3',
+    label: 'Progressive Fishing Rod Progressive Fishing Rod',
+  },
+  {
+    value: '3',
+    label: 'Progressive Fishing Rod',
+  },
 ];
 
 function SelectRow() {
   return (
-    <div>
+    <div className="pb-1">
       <Select
         options={selOptions}
         className="my-react-select-container"
         classNamePrefix="my-react-select"
+        isClearable
       />
+      {/* <div style={{ visibility: 'hidden' }}>
+        <Select
+          className="my-react-select-container"
+          classNamePrefix="my-react-select"
+        />
+      </div> */}
     </div>
   );
 }
