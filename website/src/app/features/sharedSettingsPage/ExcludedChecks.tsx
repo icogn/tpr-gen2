@@ -28,8 +28,7 @@
 
 // export default ExcludedChecks;
 
-import { Virtuoso } from 'react-virtuoso';
-import { excludedChecksList } from './excludedChecksList';
+// import { excludedChecksList } from './excludedChecksList';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
@@ -38,27 +37,27 @@ import { CheckId, alphabeticalCheckIds, checkIdToName } from './checks';
 import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
-import ListBtnRow from './ListBtnRow';
+// import ListBtnRow from './ListBtnRow';
 import type { LeftListFilters } from './LeftList';
 import LeftList, { LeftListRow } from './LeftList';
 import { excludedChecksByGroup, excludedChecksGroupsAsOptions } from './excludedChecksByGroup';
 
-type RowProps = {
-  index: number;
-};
+// type RowProps = {
+//   index: number;
+// };
 
-function Row({ index }: RowProps) {
-  return (
-    <div>
-      <input type="checkbox" />
-      <span>{`${index} ${excludedChecksList[index]}`}</span>
-    </div>
-  );
-}
+// function Row({ index }: RowProps) {
+//   return (
+//     <div>
+//       <input type="checkbox" />
+//       <span>{`${index} ${excludedChecksList[index]}`}</span>
+//     </div>
+//   );
+// }
 
-function OtherRow() {
-  return <div style={{ height: '200px', backgroundColor: 'pink' }}>OtherRow</div>;
-}
+// function OtherRow() {
+//   return <div style={{ height: '200px', backgroundColor: 'pink' }}>OtherRow</div>;
+// }
 
 // type Group = {
 //   checkIndexes: number[];
@@ -623,8 +622,6 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
   const { fields, replace, prepend } = useFieldArrayRet;
 
   const [leftFilters, setLeftFilters] = useState<LeftListFilters>({ search: '', selectVal: null });
-  console.log('newLeftFilters');
-  console.log(leftFilters);
 
   const fullLeftRows = useMemo(() => {
     const selectedCheckIds: Record<string, boolean> = {};
@@ -681,14 +678,15 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
     setTimeout(() => {
       // const newVal = selectedChecks.reduce<ExcludedCheckField[]>((acc, checkId, i) => {
       const newVal = alphabeticalCheckIds.reduce<ExcludedCheckField[]>((acc, checkId, i) => {
-        if (i < 460) {
+        // if (i < 460) {
+        if (i < 10) {
           acc.push({ checkId });
         }
         return acc;
       }, []);
 
       replace(newVal);
-    }, 300000);
+    }, 0);
   }, [replace]);
 
   return (
@@ -717,7 +715,8 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
           );
         }}
       />
-      <div className="flex-1">
+
+      {/* <div className="flex-1">
         <ListBtnRow
           isAdd
           onBtnClick={() => {}}
@@ -733,7 +732,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
             }
           }}
         />
-      </div>
+      </div> */}
       <RightList useFieldArrayRet={useFieldArrayRet} />
     </div>
   );
@@ -744,33 +743,22 @@ type RightListProps = {
 };
 
 function RightList({ useFieldArrayRet }: RightListProps) {
-  const { fields } = useFieldArrayRet;
+  const { fields, remove } = useFieldArrayRet;
 
-  const [checkedChecks, setCheckedChecks] = useState<Record<string, boolean>>({});
+  const checkIdToFieldIndex = useMemo(() => {
+    const map: Record<string, number> = {};
+    fields.forEach(({ checkId }, i) => {
+      map[checkId] = i;
+    });
+    return map;
+  }, [fields]);
+
+  const [rightFilters, setRightFilters] = useState<LeftListFilters>({
+    search: '',
+    selectVal: null,
+  });
+
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
-
-  const updateCheckedChecks: UpdateCheckedChecks = useCallback(
-    (checkIds: CheckId | CheckId[], checked: boolean) => {
-      if (Array.isArray(checkIds)) {
-        const diff: Record<string, boolean> = {};
-
-        checkIds.forEach(checkId => {
-          diff[checkId] = checked;
-        });
-
-        setCheckedChecks(currVal => ({
-          ...currVal,
-          ...diff,
-        }));
-      } else {
-        setCheckedChecks(currVal => ({
-          ...currVal,
-          [checkIds]: checked,
-        }));
-      }
-    },
-    [setCheckedChecks],
-  );
 
   const updateExpandedGroups = useCallback(
     (groupName: string, expanded: boolean) => {
@@ -849,20 +837,42 @@ function RightList({ useFieldArrayRet }: RightListProps) {
     };
   }, [expandedGroups, groupsToShow, checksInGroups, fields]);
 
+  const handleRemove = useCallback(
+    (rowIdRecord: Record<string, boolean>) => {
+      const list: number[] = [];
+      alphabeticalCheckIds.forEach(checkId => {
+        if (rowIdRecord[checkId]) {
+          checkIdToFieldIndex;
+          const index = checkIdToFieldIndex[checkId];
+          if (typeof index === 'number' && !Number.isNaN(index)) {
+            list.push(index);
+          }
+        }
+      });
+
+      remove(list);
+    },
+    [remove, checkIdToFieldIndex],
+  );
+
   return (
-    <Virtuoso
-      style={{ height: '400px' }}
-      className="flex-1"
-      totalCount={totalRows}
-      itemContent={index => {
+    <LeftList
+      isAdd={false}
+      totalRenderedRows={totalRows}
+      filteredEntityIds={[]}
+      onSubmit={handleRemove}
+      filters={rightFilters}
+      invisibleSelectRow
+      onFiltersChange={setRightFilters}
+      onRenderRowIndex={({ index, checkedRows, updateChecked }) => {
         const indexInfo = indexMapping[index];
 
         if ('checkId' in indexInfo) {
           return (
             <FancyRowCheck
               checkRowInfo={indexInfo}
-              checked={checkedChecks[indexInfo.checkId]}
-              updateCheckedChecks={updateCheckedChecks}
+              checked={checkedRows[indexInfo.checkId]}
+              updateCheckedChecks={updateChecked}
             />
           );
         } else if ('groupName' in indexInfo) {
@@ -870,8 +880,8 @@ function RightList({ useFieldArrayRet }: RightListProps) {
           return (
             <FancyRowGroup
               groupRowInfo={indexInfo}
-              checkedChecks={checkedChecks}
-              updateCheckedChecks={updateCheckedChecks}
+              checkedChecks={checkedRows}
+              updateCheckedChecks={updateChecked}
               expanded={expandedGroups[groupName]}
               updateExpandedGroups={updateExpandedGroups}
             />
@@ -881,6 +891,39 @@ function RightList({ useFieldArrayRet }: RightListProps) {
       }}
     />
   );
+
+  // return (
+  //   <Virtuoso
+  //     style={{ height: '400px' }}
+  //     className="flex-1"
+  //     totalCount={totalRows}
+  //     itemContent={index => {
+  //       const indexInfo = indexMapping[index];
+
+  //       if ('checkId' in indexInfo) {
+  //         return (
+  //           <FancyRowCheck
+  //             checkRowInfo={indexInfo}
+  //             checked={checkedChecks[indexInfo.checkId]}
+  //             updateCheckedChecks={updateCheckedChecks}
+  //           />
+  //         );
+  //       } else if ('groupName' in indexInfo) {
+  //         const { groupName } = indexInfo;
+  //         return (
+  //           <FancyRowGroup
+  //             groupRowInfo={indexInfo}
+  //             checkedChecks={checkedChecks}
+  //             updateCheckedChecks={updateCheckedChecks}
+  //             expanded={expandedGroups[groupName]}
+  //             updateExpandedGroups={updateExpandedGroups}
+  //           />
+  //         );
+  //       }
+  //       return null; // Expected to never return null.
+  //     }}
+  //   />
+  // );
 }
 
 type FancyRowProps = {

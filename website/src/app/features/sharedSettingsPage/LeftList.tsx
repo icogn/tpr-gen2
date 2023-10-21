@@ -10,7 +10,10 @@ export type LeftListFilters = {
   selectVal: SingleValue<SelectOption>;
 };
 
-type UpdateCheckedEntities = (checkIds: string | string[], checked: boolean) => void;
+type UpdateCheckedEntities = (
+  entityIds: string | string[] | number | number[],
+  checked: boolean,
+) => void;
 
 type OnRenderRowIndexParam = {
   index: number;
@@ -37,6 +40,7 @@ type LeftListProps = {
   filters: LeftListFilters;
   onFiltersChange(filters: LeftListFilters): void;
   selectOptions?: SelectOption[];
+  invisibleSelectRow?: boolean;
 };
 
 function LeftList({
@@ -48,6 +52,7 @@ function LeftList({
   filters,
   onFiltersChange,
   selectOptions = [],
+  invisibleSelectRow = false,
 }: LeftListProps) {
   const [checkedRows, setCheckedRows] = useState<Record<string, boolean>>({});
 
@@ -101,7 +106,7 @@ function LeftList({
   );
 
   const updateChecked: UpdateCheckedEntities = useCallback(
-    (ids: string | string[], checked: boolean) => {
+    (ids: string | string[] | number | number[], checked: boolean) => {
       if (Array.isArray(ids)) {
         const diff: Record<string, boolean> = {};
 
@@ -148,7 +153,8 @@ function LeftList({
         }}
         totalSelected={totalSelected}
       />
-      {selectOptions?.length > 0 && (
+      {invisibleSelectRow && <SelectRow invisible />}
+      {!invisibleSelectRow && selectOptions?.length > 0 && (
         <SelectRow
           value={filters.selectVal}
           options={selectOptions}
@@ -236,14 +242,26 @@ export type SelectOption = {
 };
 
 type SelectRowProps = {
-  value: SingleValue<SelectOption>;
-  options: SelectOption[];
-  onChange(value: SingleValue<SelectOption>): void;
+  value?: SingleValue<SelectOption>;
+  options?: SelectOption[];
+  onChange?(value: SingleValue<SelectOption>): void;
+  invisible?: boolean;
 };
 
-function SelectRow({ value, options, onChange }: SelectRowProps) {
+const emptyList: SelectOption[] = [];
+const noop = () => {};
+
+function SelectRow({
+  value = null,
+  options = emptyList,
+  onChange = noop,
+  invisible = false,
+}: SelectRowProps) {
   return (
-    <div className="pb-1">
+    <div
+      className="pb-1"
+      style={invisible ? { visibility: 'hidden' } : undefined}
+    >
       <Select
         value={value}
         options={options}
@@ -253,12 +271,6 @@ function SelectRow({ value, options, onChange }: SelectRowProps) {
         placeholder="(All)"
         isClearable
       />
-      {/* <div style={{ visibility: 'hidden' }}>
-        <Select
-          className="my-react-select-container"
-          classNamePrefix="my-react-select"
-        />
-      </div> */}
     </div>
   );
 }
