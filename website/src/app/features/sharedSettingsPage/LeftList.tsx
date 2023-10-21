@@ -3,6 +3,7 @@ import ListBtnRow from './ListBtnRow';
 import type { ChangeEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { Checkbox } from '@mui/material';
+import Select from 'react-select';
 
 export type LeftListFilters = {
   search: string;
@@ -135,6 +136,7 @@ function LeftList({
         }}
         totalSelected={totalSelected}
       />
+      <SelectRow />
       <SearchRow
         search={filters.search}
         onSearchChange={handleSearchChange}
@@ -205,6 +207,25 @@ function SearchRow({
         style={{ color: '#000' }}
         value={search}
         onChange={onSearchChange}
+      />
+    </div>
+  );
+}
+
+const selOptions = [
+  {
+    value: '1',
+    label: 'LLLL',
+  },
+];
+
+function SelectRow() {
+  return (
+    <div>
+      <Select
+        options={selOptions}
+        className="my-react-select-container"
+        classNamePrefix="my-react-select"
       />
     </div>
   );
