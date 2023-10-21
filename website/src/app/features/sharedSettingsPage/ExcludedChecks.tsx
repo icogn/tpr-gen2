@@ -39,7 +39,7 @@ import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
 import ListBtnRow from './ListBtnRow';
-import type { LeftListFilters } from './LeftList';
+import type { LeftListFilters, SelectOption } from './LeftList';
 import LeftList, { LeftListRow } from './LeftList';
 
 type RowProps = {
@@ -588,6 +588,25 @@ type OnCheckChange = (e: ChangeEvent<HTMLInputElement>, tgtChecked: boolean) => 
 type UpdateCheckedChecks = (checkIds: CheckId | CheckId[], checked: boolean) => void;
 type UpdateExpandedGroups = (groupName: string, expanded: boolean) => void;
 
+const selOptions: SelectOption[] = [
+  {
+    value: '1',
+    label: 'LLLL',
+  },
+  {
+    value: '2',
+    label: 'Dog',
+  },
+  {
+    value: '3',
+    label: 'Progressive Fishing Rod Progressive Fishing Rod',
+  },
+  {
+    value: '3',
+    label: 'Progressive Fishing Rod',
+  },
+];
+
 type ExcludedChecksProps = {
   useFormRet: UseFormReturn<FormSchema>;
 };
@@ -601,6 +620,8 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
   const { fields, replace, prepend } = useFieldArrayRet;
 
   const [leftFilters, setLeftFilters] = useState<LeftListFilters>({ search: '', selectVal: null });
+  console.log('newLeftFilters');
+  console.log(leftFilters);
 
   const fullLeftRows = useMemo(() => {
     const selectedCheckIds: Record<string, boolean> = {};
@@ -659,6 +680,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
         totalRenderedRows={filteredLeftRows.length}
         filteredEntityIds={filteredLeftRows}
         onSubmit={handleAdd}
+        selectOptions={selOptions}
         filters={leftFilters}
         onFiltersChange={setLeftFilters}
         onRenderRowIndex={({ index, checkedRows, updateChecked }) => {

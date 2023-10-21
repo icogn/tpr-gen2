@@ -3,11 +3,11 @@ import ListBtnRow from './ListBtnRow';
 import type { ChangeEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { Checkbox } from '@mui/material';
-import Select from 'react-select';
+import Select, { type SingleValue } from 'react-select';
 
 export type LeftListFilters = {
   search: string;
-  selectVal: string | null;
+  selectVal: SingleValue<SelectOption>;
 };
 
 type UpdateCheckedEntities = (checkIds: string | string[], checked: boolean) => void;
@@ -36,6 +36,7 @@ type LeftListProps = {
   onRenderRowIndex: OnRenderRowIndex;
   filters: LeftListFilters;
   onFiltersChange(filters: LeftListFilters): void;
+  selectOptions?: SelectOption[];
 };
 
 function LeftList({
@@ -46,6 +47,7 @@ function LeftList({
   onRenderRowIndex,
   filters,
   onFiltersChange,
+  selectOptions = [],
 }: LeftListProps) {
   const [checkedRows, setCheckedRows] = useState<Record<string, boolean>>({});
 
@@ -83,6 +85,16 @@ function LeftList({
       onFiltersChange({
         ...filters,
         search: e.target.value,
+      });
+    },
+    [filters, onFiltersChange],
+  );
+
+  const handleSelectChange = useCallback(
+    (newVal: SingleValue<SelectOption>) => {
+      onFiltersChange({
+        ...filters,
+        selectVal: newVal,
       });
     },
     [filters, onFiltersChange],
@@ -136,7 +148,13 @@ function LeftList({
         }}
         totalSelected={totalSelected}
       />
-      <SelectRow />
+      {selectOptions?.length > 0 && (
+        <SelectRow
+          value={filters.selectVal}
+          options={selectOptions}
+          onChange={handleSelectChange}
+        />
+      )}
       <SearchRow
         search={filters.search}
         onSearchChange={handleSearchChange}
@@ -212,30 +230,24 @@ function SearchRow({
   );
 }
 
-const selOptions = [
-  {
-    value: '1',
-    label: 'LLLL',
-  },
-  {
-    value: '2',
-    label: 'Dog',
-  },
-  {
-    value: '3',
-    label: 'Progressive Fishing Rod Progressive Fishing Rod',
-  },
-  {
-    value: '3',
-    label: 'Progressive Fishing Rod',
-  },
-];
+export type SelectOption = {
+  value: string;
+  label: string;
+};
 
-function SelectRow() {
+type SelectRowProps = {
+  value: SingleValue<SelectOption>;
+  options: SelectOption[];
+  onChange(value: SingleValue<SelectOption>): void;
+};
+
+function SelectRow({ value, options, onChange }: SelectRowProps) {
   return (
     <div className="pb-1">
       <Select
-        options={selOptions}
+        value={value}
+        options={options}
+        onChange={onChange}
         className="my-react-select-container"
         classNamePrefix="my-react-select"
         isClearable
