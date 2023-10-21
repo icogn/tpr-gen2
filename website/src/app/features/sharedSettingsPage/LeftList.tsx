@@ -4,6 +4,11 @@ import type { ChangeEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { Checkbox } from '@mui/material';
 
+export type LeftListFilters = {
+  search: string;
+  selectVal: string | null;
+};
+
 type UpdateCheckedEntities = (checkIds: string | string[], checked: boolean) => void;
 
 type OnRenderRowIndexParam = {
@@ -23,19 +28,25 @@ type LeftListProps = {
   // the group. In that case, this value would be 10 since that is how many rows
   // we render.
   totalRenderedRows: number;
+  filteredEntityIds: string[] | number[];
   // filteredEntityIds: string[];
   onSubmit(selectedRowIds: Record<string, boolean>): void;
   // onFiltersChange(search: string): void;
   onRenderRowIndex: OnRenderRowIndex;
+  filters: LeftListFilters;
+  onFiltersChange(filters: LeftListFilters): void;
 };
 
-function LeftList({ isAdd, totalRenderedRows, onSubmit, onRenderRowIndex }: LeftListProps) {
+function LeftList({
+  isAdd,
+  totalRenderedRows,
+  filteredEntityIds,
+  onSubmit,
+  onRenderRowIndex,
+  filters,
+  onFiltersChange,
+}: LeftListProps) {
   const [checkedRows, setCheckedRows] = useState<Record<string, boolean>>({});
-  const [search, setSearch] = useState('');
-
-  // TODO: checkbox and search row
-
-  // TODO: ability to add
 
   // TODO: allow for right content rendering so that this component can be used
   // for left and right side lists
@@ -49,47 +60,31 @@ function LeftList({ isAdd, totalRenderedRows, onSubmit, onRenderRowIndex }: Left
     }, 0);
   }, [checkedRows]);
 
-  // useMemo(() => {
+  const { indeterminateChecked, allChecked } = useMemo(() => {
+    let numChecked = 0;
 
-  // }, [allEntityIds]);
+    filteredEntityIds.forEach(id => {
+      if (checkedRows[id]) {
+        numChecked += 1;
+      }
+    });
 
-  // const { indeterminateChecked, allChecked } = useMemo(() => {
-  //   let numFilteredSelected = 0;
+    const allChecks = filteredEntityIds.length === numChecked && numChecked > 0;
 
-  //   for (let i = 0; i < allEntityIds.length; i++) {
-  //     const entityId = allEntityIds[i];
-  //     if (checkedRows[entityId]) {
-  //       numFilteredSelected += 0;
-  //     }
-  //   }
-
-  //   const filtered = data.filter(itemId => {
-  //     const itemDef = startingItemDefs[itemId];
-  //     if (!itemDef) {
-  //       return false;
-  //     }
-  //     if (itemDef.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0) {
-  //       if (selected[itemId]) {
-  //         numFilteredSelected += 1;
-  //       }
-  //       return true;
-  //     }
-  //   });
-
-  //   const allChecks = allEntityIds.length === numFilteredSelected && numFilteredSelected > 0;
-
-  //   return {
-  //     filteredData: filtered,
-  //     indeterminateChecked: !allChecks && numFilteredSelected > 0,
-  //     allChecked: allChecks,
-  //   };
-  // }, [data, selected, searchText]);
+    return {
+      indeterminateChecked: !allChecks && numChecked > 0,
+      allChecked: allChecks,
+    };
+  }, [filteredEntityIds, checkedRows]);
 
   const handleSearchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setSearch(e.target.value);
+      onFiltersChange({
+        ...filters,
+        search: e.target.value,
+      });
     },
-    [setSearch],
+    [filters, onFiltersChange],
   );
 
   const updateChecked: UpdateCheckedEntities = useCallback(
@@ -115,6 +110,21 @@ function LeftList({ isAdd, totalRenderedRows, onSubmit, onRenderRowIndex }: Left
     [setCheckedRows],
   );
 
+  const handleCheckChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      const diff: Record<string, boolean> = {};
+      filteredEntityIds.forEach(id => {
+        diff[id] = checked;
+      });
+
+      setCheckedRows(currVal => ({
+        ...currVal,
+        ...diff,
+      }));
+    },
+    [setCheckedRows, filteredEntityIds],
+  );
+
   return (
     <div className="flex-1">
       <ListBtnRow
@@ -126,8 +136,11 @@ function LeftList({ isAdd, totalRenderedRows, onSubmit, onRenderRowIndex }: Left
         totalSelected={totalSelected}
       />
       <SearchRow
-        search={search}
+        search={filters.search}
         onSearchChange={handleSearchChange}
+        indeterminateChecked={indeterminateChecked}
+        allChecked={allChecked}
+        onCheckChange={handleCheckChange}
       />
       <Virtuoso
         style={{ height: '400px' }}
@@ -165,29 +178,25 @@ export function LeftListRow({ text = '', checked, onClick }: RowProps) {
 type SearchRowProps = {
   search: string;
   onSearchChange(e: ChangeEvent<HTMLInputElement>): void;
+  indeterminateChecked: boolean;
+  allChecked: boolean;
+  onCheckChange(e: ChangeEvent<HTMLInputElement>, checked: boolean): void;
 };
 
-function SearchRow({ search, onSearchChange }: SearchRowProps) {
+function SearchRow({
+  search,
+  onSearchChange,
+  indeterminateChecked,
+  allChecked,
+  onCheckChange,
+}: SearchRowProps) {
   return (
     <div className="flex items-center mb-1 w-full">
       <Checkbox
         sx={{ marginLeft: '-8px' }}
-        // indeterminate={indeterminateChecked}
-        // checked={indeterminateChecked || allChecked}
-        // onChange={e => {
-        //   console.log('e.target.checked');
-        //   console.log(e.target.checked);
-
-        //   const diff: ItemIdRecord<boolean> = {};
-        //   filteredData.forEach(itemId => {
-        //     diff[itemId] = e.target.checked;
-        //   });
-
-        //   setSelected({
-        //     ...selected,
-        //     ...diff,
-        //   });
-        // }}
+        indeterminate={indeterminateChecked}
+        checked={indeterminateChecked || allChecked}
+        onChange={onCheckChange}
       />
       <input
         type="text"

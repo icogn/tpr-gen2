@@ -39,6 +39,7 @@ import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
 import ListBtnRow from './ListBtnRow';
+import type { LeftListFilters } from './LeftList';
 import LeftList, { LeftListRow } from './LeftList';
 
 type RowProps = {
@@ -599,7 +600,9 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
 
   const { fields, replace, prepend } = useFieldArrayRet;
 
-  const leftContent = useMemo(() => {
+  const [leftFilters, setLeftFilters] = useState<LeftListFilters>({ search: '', selectVal: null });
+
+  const fullLeftRows = useMemo(() => {
     const selectedCheckIds: Record<string, boolean> = {};
     fields.forEach(({ checkId }: ExcludedCheckField) => {
       selectedCheckIds[checkId] = true;
@@ -613,6 +616,13 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
     });
     return list;
   }, [fields]);
+
+  const filteredLeftRows = useMemo(() => {
+    return fullLeftRows.filter((checkId: CheckId) => {
+      const text = checkIdToName(checkId) || '';
+      return text.toLowerCase().indexOf(leftFilters.search.toLowerCase()) >= 0;
+    });
+  }, [fullLeftRows, leftFilters]);
 
   const handleAdd = useCallback(
     (rowIdRecord: Record<string, boolean>) => {
@@ -632,7 +642,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
     setTimeout(() => {
       // const newVal = selectedChecks.reduce<ExcludedCheckField[]>((acc, checkId, i) => {
       const newVal = alphabeticalCheckIds.reduce<ExcludedCheckField[]>((acc, checkId, i) => {
-        if (i < 100) {
+        if (i < 460) {
           acc.push({ checkId });
         }
         return acc;
@@ -646,10 +656,13 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
     <div className="flex">
       <LeftList
         isAdd
-        totalRenderedRows={leftContent.length}
+        totalRenderedRows={filteredLeftRows.length}
+        filteredEntityIds={filteredLeftRows}
         onSubmit={handleAdd}
+        filters={leftFilters}
+        onFiltersChange={setLeftFilters}
         onRenderRowIndex={({ index, checkedRows, updateChecked }) => {
-          const id = leftContent[index];
+          const id = filteredLeftRows[index];
           const text = checkIdToName(id);
           const checked = Boolean(checkedRows[id]);
 
