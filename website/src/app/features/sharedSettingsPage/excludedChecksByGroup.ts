@@ -299,7 +299,7 @@ export const excludedChecksByGroup: Record<string, CheckId[]> = {
     CheckId.Snowpeak_Icy_Summit_Poe,
     CheckId.Snowpeak_Poe_Among_Trees,
   ],
-  "Hero's Shade": [
+  'Golden Wolf': [
     CheckId.Faron_Woods_Golden_Wolf,
     CheckId.Gerudo_Desert_Golden_Wolf,
     CheckId.Kakariko_Graveyard_Golden_Wolf,
