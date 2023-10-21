@@ -39,8 +39,9 @@ import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
 import ListBtnRow from './ListBtnRow';
-import type { LeftListFilters, SelectOption } from './LeftList';
+import type { LeftListFilters } from './LeftList';
 import LeftList, { LeftListRow } from './LeftList';
+import { excludedChecksByGroup, excludedChecksGroupsAsOptions } from './excludedChecksByGroup';
 
 type RowProps = {
   index: number;
@@ -588,24 +589,26 @@ type OnCheckChange = (e: ChangeEvent<HTMLInputElement>, tgtChecked: boolean) => 
 type UpdateCheckedChecks = (checkIds: CheckId | CheckId[], checked: boolean) => void;
 type UpdateExpandedGroups = (groupName: string, expanded: boolean) => void;
 
-const selOptions: SelectOption[] = [
-  {
-    value: '1',
-    label: 'LLLL',
-  },
-  {
-    value: '2',
-    label: 'Dog',
-  },
-  {
-    value: '3',
-    label: 'Progressive Fishing Rod Progressive Fishing Rod',
-  },
-  {
-    value: '3',
-    label: 'Progressive Fishing Rod',
-  },
-];
+// Map string to CheckId[] for the zones.
+
+// const selOptions: SelectOption[] = [
+//   {
+//     value: '1',
+//     label: 'LLLL',
+//   },
+//   {
+//     value: '2',
+//     label: 'Dog',
+//   },
+//   {
+//     value: '3',
+//     label: 'Progressive Fishing Rod Progressive Fishing Rod',
+//   },
+//   {
+//     value: '3',
+//     label: 'Progressive Fishing Rod',
+//   },
+// ];
 
 type ExcludedChecksProps = {
   useFormRet: UseFormReturn<FormSchema>;
@@ -639,7 +642,22 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
   }, [fields]);
 
   const filteredLeftRows = useMemo(() => {
+    let checksOfGroup: Record<string, boolean> | null = null;
+
+    if (leftFilters.selectVal) {
+      checksOfGroup = {};
+      const groupName = leftFilters.selectVal.value;
+      const checkIds = excludedChecksByGroup[groupName];
+      checkIds.forEach(checkId => {
+        checksOfGroup![checkId] = true;
+      });
+    }
+
     return fullLeftRows.filter((checkId: CheckId) => {
+      if (checksOfGroup && !checksOfGroup[checkId]) {
+        return false;
+      }
+
       const text = checkIdToName(checkId) || '';
       return text.toLowerCase().indexOf(leftFilters.search.toLowerCase()) >= 0;
     });
@@ -680,7 +698,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
         totalRenderedRows={filteredLeftRows.length}
         filteredEntityIds={filteredLeftRows}
         onSubmit={handleAdd}
-        selectOptions={selOptions}
+        selectOptions={excludedChecksGroupsAsOptions}
         filters={leftFilters}
         onFiltersChange={setLeftFilters}
         onRenderRowIndex={({ index, checkedRows, updateChecked }) => {
