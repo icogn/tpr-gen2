@@ -4,11 +4,11 @@ import { useMemo, useState } from 'react';
 
 type LeftListProps = {
   numRows: number;
-  getRowId(index: number): string;
+  getRowInfo(index: number): { id: string; text?: string };
   onSubmit(selectedRowIds: Record<string, boolean>): void;
 };
 
-function LeftList({ numRows, getRowId, onSubmit }: LeftListProps) {
+function LeftList({ numRows, getRowInfo, onSubmit }: LeftListProps) {
   const [checkedRows, setCheckedRows] = useState<Record<string, boolean>>({});
 
   const totalSelected = useMemo(() => {
@@ -26,6 +26,7 @@ function LeftList({ numRows, getRowId, onSubmit }: LeftListProps) {
         isAdd
         onBtnClick={() => {
           onSubmit(checkedRows);
+          setCheckedRows({});
         }}
         totalSelected={totalSelected}
       />
@@ -33,15 +34,15 @@ function LeftList({ numRows, getRowId, onSubmit }: LeftListProps) {
         style={{ height: '400px' }}
         totalCount={numRows}
         itemContent={index => {
-          const rowId = getRowId(index);
+          const { id, text } = getRowInfo(index);
           return (
             <Row
-              index={index}
-              checked={Boolean(checkedRows[rowId])}
+              text={text}
+              checked={Boolean(checkedRows[id])}
               onClick={() => {
                 setCheckedRows({
                   ...checkedRows,
-                  [rowId]: !checkedRows[rowId],
+                  [id]: !checkedRows[id],
                 });
               }}
             />
@@ -53,21 +54,23 @@ function LeftList({ numRows, getRowId, onSubmit }: LeftListProps) {
 }
 
 type RowProps = {
-  index: number;
+  text?: string;
   checked: boolean;
   onClick(): void;
 };
 
-function Row({ index, checked, onClick }: RowProps) {
+function Row({ text = '', checked, onClick }: RowProps) {
   return (
-    <div onClick={onClick}>
+    <div
+      onClick={onClick}
+      style={{ userSelect: 'none' }}
+    >
       <input
         type="checkbox"
         checked={checked}
         readOnly
       />
-      {/* <span>{`${index} ${excludedChecksList[index]}`}</span> */}
-      <span>{`${index}`}</span>
+      <span>{text}</span>
     </div>
   );
 }
