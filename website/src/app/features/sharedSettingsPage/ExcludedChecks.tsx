@@ -38,6 +38,8 @@ import { CheckId, checkIdToName } from './checks';
 import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
+import ListBtnRow from './ListBtnRow';
+import LeftList from './LeftList';
 
 type RowProps = {
   index: number;
@@ -610,18 +612,30 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
 
   return (
     <div className="flex">
-      <Virtuoso
-        style={{ height: '400px' }}
-        className="flex-1"
-        totalCount={excludedChecksList.length}
-        itemContent={index => {
-          if (index === 22) {
-            return <OtherRow />;
-          } else {
-            return <Row index={index} />;
-          }
+      <LeftList
+        numRows={excludedChecksList.length}
+        getRowId={index => String(index)}
+        onSubmit={ch => {
+          console.log(ch);
         }}
       />
+      <div className="flex-1">
+        <ListBtnRow
+          isAdd
+          onBtnClick={() => {}}
+        />
+        <Virtuoso
+          style={{ height: '400px' }}
+          totalCount={excludedChecksList.length}
+          itemContent={index => {
+            if (index === 22) {
+              return <OtherRow />;
+            } else {
+              return <Row index={index} />;
+            }
+          }}
+        />
+      </div>
       <RightList useFieldArrayRet={useFieldArrayRet} />
     </div>
   );
