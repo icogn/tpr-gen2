@@ -39,7 +39,7 @@ import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
 import ListBtnRow from './ListBtnRow';
-import LeftList from './LeftList';
+import LeftList, { LeftListRow } from './LeftList';
 
 type RowProps = {
   index: number;
@@ -645,12 +645,23 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
   return (
     <div className="flex">
       <LeftList
-        numRows={leftContent.length}
-        getRowInfo={index => {
-          const id = leftContent[index];
-          return { id: String(id), text: checkIdToName(id) };
-        }}
+        totalRenderedRows={leftContent.length}
         onSubmit={handleAdd}
+        onRenderRowIndex={({ index, checkedRows, updateChecked }) => {
+          const id = leftContent[index];
+          const text = checkIdToName(id);
+          const checked = Boolean(checkedRows[id]);
+
+          return (
+            <LeftListRow
+              text={text}
+              checked={checked}
+              onClick={() => {
+                updateChecked(String(id), !checked);
+              }}
+            />
+          );
+        }}
       />
       <div className="flex-1">
         <ListBtnRow
