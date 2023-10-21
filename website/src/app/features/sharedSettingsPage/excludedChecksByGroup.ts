@@ -308,7 +308,7 @@ export const excludedChecksByGroup: Record<string, CheckId[]> = {
     CheckId.Outside_South_Castle_Town_Golden_Wolf,
     CheckId.West_Hyrule_Field_Golden_Wolf,
   ],
-  'Multi-zone': [
+  Multizone: [
     CheckId.Goron_Springwater_Rush,
     CheckId.Iza_Helping_Hand,
     CheckId.Iza_Raging_Rapids_Minigame,
