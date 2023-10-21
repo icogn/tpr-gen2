@@ -96,7 +96,6 @@ export const excludedChecksByGroup: Record<string, CheckId[]> = {
     CheckId.Eldin_Field_Female_Grasshopper,
     CheckId.Eldin_Field_Male_Grasshopper,
     CheckId.Eldin_Field_Water_Bomb_Fish_Grotto_Chest,
-    CheckId.Goron_Springwater_Rush,
   ],
   'NE Hyrule Field': [
     CheckId.Bridge_of_Eldin_Female_Phasmid,
@@ -252,9 +251,6 @@ export const excludedChecksByGroup: Record<string, CheckId[]> = {
   "Upper Zora's River": [
     CheckId.Fishing_Hole_Bottle,
     CheckId.Fishing_Hole_Heart_Piece,
-    CheckId.Iza_Helping_Hand,
-    CheckId.Iza_Raging_Rapids_Minigame,
-    CheckId.Plumm_Fruit_Balloon_Minigame,
     CheckId.Upper_Zoras_River_Female_Dragonfly,
     CheckId.Upper_Zoras_River_Poe,
   ],
@@ -311,6 +307,12 @@ export const excludedChecksByGroup: Record<string, CheckId[]> = {
     CheckId.Ordon_Spring_Golden_Wolf,
     CheckId.Outside_South_Castle_Town_Golden_Wolf,
     CheckId.West_Hyrule_Field_Golden_Wolf,
+  ],
+  'Multi-zone': [
+    CheckId.Goron_Springwater_Rush,
+    CheckId.Iza_Helping_Hand,
+    CheckId.Iza_Raging_Rapids_Minigame,
+    CheckId.Plumm_Fruit_Balloon_Minigame,
   ],
   'Cave of Ordeals': [
     CheckId.Cave_of_Ordeals_Floor_17_Poe,

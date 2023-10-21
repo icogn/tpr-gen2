@@ -688,7 +688,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
       }, []);
 
       replace(newVal);
-    }, 3000);
+    }, 300000);
   }, [replace]);
 
   return (
