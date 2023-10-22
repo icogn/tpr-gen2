@@ -54,7 +54,7 @@ function LeftRightPickerListRow({
   return (
     <div
       className={clsx(
-        'flex items-center pr-2',
+        'flex items-center px-2',
         isSubRow && 'pl-5',
         styles.rowRoot,
         appearAnim && styles.appearAnim,

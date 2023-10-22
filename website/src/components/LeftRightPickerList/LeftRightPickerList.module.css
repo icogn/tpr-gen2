@@ -1,5 +1,6 @@
 .listRoot {
-  border: solid 1px red;
+  /* border: solid 1px red; */
+  @apply border border-neutral-300 dark:border-neutral-700;
 }
 
 .rightList {
@@ -9,11 +10,12 @@
 .rowRoot {
   border-bottom: 1px solid white;
   min-height: 28px;
+  @apply border-b border-neutral-300 dark:border-neutral-700;
 }
 
 .rowText {
   @apply ml-2 text-sm;
-  padding: 2px 0;
+  /* padding: 2px 0; */
 }
 
 /* .root:not(:last-child) { */

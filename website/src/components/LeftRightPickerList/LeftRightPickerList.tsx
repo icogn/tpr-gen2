@@ -216,7 +216,17 @@ function LeftRightPickerList({
 
   // Only apply `computeItemKey` prop when not undefined. React Virtuoso is not
   // happy if we explicitly set the prop value to undefined.
-  const otherVirtuosoProps = computeRowKey ? { computeItemKey: computeRowKey } : {};
+  const otherVirtuosoProps = computeRowKey
+    ? {
+        computeItemKey: (index: number) => {
+          if (index < totalRenderedRows) {
+            return computeRowKey(index);
+          } else {
+            return '__bottom-padding-row__';
+          }
+        },
+      }
+    : {};
 
   return (
     <div className={clsx('flex-1', !isAdd && styles.rightList)}>
@@ -247,15 +257,19 @@ function LeftRightPickerList({
         {...otherVirtuosoProps}
         onScroll={handleScroll}
         style={{ height: '400px' }}
-        totalCount={totalRenderedRows}
+        totalCount={totalRenderedRows + 1}
         className={styles.listRoot}
         itemContent={index => {
-          return onRenderRowIndex({
-            index,
-            checkedRows,
-            updateChecked,
-            canAnimNewEntityIds: preventAnims.current ? staticObj : newestEntityIds,
-          });
+          if (index < totalRenderedRows) {
+            return onRenderRowIndex({
+              index,
+              checkedRows,
+              updateChecked,
+              canAnimNewEntityIds: preventAnims.current ? staticObj : newestEntityIds,
+            });
+          } else {
+            return <div className="pt-2" />;
+          }
         }}
       />
     </div>
