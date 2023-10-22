@@ -33,7 +33,8 @@ import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Checkbox } from '@mui/material';
-import { CheckId, alphabeticalCheckIds, checkIdToName } from './checks';
+import type { CheckId } from './checks';
+import { alphabeticalCheckIds, checkIdToName } from './checks';
 import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
@@ -64,17 +65,17 @@ import { excludedChecksByGroup, excludedChecksGroupsAsOptions } from './excluded
 //   expanded: boolean;
 // };
 
-const groupDefs: { [key: string]: CheckId[] } = {
-  'Golden Wolves': [
-    CheckId.Faron_Woods_Golden_Wolf,
-    CheckId.Gerudo_Desert_Golden_Wolf,
-    CheckId.Kakariko_Graveyard_Golden_Wolf,
-    CheckId.North_Castle_Town_Golden_Wolf,
-    CheckId.Ordon_Spring_Golden_Wolf,
-    CheckId.Outside_South_Castle_Town_Golden_Wolf,
-    CheckId.West_Hyrule_Field_Golden_Wolf,
-  ],
-};
+// const groupDefs: { [key: string]: CheckId[] } = {
+//   'Golden Wolves': [
+//     CheckId.Faron_Woods_Golden_Wolf,
+//     CheckId.Gerudo_Desert_Golden_Wolf,
+//     CheckId.Kakariko_Graveyard_Golden_Wolf,
+//     CheckId.North_Castle_Town_Golden_Wolf,
+//     CheckId.Ordon_Spring_Golden_Wolf,
+//     CheckId.Outside_South_Castle_Town_Golden_Wolf,
+//     CheckId.West_Hyrule_Field_Golden_Wolf,
+//   ],
+// };
 
 // const selectedChecks = [
 //   checkNameToId('Uli Cradle Delivery'),
@@ -745,6 +746,8 @@ type RightListProps = {
 function RightList({ useFieldArrayRet }: RightListProps) {
   const { fields, remove } = useFieldArrayRet;
 
+  // TODO: get top checkbox working by passing filtered entity ids.
+
   const checkIdToFieldIndex = useMemo(() => {
     const map: Record<string, number> = {};
     fields.forEach(({ checkId }, i) => {
@@ -758,6 +761,8 @@ function RightList({ useFieldArrayRet }: RightListProps) {
     selectVal: null,
   });
 
+  const { search } = rightFilters;
+
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const updateExpandedGroups = useCallback(
@@ -770,17 +775,28 @@ function RightList({ useFieldArrayRet }: RightListProps) {
     [setExpandedGroups],
   );
 
+  useEffect(() => {
+    setExpandedGroups({});
+  }, [search]);
+
   const { groupsToShow, checksInGroups } = useMemo(() => {
+    const groupNames: string[] = [];
+    let checkIdsInGroup: Record<string, boolean> = {};
+
+    if (search) {
+      return {
+        groupsToShow: groupNames,
+        checksInGroups: checkIdsInGroup,
+      };
+    }
+
     const selectedChecksById: Record<number, boolean> = {};
     fields.forEach(({ checkId }) => {
       selectedChecksById[checkId] = true;
     });
 
-    const groupNames: string[] = [];
-    let checkIdsInGroup: Record<string, boolean> = {};
-
-    Object.keys(groupDefs).forEach(groupName => {
-      const checksInGroup = groupDefs[groupName];
+    Object.keys(excludedChecksByGroup).forEach(groupName => {
+      const checksInGroup = excludedChecksByGroup[groupName];
       const checkIdsInGroupDiff: Record<string, boolean> = {};
 
       for (let i = 0; i < checksInGroup.length; i++) {
@@ -803,7 +819,7 @@ function RightList({ useFieldArrayRet }: RightListProps) {
       groupsToShow: groupNames,
       checksInGroups: checkIdsInGroup,
     };
-  }, [fields]);
+  }, [fields, search]);
 
   const { indexMapping, totalRows } = useMemo(() => {
     // Calc indexes and stuff for quick rendering.
@@ -817,17 +833,22 @@ function RightList({ useFieldArrayRet }: RightListProps) {
       currentIndex += 1;
 
       if (expandedGroups[groupName]) {
-        groupDefs[groupName].forEach(checkId => {
+        excludedChecksByGroup[groupName].forEach(checkId => {
           idxMapping[currentIndex] = { checkId, isSubRow: true };
           currentIndex += 1;
         });
       }
     });
 
+    const lowercaseSearch = search.toLowerCase();
+
     fields.forEach(({ checkId }) => {
       if (!checksInGroups[checkId]) {
-        idxMapping[currentIndex] = { checkId };
-        currentIndex += 1;
+        const text = checkIdToName(checkId)?.toLowerCase() || '';
+        if (text.indexOf(lowercaseSearch) >= 0) {
+          idxMapping[currentIndex] = { checkId };
+          currentIndex += 1;
+        }
       }
     });
 
@@ -835,7 +856,7 @@ function RightList({ useFieldArrayRet }: RightListProps) {
       indexMapping: idxMapping,
       totalRows: currentIndex,
     };
-  }, [expandedGroups, groupsToShow, checksInGroups, fields]);
+  }, [expandedGroups, groupsToShow, checksInGroups, fields, search]);
 
   const handleRemove = useCallback(
     (rowIdRecord: Record<string, boolean>) => {
@@ -1025,7 +1046,7 @@ function FancyRowGroup({
 
     let numChecked = 0;
 
-    const groupDef = groupDefs[groupName];
+    const groupDef = excludedChecksByGroup[groupName];
     for (let i = 0; i < groupDef.length; i++) {
       if (checkedChecks[groupDef[i]]) {
         numChecked += 1;
@@ -1042,7 +1063,7 @@ function FancyRowGroup({
   }, [groupName, checkedChecks]);
 
   const text = useMemo(() => {
-    return `${groupName} (${groupDefs[groupName].length})`;
+    return `${groupName} (${excludedChecksByGroup[groupName].length})`;
   }, [groupName]);
 
   const handleClick = useCallback(() => {
@@ -1051,7 +1072,7 @@ function FancyRowGroup({
 
   const handleCheckChange: OnCheckChange = useCallback(
     (e, tgtChecked) => {
-      updateCheckedChecks(groupDefs[groupName], tgtChecked);
+      updateCheckedChecks(excludedChecksByGroup[groupName], tgtChecked);
     },
     [groupName, updateCheckedChecks],
   );
