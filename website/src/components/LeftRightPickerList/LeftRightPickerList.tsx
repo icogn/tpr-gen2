@@ -128,7 +128,10 @@ function LeftRightPickerList({
 
   useEffect(() => {
     // Somewhat hacky way to prevent appear animation from replaying when the
-    // user tabs away then tabs back. Currently no reason to change this.
+    // user tabs away then tabs back. This also removes the need for disabling
+    // the animations on scroll since the rerender on scroll will have this
+    // applied. That was to fix the issue of top items play animation, scroll
+    // down, scroll back up, animation replays.
     setTimeout(() => {
       preventAnims.current = true;
     }, 0);
@@ -218,10 +221,6 @@ function LeftRightPickerList({
     [setCheckedRows, filteredEntityIds],
   );
 
-  const handleScroll = useCallback(() => {
-    preventAnims.current = true;
-  }, []);
-
   // Only apply `computeItemKey` prop when not undefined. React Virtuoso is not
   // happy if we explicitly set the prop value to undefined.
   const otherVirtuosoProps = computeRowKey
@@ -264,7 +263,6 @@ function LeftRightPickerList({
       <div className={styles.listRoot}>
         <Virtuoso
           {...otherVirtuosoProps}
-          onScroll={handleScroll}
           totalCount={totalRenderedRows + 1}
           itemContent={index => {
             if (index < totalRenderedRows) {
