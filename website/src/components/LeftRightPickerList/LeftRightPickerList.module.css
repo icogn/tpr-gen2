@@ -1,6 +1,7 @@
 .listRoot {
   /* border: solid 1px red; */
   @apply border border-neutral-300 dark:border-neutral-700;
+  height: 480px;
 }
 
 .rightList {

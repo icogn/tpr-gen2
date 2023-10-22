@@ -253,25 +253,25 @@ function LeftRightPickerList({
         allChecked={allChecked}
         onCheckChange={handleCheckChange}
       />
-      <Virtuoso
-        {...otherVirtuosoProps}
-        onScroll={handleScroll}
-        style={{ height: '400px' }}
-        totalCount={totalRenderedRows + 1}
-        className={styles.listRoot}
-        itemContent={index => {
-          if (index < totalRenderedRows) {
-            return onRenderRowIndex({
-              index,
-              checkedRows,
-              updateChecked,
-              canAnimNewEntityIds: preventAnims.current ? staticObj : newestEntityIds,
-            });
-          } else {
-            return <div className="pt-2" />;
-          }
-        }}
-      />
+      <div className={styles.listRoot}>
+        <Virtuoso
+          {...otherVirtuosoProps}
+          onScroll={handleScroll}
+          totalCount={totalRenderedRows + 1}
+          itemContent={index => {
+            if (index < totalRenderedRows) {
+              return onRenderRowIndex({
+                index,
+                checkedRows,
+                updateChecked,
+                canAnimNewEntityIds: preventAnims.current ? staticObj : newestEntityIds,
+              });
+            } else {
+              return <div className="pt-2" />;
+            }
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -292,9 +292,11 @@ function SearchRow({
   onCheckChange,
 }: SearchRowProps) {
   return (
-    <div className="flex items-center mb-1 w-full">
+    <div className="flex items-center mb-2 w-full px-2 border border-transparent">
       <Checkbox
-        sx={{ marginLeft: '-8px' }}
+        size="small"
+        disableRipple
+        sx={{ padding: 0 }}
         indeterminate={indeterminateChecked}
         checked={indeterminateChecked || allChecked}
         onChange={onCheckChange}
@@ -302,7 +304,7 @@ function SearchRow({
       <input
         type="text"
         placeholder="Search"
-        className="px-2 ml-1 flex-1 min-w-0"
+        className="px-2 ml-2 flex-1 min-w-0 rounded"
         style={{ color: '#000' }}
         value={search}
         onChange={onSearchChange}
@@ -329,7 +331,7 @@ function SelectRow({
 }: SelectRowProps) {
   return (
     <div
-      className="pb-1"
+      className="pb-2"
       style={invisible ? { visibility: 'hidden' } : undefined}
     >
       <Select
