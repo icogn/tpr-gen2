@@ -1,9 +1,12 @@
 import { Virtuoso } from 'react-virtuoso';
 import ListBtnRow from './ListBtnRow';
 import type { ChangeEvent } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Checkbox } from '@mui/material';
 import Select, { type SingleValue } from 'react-select';
+import { usePreviousDistinct } from 'react-use';
+
+const staticObj = {};
 
 export type LeftListFilters = {
   search: string;
@@ -19,6 +22,7 @@ type OnRenderRowIndexParam = {
   index: number;
   checkedRows: Record<string, boolean>;
   updateChecked: UpdateCheckedEntities;
+  canAnimNewEntityIds: Record<string, boolean>;
 };
 
 type OnRenderRowIndex = (param: OnRenderRowIndexParam) => React.ReactNode;
@@ -32,6 +36,7 @@ type LeftListProps = {
   // the group. In that case, this value would be 10 since that is how many rows
   // we render.
   totalRenderedRows: number;
+  unfilteredEntityIds: string[] | number[];
   filteredEntityIds: string[] | number[];
   // filteredEntityIds: string[];
   onSubmit(selectedRowIds: Record<string, boolean>): void;
@@ -41,11 +46,13 @@ type LeftListProps = {
   onFiltersChange(filters: LeftListFilters): void;
   selectOptions?: SelectOption[];
   invisibleSelectRow?: boolean;
+  computeRowKey?(index: number): React.Key;
 };
 
 function LeftList({
   isAdd,
   totalRenderedRows,
+  unfilteredEntityIds,
   filteredEntityIds,
   onSubmit,
   onRenderRowIndex,
@@ -53,11 +60,68 @@ function LeftList({
   onFiltersChange,
   selectOptions = [],
   invisibleSelectRow = false,
+  computeRowKey = undefined,
 }: LeftListProps) {
   const [checkedRows, setCheckedRows] = useState<Record<string, boolean>>({});
+  const preventAnims = useRef(true);
 
   // TODO: allow for right content rendering so that this component can be used
   // for left and right side lists
+
+  const prevFields = usePreviousDistinct(unfilteredEntityIds, (prev, next) => {
+    const prevIsArray = Array.isArray(prev);
+    const nextIsArray = Array.isArray(next);
+
+    if (prevIsArray !== nextIsArray) {
+      return false;
+    } else if (!prevIsArray) {
+      return prev === next;
+    }
+
+    const prevArr = prev!;
+    const nextArr = next!;
+
+    if (prevArr.length !== nextArr.length) {
+      return false;
+    }
+
+    for (let i = 0; i < prevArr.length; i++) {
+      const prevVal = prevArr[i];
+      const nextVal = nextArr[i];
+      if (prevVal !== nextVal) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  useEffect(() => {
+    preventAnims.current = true;
+  }, [filters]);
+
+  const newestEntityIds = useMemo(() => {
+    if (prevFields && unfilteredEntityIds.length > prevFields.length) {
+      preventAnims.current = false;
+
+      const oldFieldIds: Record<string, boolean> = {};
+      if (prevFields) {
+        prevFields.forEach(id => {
+          oldFieldIds[id] = true;
+        });
+      }
+
+      const res: Record<string, boolean> = {};
+      unfilteredEntityIds.forEach(id => {
+        if (!oldFieldIds[id]) {
+          res[id] = true;
+        }
+      });
+      return res;
+    }
+
+    return {};
+  }, [prevFields, unfilteredEntityIds]);
 
   const totalSelected = useMemo(() => {
     return Object.keys(checkedRows).reduce((acc, rowId) => {
@@ -143,6 +207,14 @@ function LeftList({
     [setCheckedRows, filteredEntityIds],
   );
 
+  const handleScroll = useCallback(() => {
+    preventAnims.current = true;
+  }, []);
+
+  // Only apply `computeItemKey` prop when not undefined. React Virtuoso is not
+  // happy if we explicitly set the prop value to undefined.
+  const otherVirtuosoProps = computeRowKey ? { computeItemKey: computeRowKey } : {};
+
   return (
     <div className="flex-1">
       <ListBtnRow
@@ -169,10 +241,17 @@ function LeftList({
         onCheckChange={handleCheckChange}
       />
       <Virtuoso
+        {...otherVirtuosoProps}
+        onScroll={handleScroll}
         style={{ height: '400px' }}
         totalCount={totalRenderedRows}
         itemContent={index => {
-          return onRenderRowIndex({ index, checkedRows, updateChecked });
+          return onRenderRowIndex({
+            index,
+            checkedRows,
+            updateChecked,
+            canAnimNewEntityIds: preventAnims.current ? staticObj : newestEntityIds,
+          });
         }}
       />
     </div>
