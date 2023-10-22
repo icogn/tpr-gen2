@@ -2,6 +2,7 @@ import { Checkbox } from '@mui/material';
 import styles from './LeftRightPickerList.module.css';
 import clsx from 'clsx';
 import type { ChangeEvent } from 'react';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 // type LeftRightPickerListRowProps = {
 //   text?: string;
@@ -75,7 +76,9 @@ function LeftRightPickerListRow({
         onChange={onCheckChange}
       />
       <span className={styles.rowText}>{text}</span>
-      {isGroupNameRow && <div className="ml-auto">{expanded ? 'A' : 'V'}</div>}
+      {isGroupNameRow && (
+        <div className="ml-auto">{expanded ? <ExpandLess /> : <ExpandMore />}</div>
+      )}
     </div>
   );
 }
