@@ -746,8 +746,6 @@ type RightListProps = {
 function RightList({ useFieldArrayRet }: RightListProps) {
   const { fields, remove } = useFieldArrayRet;
 
-  // TODO: get top checkbox working by passing filtered entity ids.
-
   const checkIdToFieldIndex = useMemo(() => {
     const map: Record<string, number> = {};
     fields.forEach(({ checkId }, i) => {
@@ -821,9 +819,10 @@ function RightList({ useFieldArrayRet }: RightListProps) {
     };
   }, [fields, search]);
 
-  const { indexMapping, totalRows } = useMemo(() => {
+  const { indexMapping, totalRows, filteredEntityIds } = useMemo(() => {
     // Calc indexes and stuff for quick rendering.
     const idxMapping: Record<number, IndexInfo> = {};
+    const filteredEntityIds: CheckId[] = [];
 
     let currentIndex = 0;
 
@@ -832,12 +831,15 @@ function RightList({ useFieldArrayRet }: RightListProps) {
       idxMapping[currentIndex] = { groupName };
       currentIndex += 1;
 
-      if (expandedGroups[groupName]) {
-        excludedChecksByGroup[groupName].forEach(checkId => {
+      const groupIsExpanded = expandedGroups[groupName];
+
+      excludedChecksByGroup[groupName].forEach(checkId => {
+        filteredEntityIds.push(checkId);
+        if (groupIsExpanded) {
           idxMapping[currentIndex] = { checkId, isSubRow: true };
           currentIndex += 1;
-        });
-      }
+        }
+      });
     });
 
     const lowercaseSearch = search.toLowerCase();
@@ -847,6 +849,7 @@ function RightList({ useFieldArrayRet }: RightListProps) {
         const text = checkIdToName(checkId)?.toLowerCase() || '';
         if (text.indexOf(lowercaseSearch) >= 0) {
           idxMapping[currentIndex] = { checkId };
+          filteredEntityIds.push(checkId);
           currentIndex += 1;
         }
       }
@@ -855,6 +858,7 @@ function RightList({ useFieldArrayRet }: RightListProps) {
     return {
       indexMapping: idxMapping,
       totalRows: currentIndex,
+      filteredEntityIds,
     };
   }, [expandedGroups, groupsToShow, checksInGroups, fields, search]);
 
@@ -880,7 +884,7 @@ function RightList({ useFieldArrayRet }: RightListProps) {
     <LeftList
       isAdd={false}
       totalRenderedRows={totalRows}
-      filteredEntityIds={[]}
+      filteredEntityIds={filteredEntityIds}
       onSubmit={handleRemove}
       filters={rightFilters}
       invisibleSelectRow
@@ -1084,6 +1088,7 @@ function FancyRowGroup({
       onClick={handleClick}
       onCheckChange={handleCheckChange}
       isGroupNameRow
+      expanded={expanded}
     />
   );
 }
