@@ -14,6 +14,15 @@
   @apply border-b border-neutral-300 dark:border-neutral-700;
 }
 
+.rowRootChecked {
+  @apply bg-white dark:bg-neutral-900;
+}
+
+.rowRoot:hover {
+  /* background-color: pink; */
+  @apply bg-white dark:bg-neutral-700;
+}
+
 .rowText {
   @apply ml-2 text-sm;
   /* padding: 2px 0; */

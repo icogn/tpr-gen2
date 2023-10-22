@@ -57,6 +57,7 @@ function LeftRightPickerListRow({
         'flex items-center px-2',
         isSubRow && 'pl-5',
         styles.rowRoot,
+        (checked || indeterminate) && styles.rowRootChecked,
         appearAnim && styles.appearAnim,
       )}
       style={{ userSelect: 'none' }}
