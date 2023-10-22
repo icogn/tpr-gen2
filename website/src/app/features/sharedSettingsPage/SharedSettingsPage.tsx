@@ -15,12 +15,29 @@ import { useForm } from 'react-hook-form';
 import { type FormSchema } from './startingInventoryListShared';
 import FormWatcher from './FormWatcher';
 import ExcludedChecks from './ExcludedChecks';
+import { CheckId } from './checks';
 
 function SharedSettingsPage() {
   const useFormRet = useForm<FormSchema>({
     values: {
       list: [],
-      excludedChecks: [],
+      excludedChecks: [
+        { checkId: CheckId.Cave_of_Ordeals_Floor_17_Poe },
+        { checkId: CheckId.Cave_of_Ordeals_Floor_33_Poe },
+        { checkId: CheckId.Cave_of_Ordeals_Floor_44_Poe },
+        { checkId: CheckId.Cave_of_Ordeals_Great_Fairy_Reward },
+        { checkId: CheckId.Faron_Woods_Golden_Wolf },
+        { checkId: CheckId.Gerudo_Desert_Golden_Wolf },
+        { checkId: CheckId.Kakariko_Graveyard_Golden_Wolf },
+        { checkId: CheckId.North_Castle_Town_Golden_Wolf },
+        { checkId: CheckId.Ordon_Spring_Golden_Wolf },
+        { checkId: CheckId.Outside_South_Castle_Town_Golden_Wolf },
+        { checkId: CheckId.West_Hyrule_Field_Golden_Wolf },
+        { checkId: CheckId.Jovani_20_Poe_Soul_Reward },
+        { checkId: CheckId.Jovani_60_Poe_Soul_Reward },
+        { checkId: CheckId.Doctors_Office_Balcony_Chest },
+        { checkId: CheckId.Iza_Raging_Rapids_Minigame },
+      ],
       exBool: false,
     },
     defaultValues: {
