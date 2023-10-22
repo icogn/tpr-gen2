@@ -8,7 +8,7 @@ import { usePreviousDistinct } from 'react-use';
 
 const staticObj = {};
 
-export type LeftListFilters = {
+export type LeftRightPickerListFilters = {
   search: string;
   selectVal: SingleValue<SelectOption>;
 };
@@ -49,7 +49,7 @@ type LeftListProps = {
   computeRowKey?(index: number): React.Key;
 };
 
-function LeftList({
+function LeftRightPickerList({
   isAdd,
   totalRenderedRows,
   unfilteredEntityIds,
@@ -258,28 +258,6 @@ function LeftList({
   );
 }
 
-type RowProps = {
-  text?: string;
-  checked: boolean;
-  onClick(): void;
-};
-
-export function LeftListRow({ text = '', checked, onClick }: RowProps) {
-  return (
-    <div
-      onClick={onClick}
-      style={{ userSelect: 'none' }}
-    >
-      <input
-        type="checkbox"
-        checked={checked}
-        readOnly
-      />
-      <span>{text}</span>
-    </div>
-  );
-}
-
 type SearchRowProps = {
   search: string;
   onSearchChange(e: ChangeEvent<HTMLInputElement>): void;
@@ -354,4 +332,4 @@ function SelectRow({
   );
 }
 
-export default LeftList;
+export default LeftRightPickerList;

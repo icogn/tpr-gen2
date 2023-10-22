@@ -9,10 +9,11 @@ import { alphabeticalCheckIds, checkIdToName } from './checks';
 import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
-import type { LeftListFilters } from './LeftList';
-import LeftList, { LeftListRow } from './LeftList';
 import { excludedChecksByGroup, excludedChecksGroupsAsOptions } from './excludedChecksByGroup';
 import styles from './SharedSettingsPage.module.css';
+import type { LeftRightPickerListFilters } from '@/components/LeftRightPickerList/LeftRightPickerList';
+import LeftRightPickerList from '@/components/LeftRightPickerList/LeftRightPickerList';
+import LeftRightPickerListRow from '@/components/LeftRightPickerList/LeftRightPickerListRow';
 
 type CheckRowInfo = {
   checkId: CheckId;
@@ -41,7 +42,10 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
 
   const { fields, prepend } = useFieldArrayRet;
 
-  const [leftFilters, setLeftFilters] = useState<LeftListFilters>({ search: '', selectVal: null });
+  const [leftFilters, setLeftFilters] = useState<LeftRightPickerListFilters>({
+    search: '',
+    selectVal: null,
+  });
 
   const fullLeftRows = useMemo(() => {
     const selectedCheckIds: Record<string, boolean> = {};
@@ -96,7 +100,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
 
   return (
     <div className="flex">
-      <LeftList
+      <LeftRightPickerList
         isAdd
         totalRenderedRows={filteredLeftRows.length}
         unfilteredEntityIds={fullLeftRows}
@@ -115,7 +119,7 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
           const checked = Boolean(checkedRows[id]);
 
           return (
-            <LeftListRow
+            <LeftRightPickerListRow
               key={text}
               text={text}
               checked={checked}
@@ -146,7 +150,7 @@ function RightList({ useFieldArrayRet }: RightListProps) {
     return map;
   }, [fields]);
 
-  const [rightFilters, setRightFilters] = useState<LeftListFilters>({
+  const [rightFilters, setRightFilters] = useState<LeftRightPickerListFilters>({
     search: '',
     selectVal: null,
   });
@@ -287,7 +291,7 @@ function RightList({ useFieldArrayRet }: RightListProps) {
   );
 
   return (
-    <LeftList
+    <LeftRightPickerList
       isAdd={false}
       totalRenderedRows={totalRows}
       unfilteredEntityIds={unfilteredEntityIds}

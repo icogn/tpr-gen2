@@ -569,8 +569,6 @@ Object.keys(excludedChecksByGroup).forEach(groupName => {
   excludedChecksByGroup[groupName] = sorted;
 });
 
-console.log(excludedChecksByGroup.Ordon.map(checkId => checkIdToName(checkId)));
-
 export const excludedChecksGroupsAsOptions: SelectOption[] = Object.keys(excludedChecksByGroup)
   .sort()
   .reduce<SelectOption[]>((acc, groupName) => {
