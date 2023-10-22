@@ -126,6 +126,14 @@ function LeftRightPickerList({
     return {};
   }, [prevFields, unfilteredEntityIds]);
 
+  useEffect(() => {
+    // Somewhat hacky way to prevent appear animation from replaying when the
+    // user tabs away then tabs back. Currently no reason to change this.
+    setTimeout(() => {
+      preventAnims.current = true;
+    }, 0);
+  }, [newestEntityIds]);
+
   const totalSelected = useMemo(() => {
     return Object.keys(checkedRows).reduce((acc, rowId) => {
       if (checkedRows[rowId]) {
