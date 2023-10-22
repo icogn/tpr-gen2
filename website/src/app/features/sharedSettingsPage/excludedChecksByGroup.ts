@@ -1,5 +1,4 @@
-// const excludedChecksByGroups
-import type { SelectOption } from './LeftList';
+import { type SelectOption } from '@/types/commonTypes';
 import { CheckId, checkIdToName } from './checks';
 
 export const excludedChecksByGroup: Record<string, CheckId[]> = {

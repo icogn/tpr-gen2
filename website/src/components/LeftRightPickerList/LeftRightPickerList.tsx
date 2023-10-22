@@ -5,6 +5,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Checkbox } from '@mui/material';
 import Select, { type SingleValue } from 'react-select';
 import { usePreviousDistinct } from 'react-use';
+import type { SelectOption } from '@/types/commonTypes';
+import styles from './LeftRightPickerList.module.css';
+import clsx from 'clsx';
 
 const staticObj = {};
 
@@ -42,8 +45,8 @@ type LeftListProps = {
   onSubmit(selectedRowIds: Record<string, boolean>): void;
   // onFiltersChange(search: string): void;
   onRenderRowIndex: OnRenderRowIndex;
-  filters: LeftListFilters;
-  onFiltersChange(filters: LeftListFilters): void;
+  filters: LeftRightPickerListFilters;
+  onFiltersChange(filters: LeftRightPickerListFilters): void;
   selectOptions?: SelectOption[];
   invisibleSelectRow?: boolean;
   computeRowKey?(index: number): React.Key;
@@ -216,7 +219,7 @@ function LeftRightPickerList({
   const otherVirtuosoProps = computeRowKey ? { computeItemKey: computeRowKey } : {};
 
   return (
-    <div className="flex-1">
+    <div className={clsx('flex-1', !isAdd && styles.rightList)}>
       <ListBtnRow
         isAdd={isAdd}
         onBtnClick={() => {
@@ -245,6 +248,7 @@ function LeftRightPickerList({
         onScroll={handleScroll}
         style={{ height: '400px' }}
         totalCount={totalRenderedRows}
+        className={styles.listRoot}
         itemContent={index => {
           return onRenderRowIndex({
             index,
@@ -292,11 +296,6 @@ function SearchRow({
     </div>
   );
 }
-
-export type SelectOption = {
-  value: string;
-  label: string;
-};
 
 type SelectRowProps = {
   value?: SingleValue<SelectOption>;

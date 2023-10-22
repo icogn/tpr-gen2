@@ -2,15 +2,12 @@
 
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import clsx from 'clsx';
-import { Checkbox } from '@mui/material';
 import type { CheckId } from './checks';
 import { alphabeticalCheckIds, checkIdToName } from './checks';
 import type { UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import type { ExcludedCheckField, FormSchema } from './startingInventoryListShared';
 import { excludedChecksByGroup, excludedChecksGroupsAsOptions } from './excludedChecksByGroup';
-import styles from './SharedSettingsPage.module.css';
 import type { LeftRightPickerListFilters } from '@/components/LeftRightPickerList/LeftRightPickerList';
 import LeftRightPickerList from '@/components/LeftRightPickerList/LeftRightPickerList';
 import LeftRightPickerListRow from '@/components/LeftRightPickerList/LeftRightPickerListRow';
@@ -118,14 +115,17 @@ function ExcludedChecks({ useFormRet }: ExcludedChecksProps) {
           const text = checkIdToName(id);
           const checked = Boolean(checkedRows[id]);
 
+          const onClick = () => {
+            updateChecked(String(id), !checked);
+          };
+
           return (
             <LeftRightPickerListRow
               key={text}
               text={text}
               checked={checked}
-              onClick={() => {
-                updateChecked(String(id), !checked);
-              }}
+              onClick={onClick}
+              onCheckChange={onClick}
             />
           );
         }}
@@ -352,52 +352,6 @@ function RightList({ useFieldArrayRet }: RightListProps) {
   );
 }
 
-type FancyRowProps = {
-  onClick(): void;
-  onCheckChange: OnCheckChange;
-  checked?: boolean;
-  indeterminate?: boolean;
-  expanded?: boolean;
-  text?: string;
-  isGroupNameRow?: boolean;
-  isSubRow?: boolean;
-  appearAnim?: boolean;
-};
-
-function FancyRow({
-  onClick,
-  onCheckChange,
-  checked = false,
-  indeterminate = false,
-  expanded = false,
-  text = '',
-  isGroupNameRow = false,
-  isSubRow = false,
-  appearAnim = false,
-}: FancyRowProps) {
-  return (
-    <div
-      className={clsx('flex items-center px-2', isSubRow && 'pl-5', appearAnim && styles.anim)}
-      style={{ userSelect: 'none' }}
-      onClick={onClick}
-    >
-      <Checkbox
-        size="small"
-        disableRipple
-        sx={{ padding: 0, marginRight: '0.5rem' }}
-        indeterminate={indeterminate}
-        checked={indeterminate || checked}
-        onClick={e => {
-          e.stopPropagation();
-        }}
-        onChange={onCheckChange}
-      />
-      <span>{text}</span>
-      {isGroupNameRow && <div className="ml-auto">{expanded ? 'A' : 'V'}</div>}
-    </div>
-  );
-}
-
 type FancyRowCheckProps = {
   checkRowInfo: CheckRowInfo;
   checked?: boolean;
@@ -429,7 +383,7 @@ function FancyRowCheck({
   }, [checkRowInfo, checked, updateCheckedChecks]);
 
   return (
-    <FancyRow
+    <LeftRightPickerListRow
       {...memoedProps}
       checked={checked}
       isSubRow={checkRowInfo.isSubRow}
@@ -494,7 +448,7 @@ function FancyRowGroup({
   );
 
   return (
-    <FancyRow
+    <LeftRightPickerListRow
       {...memoedProps}
       text={text}
       onClick={handleClick}
